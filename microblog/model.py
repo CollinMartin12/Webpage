@@ -27,10 +27,16 @@ class Post(db.Model):
     timestamp: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
+    trip: Mapped["Trip"] = relationship(back_populates="posts")
     # response_to_id: Mapped[Optional[int]] = mapped_column(ForeignKey("post.id"))
     # response_to: Mapped["Post"] = relationship(
     #     back_populates="responses", remote_side=[id]
     # )
+class Trip(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user: Mapped["User"] = relationship(back_populates="trips")
     departure: Mapped[str] = mapped_column(String(128))
     destination: Mapped[str] = mapped_column(String(128))
     possible_dates: Mapped[datetime.date] = mapped_column(Date)
