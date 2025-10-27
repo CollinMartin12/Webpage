@@ -20,7 +20,7 @@ def create_app(test_config=None):
     # Code to place inside create_app, after the other app.config assignment
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = "mysql+pymysql://26_webapp_29:mx4ZAdkY@mysql.lab.it.uc3m.es/26_webapp_29a"
+    ] = "mysql+pymysql://26_webapp_29:mx4ZAdkY@mysql.lab.it.uc3m.es/26_webapp_29b"
 
     db.init_app(app)
     

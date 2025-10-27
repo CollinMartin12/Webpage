@@ -18,6 +18,7 @@ class User(flask_login.UserMixin, db.Model):
     description: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     messages: Mapped[List["Message"]] = relationship(back_populates="user")
     trips: Mapped[List["Trip"]] = relationship(back_populates="user")
+    meetups: Mapped[List["Meetups"]] = relationship(back_populates="user")
 
 
 class Post(db.Model):
@@ -35,6 +36,8 @@ class Post(db.Model):
     # response_to: Mapped["Post"] = relationship(
     #     back_populates="responses", remote_side=[id]
     # )
+
+
 class Trip(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
@@ -46,11 +49,9 @@ class Trip(db.Model):
     type_of_trip: Mapped[str] = mapped_column(String(128))
     max_participants: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(128))
-    messages: Mapped[List["Message"]] = relationship(back_populates="post")
     posts: Mapped[List["Post"]] = relationship(back_populates="trip")
     trip_participants: Mapped[List["Trip_participants"]] = relationship(back_populates="trip")
     meetups: Mapped[List["Meetups"]] = relationship(back_populates="trip")
-    # Other info about our activity niche
 
     # responses: Mapped[List["Post"]] = relationship(
     #     back_populates="response_to", remote_side=[response_to_id]
@@ -70,12 +71,14 @@ class Message(db.Model):
 class Trip_participants(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
+    trip: Mapped["Trip"] = relationship(back_populates="trip_participants")
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     editing_permissions: Mapped[bool] = mapped_column(Boolean)
 
 class Meetups(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
+    trip: Mapped["Trip"] = relationship(back_populates="meetups")
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="meetups")
     content: Mapped[str] = mapped_column(String(512))
