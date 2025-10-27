@@ -41,6 +41,7 @@ def signup_post():
     email = request.form.get("email")
     username = request.form.get("username")
     password = request.form.get("password")
+    description = request.form.get("description")
     # Check that passwords are equal
     if password != request.form.get("password_repeat"):
         flash("Sorry, passwords are different")
