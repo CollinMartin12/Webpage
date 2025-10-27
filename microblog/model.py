@@ -16,6 +16,7 @@ class User(flask_login.UserMixin, db.Model):
     password: Mapped[str] = mapped_column(String(256))
     posts: Mapped[List["Post"]] = relationship(back_populates="user")
     description: Mapped[str] = mapped_column(String(512), nullable=True)
+    messages: Mapped[List["Message"]] = relationship(back_populates="user")
 
 
 class Post(db.Model):
@@ -37,6 +38,7 @@ class Post(db.Model):
     type_of_trip: Mapped[str] = mapped_column(String(128))
     max_participants: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(128))
+    messages: Mapped[List["Message"]] = relationship(back_populates="post")
     # Other info about our activity niche
 
     # responses: Mapped[List["Post"]] = relationship(
