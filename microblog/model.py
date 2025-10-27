@@ -15,8 +15,9 @@ class User(flask_login.UserMixin, db.Model):
     name: Mapped[str] = mapped_column(String(64))
     password: Mapped[str] = mapped_column(String(256))
     posts: Mapped[List["Post"]] = relationship(back_populates="user")
-    description: Mapped[str] = mapped_column(String(512), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     messages: Mapped[List["Message"]] = relationship(back_populates="user")
+    trips: Mapped[List["Trip"]] = relationship(back_populates="user")
 
 
 class Post(db.Model):
@@ -29,6 +30,7 @@ class Post(db.Model):
     )
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     trip: Mapped["Trip"] = relationship(back_populates="posts")
+    messages: Mapped[List["Message"]] = relationship(back_populates="post")
     # response_to_id: Mapped[Optional[int]] = mapped_column(ForeignKey("post.id"))
     # response_to: Mapped["Post"] = relationship(
     #     back_populates="responses", remote_side=[id]
@@ -45,6 +47,9 @@ class Trip(db.Model):
     max_participants: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(128))
     messages: Mapped[List["Message"]] = relationship(back_populates="post")
+    posts: Mapped[List["Post"]] = relationship(back_populates="trip")
+    trip_participants: Mapped[List["Trip_participants"]] = relationship(back_populates="trip")
+    meetups: Mapped[List["Meetups"]] = relationship(back_populates="trip")
     # Other info about our activity niche
 
     # responses: Mapped[List["Post"]] = relationship(
@@ -72,6 +77,7 @@ class Meetups(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user: Mapped["User"] = relationship(back_populates="meetups")
     content: Mapped[str] = mapped_column(String(512))
     timestamp: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
