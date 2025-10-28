@@ -5,6 +5,7 @@ import flask_login
 from . import db
 from . import model
 
+#NOa
 bp = Blueprint("auth", __name__)
 
 
