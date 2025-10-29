@@ -20,3 +20,8 @@ def index():
     ]
     return render_template("main/index.html", posts=posts)
 
+@bp.route("/user/<int:user_id>")
+@flask_login.login_required
+def user_profile(user_id):
+    user = model.User(id=1, email = "mar@example.com", name = "mary", password = "dummy", description = "")
+    render_template("main/profile.html", user = user)
