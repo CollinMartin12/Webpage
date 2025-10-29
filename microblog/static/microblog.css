@@ -24,7 +24,8 @@
 header {
   display: flex;                         /* put children (h1 + a) in one row */
   justify-content: space-between;        /* space out title and button */
-  align-items: center;                   /* align vertically in the middle */
+  align-items: center;
+    font-family: fantasy;/* align vertically in the middle */
   padding: 1rem 2rem;                    /* breathing room around header */
   background: #3373A1;                   /* your brand blue */
   color: #fff;
