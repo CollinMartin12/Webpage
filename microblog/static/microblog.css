@@ -21,6 +21,44 @@
   opacity:.35; pointer-events:none;
 }
 
+header {
+  display: flex;                         /* put children (h1 + a) in one row */
+  justify-content: space-between;        /* space out title and button */
+  align-items: center;                   /* align vertically in the middle */
+  padding: 1rem 2rem;                    /* breathing room around header */
+  background: #3373A1;                   /* your brand blue */
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+
+.btn-home {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-home:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-home:active {
+  transform: translateY(1px);
+}
+
 .auth .content {
   min-height: 100vh;
   display: flex;

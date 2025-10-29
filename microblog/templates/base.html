@@ -8,7 +8,7 @@
     <body class="{% block body_class %}{% endblock %}">
         <header>
             <h1>Web Application Project Collin + Noa</h1>
-            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('main.index') }}" class="btn-home">Home</a>
         </header>
         <section class="content">
             {% block content %}{% endblock %}
