@@ -30,14 +30,14 @@ def user_profile(user_id):
         abort(404)
     return render_template("main/profile.html", user = user)
 
-@bp.route("/post/<int:post_id>")
+@bp.route("/trip/<int:trip_id>")
 @flask_login.login_required
-def post(post_id):
+def trip(trip_id):
     trip = db.session.get(model.Trip, trip.id, trip.departure)
-    if not post:
-        abort(404, "Post id {} doesn't exist.".format(id))
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(id))
     # Get responses to this post
     # query = db.select(model.Trip)
     # responses = db.session.execute(query).scalars().all()
     
-    return render_template("main/posts.html", trip=trip)
+    return render_template("main/trip.html", trip=trip)
