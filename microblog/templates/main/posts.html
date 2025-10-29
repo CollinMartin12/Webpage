@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <main>
+        <header>
+            <h1>Post</h1>
+        </header>
+        <section>
+           {%set trip = trip %}
+          {% include 'trip_template.html' %}  
+        </section>
+
+    </main>
+</div>

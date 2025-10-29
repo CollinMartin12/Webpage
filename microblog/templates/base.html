@@ -11,23 +11,26 @@
             <h1>Web Application Project Collin + Noa</h1>
             <a href="{{ url_for('main.index') }}" class="btn-home">Home</a>
         </header>
+        <aside>
+            <nav>
+                <ul>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.index') }}"><span>Home</span></a></li>
+                    <li><a href="{{ url_for('main.user_profile', user_id=current_user.id) }}"><span>Profile</span></a></li>
+                    <li><a href="{{ url_for('auth.logout') }}"><span>Logout</span></a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.signup') }}"><span>Sign Up</span></a></li>
+                    <li><a href="{{ url_for('auth.login') }}"><span>Log In</span></a></li>
+                {% endif %}
+                </ul>  <!-- ← this closing </ul> was missing in your static HTML -->
+            </nav>
+        </aside>
         <section class="content">
             {% block content %}{% endblock %}
         </section>
         <footer><small>Developed for Web applications</small></footer>
     </body>
-    <nav>
-        <ul>
-          {% if current_user.is_authenticated %}
-              <li><a href="{{ url_for('main.index') }}"><span>Home</span></a></li>
-              <li><a href="{{ url_for('main.user_profile', user_id=current_user.id) }}"><span>Profile</span></a></li>
-              <li><a href="{{ url_for('auth.logout') }}"><span>Logout</span></a></li>
-          {% else %}
-              <li><a href="{{ url_for('auth.signup') }}"><span>Sign Up</span></a></li>
-              <li><a href="{{ url_for('auth.login') }}"><span>Log In</span></a></li>
-          {% endif %}
-        </ul>  <!-- ← this closing </ul> was missing in your static HTML -->
-      </nav>
+
 </html>
 
 

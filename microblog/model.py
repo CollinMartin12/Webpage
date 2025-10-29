@@ -46,6 +46,7 @@ class Trip(db.Model):
     destination: Mapped[str] = mapped_column(String(128))
     possible_dates: Mapped[datetime.date] = mapped_column(Date)
     budget: Mapped[int] = mapped_column(Float)
+    text: Mapped[str] = mapped_column(String(29))
     type_of_trip: Mapped[str] = mapped_column(String(128))
     max_participants: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(128))
