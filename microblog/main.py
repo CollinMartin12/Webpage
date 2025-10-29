@@ -17,8 +17,8 @@ bp = Blueprint("main", __name__)
 def index():
     user = model.User(id=1, email="mary@example.com", name="mary", password="dummy", description="")
     trips = [
-        model.Trip(id=1, user_id=user.id, text="Test post"),
-        model.Trip(id=2, user_id=user.id, text="Another post"),
+        model.Trip(id=1, user_id=user.id, departure="Odessa, Wa"),
+        model.Trip(id=2, user_id=user.id, departure="Israel"),
     ]
     return render_template("main/index.html", trip=trips)
 
@@ -33,7 +33,7 @@ def user_profile(user_id):
 @bp.route("/post/<int:post_id>")
 @flask_login.login_required
 def post(post_id):
-    trip = db.session.get(model.Trip, id)
+    trip = db.session.get(model.Trip, trip.id, trip.departure)
     if not post:
         abort(404, "Post id {} doesn't exist.".format(id))
     # Get responses to this post
