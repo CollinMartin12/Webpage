@@ -1,3 +1,137 @@
-body {
-    background-color: beige;
+/* ===================== AUTH PAGES (scoped) ===================== */
+:root{
+  --brand:#3373A1;          /* primary */
+  --accent:#f97316;         /* warm foodie accent */
+  --ring: rgba(51,115,161,.25);
+}
+
+/* Full-page background & subtle dots */
+.auth{
+  position: relative;
+  background:
+    radial-gradient(900px 500px at 90% -10%, rgba(51,115,161,.22), transparent 60%),
+    radial-gradient(700px 600px at -10% 110%, rgba(249,115,22,.18), transparent 60%),
+    #f6f8fb;
+}
+.auth::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity:.35; pointer-events:none;
+}
+
+.auth .content {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card (your .signup-container becomes a glassy card) */
+.auth .signup-container{
+  width: 100%;
+  max-width: 550px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 40px 48px;
+  box-shadow:
+    0 10px 20px rgba(2,6,23,.04),
+    0 6px 10px rgba(2,6,23,.06);
+  backdrop-filter: blur(6px);
+    align-content: center;
+}
+.auth .signup-container h2{
+  margin: 0 0 12px;
+  font-size: 1.6rem;
+}
+
+/* Flash messages */
+.auth .notification{
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eef6ff;
+  border: 1px solid #dbeafe;
+  color: #0b3a60;
+}
+
+/* “Blob” inputs: rounded rectangles with focus ring */
+.auth .form-group{ margin-bottom: 16px; }
+.auth label{
+  font-weight: 700;
+  display: block;
+  margin-bottom: .4rem;
+}
+.auth input[type="email"],
+.auth input[type="password"],
+.auth input[type="text"],
+.auth input[type="tel"]{
+  width: 90%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 18px;          /* <- round shape */
+  padding: 12px 14px;
+  background: #f8fafc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.auth input:hover{ background: #ffffff; }
+.auth input:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--ring); /* accessible focus halo */
+}
+
+/* Primary button (uses your existing .btn-primary class) */
+.auth .btn-primary{
+  display: inline-block;
+  width: 100%;
+  padding: .7rem 1rem;
+  border-radius: 14px;              /* <- rounded button */
+  border: 1px solid var(--brand);
+  background: linear-gradient(135deg, var(--brand), #2a5f85);
+  color: #fff; font-weight: 800;
+  text-align: center; text-decoration: none;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(51,115,161,.25);
+  cursor: pointer;
+  transition: filter .15s ease, transform .05s ease;
+}
+.auth .btn-primary:hover{ filter: brightness(.97); }
+.auth .btn-primary:active{ transform: translateY(1px); }
+
+.auth .signup-container p{
+  margin-top: 12px;
+  color: #475569;
+  text-align: center;
+}
+.auth .signup-container p a{
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: none;
+}
+.auth .signup-container p a:hover{ text-decoration: underline; }
+
+/* Dark mode */
+@media (prefers-color-scheme: dark){
+  .auth{
+    background:
+      radial-gradient(900px 500px at 90% -10%, rgba(51,115,161,.28), transparent 60%),
+      radial-gradient(700px 600px at -10% 110%, rgba(249,115,22,.20), transparent 60%),
+      #0b1220;
+  }
+  .auth::after{ opacity:.2; }
+  .auth .signup-container{
+    background: rgba(16,23,42,.75);
+    border-color: #1f2937;
+  }
+  .auth .notification{
+    background: #0f243e; border-color:#173a63; color:#cfe6ff;
+  }
+  .auth input{
+    background:#0f172a; border-color:#334155; color:#e2e8f0;
+  }
+  .auth input:hover{ background:#0b1220; }
+  .auth .signup-container p{ color:#cbd5e1; }
 }

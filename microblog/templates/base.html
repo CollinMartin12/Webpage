@@ -3,10 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Web Application Project</title>
-        <link rel="stylesheet"
-              href="{{ url_for('static', filename='microblog.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='microblog.css') }}">
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
         <header>
             <h1>Web Application Project Collin + Noa</h1>
             <a href="{{ url_for('main.index') }}">Home</a>
@@ -17,3 +16,10 @@
         <footer><small>Developed for Web applications</small></footer>
     </body>
 </html>
+
+
+
+
+
+
+
