@@ -34,8 +34,13 @@ def user_profile(user_id):
 @flask_login.login_required
 def trip(trip_id):
     # Query the trip from database using the trip_id parameter
-    
     trip = db.session.get(model.trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
     return render_template("main/trip.html", trip=trip)
+
+@bp.route("/trips")
+@flask_login.login_required
+def trips():
+    trips = db.session.execute(db.select(model.Trip)).scalars().all()
+    return render_template("main/trips_template.html", trips= trips)
