@@ -1,13 +1,48 @@
+from ast import Str
 import datetime
 from typing import List, Optional
 from datetime import date
-from sqlalchemy import String, DateTime, ForeignKey, Date, Integer, Float, Boolean, Time
+from sqlalchemy import String, DateTime, ForeignKey, Date, Integer, Float, Boolean, Time, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 import flask_login
 
 
 from . import db
+
+TripStatus = Enum("Planning", "Happening", "Done", name="trip_status")
+TripType = Enum("Breakfast", "lunch", "dinner", "Brunch")
+# RestaurantType = Enum("Italian", "Chinese", "Asian", "American", "Pastry")
+
+class RestaurantType(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped(str) = mapped_column(String(256))
+    
+class Neighborhood(db.Model):
+    id = Mapped[int] = mapped_column(primary_key=True)
+    name = Mapped[str] = mapped_column(String(256))
+
+class City(db.Model):
+    id = Mapped[int] = mapped_column(primary_key = True)
+    name = Mapped[str] = mapped_column(String(256), unique = True)
+
+class Interest(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
+    interest: Mapped[str] = mapped_column(String(128), index=True)
+    user: Mapped["User"] = relationship(back_populates="interests")
+
+class FollowingAssociation(db.Model):
+    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+
+
+class Trip_participants(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
+    trip: Mapped["Trip"] = relationship(back_populates="trip_participants")
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    editing_permissions: Mapped[bool] = mapped_column(Boolean)
 
 
 class User(flask_login.UserMixin, db.Model):
@@ -16,43 +51,45 @@ class User(flask_login.UserMixin, db.Model):
     name: Mapped[str] = mapped_column(String(64))
     password: Mapped[str] = mapped_column(String(256))
     description: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
-    profile_picture: Mapped[Optional[str]] = mapped_column(String(512), nullabel = True)
+    profile_picture: Mapped[Optional[str]] = mapped_column(String(512), nullable = True)
 
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"), index=True)
-    neightborhood_id = Mapped[int] = mapped_column(ForeignKey{"neightborhood_id"}, nullable = True)
+    neightborhood_id: Mapped[int] = mapped_column(ForeignKey{"neightborhood.id"}, nullable = True)
 
     city: Mapped[Optional["City"]] = relationship()
     neighborhood: Mapped[Optional["Neighborhood"]] = relationship()
 
-    interests: Mapped[List["Interest"]] = relationship(secondary=user_interest, lazy="selectin")
+    interests: Mapped[List["Interest"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     following: Mapped[List["User"]] = relationship(
-        "User",
-        secondary=user_follow,
-        primaryjoin=id == user_follow.c.follower_id,
-        secondaryjoin=id == user_follow.c.followed_id,
-        backref="followers",
-        lazy="selectin",
+        secondary=FollowingAssociation.__table__,
+        primaryjoin=FollowingAssociation.follower_id == id,
+        secondaryjoin=FollowingAssociation.followed_id == id,
+        back_populates="followers",
+    )
+    followers: Mapped[List["User"]] = relationship(
+        secondary=FollowingAssociation.__table__,
+        primaryjoin=FollowingAssociation.followed_id == id,
+        secondaryjoin=FollowingAssociation.follower_id == id,
+        back_populates="following",
     )
 
-    trip_posts: Mapped[List["TripPost"]] = relationship(back_populates="author")
+    # trips
+    trips_created: Mapped[List["Trip"]] = relationship(back_populates="creator")
     trip_comments: Mapped[List["TripComment"]] = relationship(back_populates="author")
+    trip_participations: Mapped[List["Trip_participants"]] = relationship(back_populates="user")  # assuming Model exists
 
-    trip_participations: Mapped[List["TripParticipant"]] = relationship(back_populates="user")
-    meetups_hosted: Mapped[List["Meetup"]] = relationship(back_populates="host")
-    meetups_joined: Mapped[List["Meetup"]] = relationship(
-        secondary=meetup_participant, back_populates="participants", lazy="selectin"
-    )
-    
-        # DMs
-    conversations: Mapped[List["Conversation"]] = relationship(
-        secondary=conversation_participant, back_populates="participants", lazy="selectin"
-    )
-    direct_messages_sent: Mapped[List["DirectMessage"]] = relationship(back_populates="sender")
+    meetups: Mapped[List["Meetups"]] = relationship(back_populates="user")
 
+    # # DMS
+    # conversations: Mapped[List["Conversation"]] = relationship(
+    #     secondary=conversation_participant, back_populates="participants", lazy="selectin"
+    # )
+    # direct_messages_sent: Mapped[List["DirectMessage"]] = relationship(back_populates="sender")
 
 
 class Trip(db.Model):
+    # CONFIGURATIONS
     id: Mapped[int] = mapped_column(primary_key=True)
     creator_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
     creator: Mapped["User"] = relationship(back_populates="trips_created")
@@ -69,62 +106,73 @@ class Trip(db.Model):
     destination_neighborhood: Mapped[Optional["Neighborhood"]] = relationship(foreign_keys=[destination_neighborhood_id])
 
     # TIMING
-    definite_date: Mapped[Optional[dt.date]] = mapped_column(Date, nullable=True)
-    status: Mapped[Optional[str]] = mapped_column(TripStatus, default="PLANNING", index=True)
-    status_time: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=dt.datetime.utcnow, index=True)
+    definite_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(TripStatus, default="PLANNING", index=True)
+    status_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
-
+    # DETAILS
     budget: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    description: Mapped[str] = mapped_column(Text)  # longer than 512 in practice
+    description: Mapped[str] = mapped_column(String(256))  # longer than 512 in practice
     restaurant_name: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)
 
 
-    departure: Mapped[str] = mapped_column(String(128))
-    destination: Mapped[str] = mapped_column(String(128))
-    possible_dates: Mapped[datetime.date] = mapped_column(Date)
-    budget: Mapped[int] = mapped_column(Float)
-    text: Mapped[str] = mapped_column(String(29))
-    type_of_trip: Mapped[str] = mapped_column(String(128))
-    max_participants: Mapped[int] = mapped_column(Integer)
-    status: Mapped[str] = mapped_column(String(128))
-    posts: Mapped[List["Post"]] = relationship(back_populates="trip")
-    trip_participants: Mapped[List["Trip_participants"]] = relationship(back_populates="trip")
-    meetups: Mapped[List["Meetups"]] = relationship(back_populates="trip")
+    trip_type_id: Mapped[Optional[int]] = mapped_column(ForeignKey("trip_type.id"), nullable=True, index=True)
+    trip_type: Mapped[Optional["TripType"]] = relationship()
+    restaurant_types: Mapped[List["RestaurantType"]] = relationship(secondary="trip_restaurant_type", lazy="selectin")
 
-    # responses: Mapped[List["Post"]] = relationship(
-    #     back_populates="response_to", remote_side=[response_to_id]
-    # )
 
-class Message(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
-    post: Mapped["Post"] = relationship(back_populates="messages")
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    user: Mapped["User"] = relationship(back_populates="messages")
-    content: Mapped[str] = mapped_column(String(512))
-    timestamp: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    # Capacity
+    max_participants: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    is_open: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
-class Trip_participants(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
-    trip: Mapped["Trip"] = relationship(back_populates="trip_participants")
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    editing_permissions: Mapped[bool] = mapped_column(Boolean)
+    # Relations
+    participants: Mapped[List["Trip_participantss"]] = relationship(back_populates="trip", cascade="all, delete-orphan")
+    meetups: Mapped[List["Meetups"]] = relationship(back_populates="trip", cascade="all, delete-orphan")
+    indefinite_date: Mapped[datetime] = relationship(back_populates="trip", cascade="all, delete-orphan")
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, index=True)
+
+
+
+MeetupStatus = Enum("PLANNING", "HAPPENING", "DONE", name="meetup_status")
 
 class Meetups(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"))
-    trip: Mapped["Trip"] = relationship(back_populates="meetups")
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    user: Mapped["User"] = relationship(back_populates="meetups")
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"), index=True)
+    trip: Mapped[Trip] = relationship(back_populates="meetups")
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
+    user: Mapped[User] = relationship(back_populates="meetups")
+
     content: Mapped[str] = mapped_column(String(512))
-    timestamp: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     location: Mapped[str] = mapped_column(String(128))
-    date: Mapped[datetime.date] = mapped_column(Date)
-    time: Mapped[datetime.time] = mapped_column(Time)
-    status: Mapped[str] = mapped_column(String(128))
+
+    city_id: Mapped[int] = mapped_column(ForeignKey("city.id"), index=True)
+    city: Mapped[City] = relationship()
+
+    date: Mapped[datetime] = mapped_column(Date)
+    time: Mapped[datetime] = mapped_column(Time)
+    status: Mapped[str] = mapped_column(MeetupStatus, index=True)
+
+# class Message(db.Model):
+#     id: Mapped[int] = mapped_column(primary_key=True)
+#     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
+#     post: Mapped["Post"] = relationship(back_populates="messages")
+#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+#     user: Mapped["User"] = relationship(back_populates="messages")
+#     content: Mapped[str] = mapped_column(String(512))
+#     timestamp: Mapped[datetime.datetime] = mapped_column(
+#         DateTime(timezone=True), server_default=func.now()
+#     )
+
+
+class TripComment:
+    id: Mapped[int] = mapped_column(primary_key=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"), index=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
+    content: Mapped[str] = mapped_column(String(1000))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+    trip: Mapped[Trip] = relationship()
+    author: Mapped[User] = relationship(back_populates="trip_comments")
 
