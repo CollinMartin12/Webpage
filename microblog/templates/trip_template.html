@@ -1,16 +1,15 @@
 <div class="trip">
+    <span>{{ trip.user.name }}</span>
     <div>{{ trip.destination}} </div>
 
     <div class="metadata">
         <span>{{ trip.user.name }}</span>
-        <span>{{ trip.timestamp }}</span>
+        <span>{{ trip.status }}</span>
         <span> {{ trip.messages }} </span>
         <div class="text">{{ trip.text}}</div>
-
         <span>{{trip.departure}} </span>
-        <!-- <span>{{ trip.meetups}}</span>
-
+        <!-- <span>{{ trip.meetups}}</span> -->
         <span>{{trip.possible_dates}} </span>
-        <span>{{trip.budget}}</span>  -->
+        <span>{{trip.budget}}</span> 
     </div>
 </div>

@@ -17,7 +17,7 @@ bp = Blueprint("main", __name__)
 def index():
     user = model.User(id=1, email="mary@example.com", name="mary", password="dummy", description="")
     trips = [
-        model.Trip(id=1, user_id=user.id, departure="Odessa, Wa", destination = "Maui, Hawaii", status = "In Planning", 
+        model.Trip(id=1, user = user, departure="Odessa, Wa", destination = "Maui, Hawaii", status = "In Planning", 
         text = "Looking for a good time in Honolulu, Girls only", possible_dates = datetime.date(2025, 11, 17),
         budget = 1900)
         # model.Trip(id=2, user_id=user.id, departure="Israel"),
