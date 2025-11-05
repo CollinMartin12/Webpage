@@ -1,15 +1,53 @@
 <div class="trip">
-    <span>{{ trip.user.name }}</span>
-    <div>{{ trip.destination}} </div>
+  <header>
+    <section class="trip_header">
+      <div>
+        <h2 class="trip_destination">{{ trip.destination_city.name }}</h2>
+        <div>Type: {{ trip.trip_type }}</div>
+        <div><i>Posted at {{ trip.created_at }}</i></div>
+        <div class="user_info">
+          <div>
+            <a href="{{ url_for('main.user_profile', user_id=trip.creator.id) }}"
+               style="text-decoration:none; color:inherit;">
+              {{ trip.creator.name }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </header>
 
-    <div class="metadata">
-        <span>{{ trip.user.name }}</span>
-        <span>{{ trip.status }}</span>
-        <span> {{ trip.messages }} </span>
-        <div class="text">{{ trip.text}}</div>
-        <span>{{trip.departure}} </span>
-        <!-- <span>{{ trip.meetups}}</span> -->
-        <span>{{trip.possible_dates}} </span>
-        <span>{{trip.budget}}</span> 
+  <section class="trip_info">
+    <span>{{ trip.description }}</span>
+    <div class="image">
+      <img src="{{ trip.picture if trip.picture else '' }}" alt="">
     </div>
+  </section>
+
+  <div class="trip_footer">
+    <div class="participants-display">
+      <span>Participants: </span>
+      {% if trip.participants | length > 0 %}
+        <div class="participant-avatars">
+          <div class="avatar-small">
+            <img src="{{ trip.participants[0].profile_picture or '/static/default-avatar.png' }}"
+                 alt="{{ trip.participants[0].name }}">
+          </div>
+          {% if trip.participants | length > 1 %}
+            <span class="participant-count">+{{ trip.participants | length - 1 }}</span>
+          {% endif %}
+        </div>
+      {% else %}
+        <span>No participants yet</span>
+      {% endif %}
+    </div>
+
+    <span>Max Participants: {{ trip.max_participants }}</span>
+    <span>There are currently {{ trip.meetups|length }} meetups</span>
+    <span>Budget: {{ trip.budget }}</span>
+
+    <div class="trip-actions">
+      <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn-primary">View Details</a>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,16 @@
+<article class="trip-comment">
+  <header class="trip-comment__hdr">
+    <a class="trip-comment__author"
+       href="{{ url_for('main.user_profile', user_id=comment.author.id) }}"
+       style="text-decoration:none;color:inherit;">
+      {{ comment.author.name }}
+    </a>
+    <span class="trip-comment__time">
+      {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}
+    </span>
+  </header>
+
+  <div class="trip-comment__content">
+    {{ comment.content }}
+  </div>
+</article>

@@ -1,5 +1,5 @@
 from flask import Flask
-
+import os
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -17,10 +17,16 @@ def create_app(test_config=None):
     # A secret for signing session cookies
     app.config["SECRET_KEY"] = "93220d9b340cf9a6c39bac99cce7daf220167498f91fa"
     
-    # Code to place inside create_app, after the other app.config assignment
+    # Database configuration - use environment variables for Docker
+    db_host = os.getenv('DB_HOST', 'mysql.lab.it.uc3m.es')
+    db_port = os.getenv('DB_PORT', '3306')
+    db_user = os.getenv('DB_USER', 'microblog_user')
+    db_password = os.getenv('DB_PASSWORD', 'microblog_password')
+    db_name = os.getenv('DB_NAME', 'microblog_db')
+    
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = "mysql+pymysql://26_webapp_29:mx4ZAdkY@mysql.lab.it.uc3m.es/26_webapp_29b"
+    ] = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
     db.init_app(app)
     

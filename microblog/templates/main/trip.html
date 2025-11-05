@@ -4,13 +4,81 @@
 <div>
     <main>
         <header>
-            <h1>Post</h1>
+            <h1>Trip Details</h1>
         </header>
-        <section>
-           {%set trip = trip %}
-          {% include 'trip_template.html' %}  
+        <div>
+           {% set trip = trip %}
+          <h3>{{ trip.destination_city.name }} - {{ trip.trip_type }}</h3>
+            <div class = "status">
+                {{ trip.status }}
+            </div>
+            <p><i> Posted at {{ trip.created_at }}</i></p>
+            <p> {{trip.departure_city.name if trip.departure_city.name else "TBD"}} -> {{trip.destination_city.name if trip.destination_city.name else "TBD"}}</p>
+            <p><i> Budget: {{ trip.budget if trip.budget else "NA" }}</i></p>
+            <p><i> Max Participants: {{ trip.max_participants }}</i></p>
+            <div class="image">
+                <img src="{{ trip.picture if trip.picture else '' }}">
+            </div>
+            <h3>About this Trip:</h3>
+            <p>{{ trip.description }}</p>
+
+        <div class="participants-display">
+            <span>Participants: </span>
+            {% if trip.participants | length > 0 %}
+                <div class="participant-avatars">
+                    <div class="avatar-small">
+                        {% for participant in trip.participants[:4] %}
+                            <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}" alt="{{ participant.name }}">
+                        {% endfor %}
+                    </div>
+                    {% if trip.participants | length > 4 %}
+                        <span class= "participant-count">+{{ trip.participants | length - 4 }}</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <span>No participants yet</span>
+            {% endif %}
+        </div>
+        <div class = "meetups_section">
+            <h3>Meetups ({{ trip.meetups|length }})</h3>
+            {% if trip.meetups | length > 0 %}
+                <ul>
+                    {% for meetup in trip.meetups %}
+                        <li>
+                            <strong>{{ meetup.title }}</strong> - {{ meetup.date }} at {{ meetup.location }}
+                            <p>{{ meetup.description }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No meetups scheduled yet.</p>
+            {% endif %}
+        </div>
+        <section id="comments" class="trip-comments">
+        <h3 class="trip-comments__title">Message Board</h3>
+
+        <!-- Create comment -->
+        <form class="trip-comments__form"
+                method="post"
+                action="{{ url_for('main.new_message', trip_id=trip.id) }}">
+            <input type="hidden" name="trip_id" value="{{ trip.id }}">
+            <textarea name="content" rows="3" maxlength="1000"
+                    placeholder="Write a message…" required></textarea>
+            <div class="trip-comments__form-actions">
+            <button type="submit">Post</button>
+            </div>
+        </form>
+
+        <!-- List comments newest → oldest -->
+        <div class="trip-comments__list">
+            {% for comment in trip.comments %}
+            {% include 'messages.html' %}
+            {% else %}
+            <p class="trip-comments__empty">No messages yet.</p>
+            {% endfor %}
+        </div>
         </section>
 
-    </main>
+
 </div>
 {% endblock %}

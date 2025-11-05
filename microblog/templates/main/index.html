@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class = "container">
+        <h1>Welcome to Microblog Travel!</h1>
+        <p>Explore and share your travel experiences with others.</p>
     <section>
-        <h2>
-            Home base, see all pages and message boards
-        </h2>
-        {% include 'trips_template.html' %}
+        <div>
+            {% if trips %}
+                {% include 'trips_template.html' %}
+            {% else %}
+                <p>No trips available.</p>
+            {% endif %}
+        </div>
     </section>
+</div>
 {% endblock %}
