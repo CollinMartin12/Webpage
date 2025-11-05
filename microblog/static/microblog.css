@@ -21,20 +21,56 @@
   opacity:.35; pointer-events:none;
 }
 
-header {
-  display: flex;                         /* put children (h1 + a) in one row */
-  justify-content: space-between;        /* space out title and button */
+/* header {
+  display: flex;                         
+  justify-content: space-between;      
   align-items: center;
-    font-family: fantasy;/* align vertically in the middle */
-  padding: 1rem 2rem;                    /* breathing room around header */
-  background: #3373A1;                   /* your brand blue */
+    font-family: fantasy;
+  padding: 1rem 2rem;                    
+  background: #3373A1;                  
   color: #fff;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
+}  */
 
-header h1 {
+/* header h1 {
   margin: 0;
   font-size: 1.4rem;
+  align-content: center;
+} */
+
+.topbar {
+  display: flex;
+  align-items: center;     /* vertically centers title and links */
+  width: 100%;
+}
+
+/* Push the link group to the right */
+.nav-links {
+  margin-left: auto;       /* pushes this div all the way right */
+  display: flex;
+  gap: 0.75rem;            /* spacing between buttons */
+}
+
+/* Title */
+.topbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Buttons/Links */
+.nav-links a {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.nav-links a:hover {
+  background-color: rgba(0, 0, 0, 0.35);
 }
 
 
@@ -59,6 +95,92 @@ header h1 {
 .btn-home:active {
   transform: translateY(1px);
 }
+
+.btn-login{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-login:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-login:active {
+  transform: translateY(1px);
+}
+
+.btn-signup{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-signup:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-signup:active {
+  transform: translateY(1px);
+}
+
+.btn-logout{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-logout:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-logout:active {
+  transform: translateY(1px);
+}
+
+
+.btn-profile{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-profile:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-profile:active {
+  transform: translateY(1px);
+}
+
 
 .auth .content {
   min-height: 100vh;
@@ -176,6 +298,127 @@ header h1 {
 }
 
 
+
+
+.trip-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  display: block;
+}
+
+.page { padding: 1rem 1.25rem 2rem; }
+
+/* GRID */
+.trip-cards{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* CARD */
+.trip-card{
+  background: #fff;
+  color: #111;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+.trip-card__link{
+  display: grid;
+  grid-template-rows: 160px auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* IMAGE */
+.trip-card__media{ position: relative; margin: 0; }
+.trip-card__media img{
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  /* rounded corners are already on the card; image fills the top */
+}
+
+/* BADGES */
+.badge{
+  position: absolute; top: .6rem; left: .6rem;
+  background: #10b981; color: #fff; font-size: .75rem; font-weight: 700;
+  padding: .25rem .55rem; border-radius: 999px;
+}
+.badge--muted{ right: .6rem; left: auto; background: #374151; opacity: .9; }
+.trip-card[data-status="finalized"] .badge{ background:#6366f1; }
+.trip-card[data-status="canceled"]  .badge{ background:#ef4444; }
+.trip-card[data-status="open"]      .badge{ background:#10b981; }
+
+/* BODY */
+.trip-card__body{ padding: .9rem 1rem 1rem; display: grid; gap: .35rem; }
+.trip-card__title{ margin: 0; font-weight: 800; font-size: 1rem; }
+.trip-card__meta{ font-size: .85rem; color:#6b7280; display:flex; gap:.75rem; flex-wrap:wrap; }
+.trip-card__text{
+  margin: .25rem 0 0; color:#374151;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.trip-card__actions{ margin-top:.5rem; display:flex; justify-content:flex-end; }
+.pill{
+  border:1px solid #e5e7eb; border-radius:999px; padding:.35rem .7rem;
+  font-weight:700; font-size:.85rem; background:#f9fafb;
+}
+/* 
+Light gray app background (optional)
+body{ background:#f5f7fb;
+text-align: center} */
+
+
+.trip-explain img {
+  display: block;          /* allows margin auto to work */
+  margin: 2rem auto;       /* centers image horizontally with spacing */
+  width: 300px;            /* set width */
+  height: 300px;           /* set height */
+  border-radius: 12px;     /* rounded corners */
+  object-fit: cover;       /* keeps proportions and crops neatly */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* subtle shadow (optional) */
+}
+
+
+.profile { max-width: 720px; margin: 1.5rem auto; font-family: Arial }
+.profile-card dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  row-gap: 0.8rem;
+  column-gap: 1.8rem;
+}
+
+.profile-card dt {
+  color: #6b7280;
+  font-weight: 600;
+  align-self: end; /* keeps labels aligned visually */
+}
+
+.profile-card dd {
+  padding-top: 0.3rem;
+}
+
+.profile-card, .profile-form { background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+.profile-card dt { color:#6b7280; }
+.profile-form { display:grid; gap:.6rem; margin-top:1rem; justify-content: center;}
+.profile-form input,
+.profile-form textarea {
+  width: 100%;
+  padding: 0.4rem 0.55rem; /* ↓ smaller padding */
+  font-size: 0.9rem; /* ↓ smaller font */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.profile-form textarea {
+  min-height: 70px; /* smaller default height */
+}
+
+.profile-form fieldset { border:1px dashed #e5e7eb; border-radius:8px; padding:.5rem; }
+.post-list { margin-top:1rem; }
+.btn.btn--primary { background:#2563eb; color:#fff; border:none; border-radius:10px; padding:.55rem 1rem; }
 /* ===================== AVATAR STYLES and Trip avatars For TRIP POSTS===================== */
 
 .participants-display {

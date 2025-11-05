@@ -36,6 +36,22 @@ def index():
 
     return render_template("main/index.html", trips=trips)
 
+
+@bp.get("/explore")
+@flask_login.login_required
+def explore():
+    trips = db.session.execute(db.select(model.Trip)).scalars().all()
+    # If your Trip model has no image_url field yet, you can inject one on the fly:
+    for t in trips:
+        if not getattr(t, "image_url", None):
+            t.image_url = url_for('static', filename='img/image.jpg')
+    return render_template("main/home.html", trips=trips)
+
+@bp.route("/home")
+def home():
+    return render_template("main/home.html")
+
+
 @bp.route("/user/<int:user_id>")
 @flask_login.login_required
 def user_profile(user_id):
@@ -47,6 +63,17 @@ def user_profile(user_id):
     if not user:
         abort(404)
     return render_template("main/profile.html", user=user)
+
+# Optional: accept the POST to simulate an update (no DB persistence)
+@bp.route("/user/<int:user_id>/edit", methods=["POST"])
+def edit_user(user_id):
+    # read form values (just to demonstrate)
+    email = (request.form.get("email") or "").strip()
+    name = (request.form.get("name") or "").strip()
+    description = request.form.get("description") or ""
+    # pretend we saved:
+    flash("Profile updated (demo). No DB persistence yet.", "success")
+    return redirect(url_for("main.user_profile", user_id=user_id))
 
 @bp.route("/trip/<int:trip_id>")
 @flask_login.login_required
