@@ -19,7 +19,7 @@ def create_app(test_config=None):
     
     # Database configuration - use environment variables for Docker
     db_host = os.getenv('DB_HOST', 'mysql.lab.it.uc3m.es')
-    db_port = os.getenv('DB_PORT', '3306')
+    db_port = os.getenv('DB_PORT', '3307')
     db_user = os.getenv('DB_USER', 'microblog_user')
     db_password = os.getenv('DB_PASSWORD', 'microblog_password')
     db_name = os.getenv('DB_NAME', 'microblog_db')

@@ -1,26 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div>
+<div class ="trip-details-container">
     <main>
         <header>
             <h1>Trip Details</h1>
         </header>
         <div>
            {% set trip = trip %}
-          <h3>{{ trip.destination_city.name }} - {{ trip.trip_type }}</h3>
+          <h3 class="trip-details-title">
+              {{ trip.destination_city.name }} - {{ trip.trip_type }}
+          </h3>
             <div class = "status">
                 {{ trip.status }}
             </div>
+        <div class="trip-meta">
             <p><i> Posted at {{ trip.created_at }}</i></p>
             <p> {{trip.departure_city.name if trip.departure_city.name else "TBD"}} -> {{trip.destination_city.name if trip.destination_city.name else "TBD"}}</p>
             <p><i> Budget: {{ trip.budget if trip.budget else "NA" }}</i></p>
             <p><i> Max Participants: {{ trip.max_participants }}</i></p>
-            <div class="image">
+        </div>
+
+            <div class="trip-details-image">
                 <img src="{{ trip.picture if trip.picture else '' }}">
             </div>
-            <h3>About this Trip:</h3>
-            <p>{{ trip.description }}</p>
+            <h3 class="trip-description-title">About this Trip:</h3>
+            <p class="trip-description">{{ trip.description }}</p>
 
         <div class="participants-display">
             <span>Participants: </span>
