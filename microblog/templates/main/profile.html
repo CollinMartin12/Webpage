@@ -12,6 +12,7 @@
         </dl>
     </div>
    <h2>Edit your details</h2>
+   {% if has_editing_permissions %}
   <form class="profile-form"
         action="{{ url_for('main.edit_user', user_id=user.id) }}"
         method="post" novalidate>

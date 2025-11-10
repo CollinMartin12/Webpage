@@ -1,4 +1,4 @@
-from flask import redirect, url_for, request
+from flask import redirect, url_for, request, flash
 from collections import UserList
 import datetime
 import dateutil.tz
@@ -29,7 +29,7 @@ def index():
         # --- Latest top-level posts (already had) ---
     trip_query = (
         db.select(model.Trip)
-        .order_by(model.Trip.created_at.desc())
+        .order_by(model.Trip.status_time.desc())
         .limit(10)
     )
     trips = db.session.execute(trip_query).scalars().all()
@@ -75,14 +75,43 @@ def edit_user(user_id):
     flash("Profile updated (demo). No DB persistence yet.", "success")
     return redirect(url_for("main.user_profile", user_id=user_id))
 
+
+
+
+
 @bp.route("/trip/<int:trip_id>")
 @flask_login.login_required
 def trip(trip_id):
-    # Query the trip from database using the trip_id parameter
-    trip = db.session.get(model.Trip, trip_id)
+    trip = db.session.execute(
+        db.select(model.Trip)
+        .options(
+            selectinload(model.Trip.participants),
+            selectinload(model.Trip.comments).selectinload(model.TripComment.author)
+        )
+        .where(model.Trip.id == trip_id)
+    ).scalar_one_or_none()
+    
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
-    return render_template("main/trip.html", trip=trip)
+    
+    user = flask_login.current_user
+    has_editing_permissions = False
+    is_participant = any(
+        participant.user_id == user.id for participant in trip.participants
+    )
+    is_creator = trip.creator_id == user.id
+
+    has_editing_permissions = is_creator or any(
+        participant.user_id == user.id and participant.editing_permissions 
+        for participant in trip.participants
+    )
+
+    return render_template("main/trip.html", trip=trip, is_participant=is_participant, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
+
+
+
+
+
 
 @bp.route("/trips")
 @flask_login.login_required
@@ -90,27 +119,209 @@ def trips():
     trips = db.session.execute(db.select(model.Trip)).scalars().all()
     return render_template("trips_template.html", trips= trips)
 
+
+@bp.route("/create_trip", methods=["GET", "POST"])
+@flask_login.login_required
+def create_trip():
+    
+    if request.method == "POST":
+        # Get form data
+        departure_city_id = request.form.get("departure_city_id") or None
+        departure_neighborhood_id = request.form.get("departure_neighborhood_id") or None
+        destination_city_id = request.form.get("destination_city_id")
+        destination_neighborhood_id = request.form.get("destination_neighborhood_id") or None
+        trip_type_id = request.form.get("trip_type_id") or None
+        description = request.form.get("description")
+        restaurant_name = request.form.get("restaurant_name") or None
+        definite_date = request.form.get("definite_date")
+        budget = request.form.get("budget")
+        picture = request.form.get("picture") or None
+        max_participants = request.form.get("max_participants")
+        is_open = request.form.get("is_open") == "on"
+
+        new_trip = model.Trip(
+            creator_id=flask_login.current_user.id,
+            departure_city_id=int(departure_city_id) if departure_city_id else None,
+            departure_neighborhood_id=int(departure_neighborhood_id) if departure_neighborhood_id else None,
+            destination_city_id=int(destination_city_id) if destination_city_id else None,
+            destination_neighborhood_id=int(destination_neighborhood_id) if destination_neighborhood_id else None,
+            trip_type_id=int(trip_type_id) if trip_type_id else None,
+            description=description,
+            restaurant_name=restaurant_name,
+            definite_date=datetime.datetime.strptime(definite_date, "%Y-%m-%d").date() if definite_date else None,
+            budget=float(budget) if budget else None,
+            picture=picture,
+            max_participants=int(max_participants) if max_participants else None,
+            is_open=is_open,
+            created_at=datetime.datetime.now(dateutil.tz.UTC),
+            status_time=datetime.datetime.now(dateutil.tz.UTC)
+        )
+        db.session.add(new_trip)
+        db.session.commit()
+        flash("Trip created successfully!", "success")
+
+        # THEN ADD THE CREATOR AS A PARTICIPANT WITH EDITING PERMISSIONS
+        new_participant = model.Trip_participants(
+            trip_id=new_trip.id,
+            user_id=flask_login.current_user.id,
+            editing_permissions=True
+        )
+        db.session.add(new_participant)
+        db.session.commit()
+        return redirect(url_for("main.trip", trip_id=new_trip.id))
+    
+    cities = db.session.execute(db.select(model.City)).scalars().all()
+    neighborhoods = db.session.execute(db.select(model.Neighborhood)).scalars().all()
+    trip_types = db.session.execute(db.select(model.TripType)).scalars().all()
+    
+    return render_template("create_trip.html", cities=cities, neighborhoods=neighborhoods, trip_types=trip_types)
+
+
+@bp.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
+@flask_login.login_required
+def edit_trip(trip_id):
+    trip = db.session.execute(
+        db.select(model.Trip)
+        .options(selectinload(model.Trip.participants))
+        .where(model.Trip.id == trip_id)
+    ).scalar_one_or_none()
+    
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    
+    user = flask_login.current_user
+    
+    # Check if user has editing permissions
+    is_creator = trip.creator_id == user.id
+    has_editing_permissions = is_creator or any(
+        p.user_id == user.id and p.editing_permissions for p in trip.participants
+    )
+    
+    if not has_editing_permissions:
+        flash("You don't have permission to edit this trip.", "error")
+        return redirect(url_for("main.trip", trip_id=trip_id))
+    
+    if request.method == "POST":
+        # Get form data
+        departure_city_id = request.form.get("departure_city_id") or None
+        departure_neighborhood_id = request.form.get("departure_neighborhood_id") or None
+        destination_city_id = request.form.get("destination_city_id")
+        destination_neighborhood_id = request.form.get("destination_neighborhood_id") or None
+        trip_type_id = request.form.get("trip_type_id") or None
+        description = request.form.get("description")
+        restaurant_name = request.form.get("restaurant_name") or None
+        definite_date = request.form.get("definite_date")
+        budget = request.form.get("budget")
+        picture = request.form.get("picture") or None
+        max_participants = request.form.get("max_participants")
+        is_open = request.form.get("is_open") == "on"
+
+        # Update trip fields
+        trip.departure_city_id = int(departure_city_id) if departure_city_id else None
+        trip.departure_neighborhood_id = int(departure_neighborhood_id) if departure_neighborhood_id else None
+        trip.destination_city_id = int(destination_city_id) if destination_city_id else None
+        trip.destination_neighborhood_id = int(destination_neighborhood_id) if destination_neighborhood_id else None
+        trip.trip_type_id = int(trip_type_id) if trip_type_id else None
+        trip.description = description
+        trip.restaurant_name = restaurant_name
+        trip.definite_date = datetime.datetime.strptime(definite_date, "%Y-%m-%d").date() if definite_date else None
+        trip.budget = float(budget) if budget else None
+        trip.picture = picture
+        trip.max_participants = int(max_participants) if max_participants else None
+        trip.is_open = is_open
+        
+        if is_creator:
+            for participant in trip.participants:
+                permission_field = f"editing_perm_{participant.user_id}"
+                new_permission = permission_field in request.form
+                participant.editing_permissions = new_permission
+                
+        db.session.commit()
+        flash("Trip updated successfully!", "success")
+        return redirect(url_for("main.trip", trip_id=trip.id))
+    
+    cities = db.session.execute(db.select(model.City)).scalars().all()
+    neighborhoods = db.session.execute(db.select(model.Neighborhood)).scalars().all()
+    trip_types = db.session.execute(db.select(model.TripType)).scalars().all()
+
+    return render_template("edit_trip.html", trip=trip, cities=cities, neighborhoods=neighborhoods, trip_types=trip_types, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
+
+
+
+@bp.route("/join/<int:trip_id>")
+@flask_login.login_required
+def join_trip(trip_id):
+    user = flask_login.current_user
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    participant = db.session.execute(
+        db.select(model.Trip_participants)
+        .where(
+            model.Trip_participants.trip_id == trip_id,
+            model.Trip_participants.user_id == user.id
+        )
+    ).scalar_one_or_none()
+    if participant:
+        participant.editing_permissions = True
+    else:
+        new_participant = model.Trip_participants(
+            trip_id=trip_id,
+            user_id=user.id,
+            editing_permissions=True
+        )
+        db.session.add(new_participant)
+    db.session.commit()
+    trips = db.session.execute(db.select(model.Trip)).scalars().all()
+    return redirect(url_for("main.trip", trip_id=trip_id))
+
+
+@bp.route("/leave/<int:trip_id>")
+@flask_login.login_required
+def leave_trip(trip_id):
+    user = flask_login.current_user
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    participant = db.session.execute(
+        db.select(model.Trip_participants)
+        .where(
+            model.Trip_participants.trip_id == trip_id,
+            model.Trip_participants.user_id == user.id
+        )
+    ).scalar_one_or_none()
+    if participant:
+        db.session.delete(participant)
+        db.session.commit()
+    return redirect(url_for("main.trip", trip_id=trip_id))
+
+
+
 @bp.route("/message", methods=["POST"])
 @flask_login.login_required
 def new_message():
     content = request.form.get("content")
     trip_id = request.form.get("trip_id")  # Get trip_id from form
-    
+    current_user = flask_login.current_user
     if not content:
         abort(400, "Message content is required")
     
     if not trip_id:
         abort(400, "Trip ID is required")
     
-    # Verify the trip exists
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
     
-    # Verify user is a participant of the trip (add this security check)
-    # You'll need to implement this based on your Trip-User relationship
-    # if not trip.participants.filter(id=flask_login.current_user.id).first():
-    #     abort(403, "You are not a participant of this trip.")
+    trip_participants = db.session.execute(
+        db.select(model.Trip_participants)
+        .where(model.Trip_participants.trip_id == trip_id)
+    ).scalars().all()
+
+    if current_user not in [participant.user for participant in trip_participants]:
+        flash("You must be a participant of the trip to comment.", "error")
+        return redirect(url_for("main.trip", trip_id=trip_id))
+
 
     # Create the TripComment
     comment = model.TripComment(

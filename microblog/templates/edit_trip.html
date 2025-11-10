@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class ="trip-details-container">
+    <main>
+        <header>
+            <h1>Editing Details</h1>
+        </header>
+        <form action =" {{ url_for('main.edit_trip', trip_id=trip.id) }} " method="post" novalidate>
+        <div>
+           {% set trip = trip %}
+          <div class="trip-details-title">
+              <label for="destination_city_id">Destination City:</label>
+              <select id="destination_city_id" name="destination_city_id" optional>
+                <option value="">Select destination city</option>
+                {% for city in cities %}
+                    <option value="{{ city.id }}" {% if trip.destination_city and trip.destination_city.id == city.id %}selected{% endif %}>{{ city.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          <div>
+            <label for="trip_type_id">Trip Type:</label>
+              <select id="trip_type_id" name="trip_type_id" optional>
+                <option value="">Select trip type</option>
+                {% for trip_type in trip_types %}
+                    <option value="{{ trip_type.id }}" {% if trip.trip_type and trip.trip_type.id == trip_type.id %}selected{% endif %}>{{ trip_type.name }}</option>
+                {% endfor %}
+              </select>
+          
+            </div>
+            <div class = "status">
+                <label for="status">Status:</label>
+                <select id="status" name="status">
+                    <option value="planned" {% if trip.status == "planned" %}selected{% endif %}>Planned</option>
+                    <option value="ongoing" {% if trip.status == "ongoing" %}selected{% endif %}>Ongoing</option>
+                    <option value="completed" {% if trip.status == "completed" %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+        
+            <div class="trip-meta">
+            <p><i> Posted at {{ trip.created_at }}</i></p>
+            <label for = "departure_city_id">Departure City:</label>
+            <select id="departure_city_id" name="departure_city_id" optional>
+                <option value="">Select departure city</option>
+                {% for city in cities %}
+                    <option value="{{ city.id }}" {% if trip.departure_city and trip.departure_city.id == city.id %}selected{% endif %}>{{ city.name }}</option>
+                {% endfor %}
+              </select>
+              <p> {{trip.departure_city.name if trip.departure_city else "TBD"}} -> {{trip.destination_city.name if trip.destination_city else "TBD"}}</p>
+              
+             <label for="budget">Budget:</label>
+             <input type="number" id="budget" name="budget" value="{{ trip.budget }}">
+             <label for="max_participants">Max Participants:</label>
+             <input type="number" id="max_participants" name="max_participants" value="{{ trip.max_participants }}">
+            </div>
+        </div>
+
+            <div class="trip-details-image">
+            <label for="picture">Picture URL:</label>
+            <input type="text" id="picture" name="picture" value="{{ trip.picture }}">
+                <img src="{{ trip.picture if trip.picture else '' }}">
+            </div>
+            <label for ="description">About this Trip:</label>
+            <textarea id="description" name="description" rows="4" maxlength="256" required>{{ trip.description }}</textarea>
+        <button class="btn btn--primary" type="submit">Save changes</button>
+        </form>
+        <div class="participants-display">
+            <span>Participants: </span>
+            {% if trip.participants | length > 0 %}
+                <div class="participant-avatars">
+                    <div class="avatar-small">
+                        {% for participant in trip.participants[:4] %}
+                            <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}" alt="{{ participant.name }}">
+                        {% endfor %}
+                    </div>
+                    {% if trip.participants | length > 4 %}
+                        <span class= "participant-count">+{{ trip.participants | length - 4 }}</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <span>No participants yet</span>
+            {% endif %}
+        </div>
+        <div class = "meetups_section">
+            <h3>Meetups ({{ trip.meetups|length }})</h3>
+            {% if trip.meetups | length > 0 %}
+                <ul>
+                    {% for meetup in trip.meetups %}
+                        <li>
+                            <strong>{{ meetup.title }}</strong> - {{ meetup.date }} at {{ meetup.location }}
+                            <p>{{ meetup.description }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No meetups scheduled yet.</p>
+            {% endif %}
+        </div>
+
+
+
+
+        <div class="trip-actions">
+            {% if not is_creator %}
+                {% if is_participant %}
+                    <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}" 
+                    class="btn btn-danger" 
+                    onclick="return confirm('Are you sure you want to leave this trip?')">
+                        Leave Trip
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}" 
+                    class="btn btn-success">
+                        Join Trip
+                    </a>
+                {% endif %}
+            {% elif is_creator %}
+                <div class="editing-permissions-section">
+                    <h4>Editing Permissions:</h4>
+                    {% for participant in trip.participants %}
+                        <div class="permission-item">
+                            <label>
+                                <input type="checkbox" 
+                                       name="editing_permissions_{{ participant.user_id.name }}" 
+                                       {% if participant.editing_permissions %}checked{% endif %}>
+                                User {{ participant.user_id.name }} (ID: {{ participant.user_id }})
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        
+        
+        <section id="comments" class="trip-comments">
+        <h3 class="trip-comments__title">Message Board</h3>
+
+        <form class="trip-comments__form"
+                method="post"
+                action="{{ url_for('main.new_message', trip_id=trip.id) }}">
+            <input type="hidden" name="trip_id" value="{{ trip.id }}">
+            <textarea name="content" rows="3" maxlength="1000"
+                    placeholder="Write a message…" required></textarea>
+            <div class="trip-comments__form-actions">
+            <button type="submit">Post</button>
+            </div>
+        </form>
+        {% if is_creator or is_participant%}
+            <div class="trip-comments__list">
+                {% for comment in trip.comments %}
+                {% include 'messages.html' %}
+                {% else %}
+                <p class="trip-comments__empty">No messages yet.</p>
+                {% endfor %}
+            </div>
+            </section>
+        {% else %}
+            <p class="trip-comments__empty">Join the trip to view and post messages.</p>
+        {% endif %}
+    </main>
+
+
+</div>
+{% endblock %}
