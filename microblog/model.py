@@ -178,6 +178,7 @@ class Meetups(db.Model):
 #     )
 
 
+# Rename this
 class TripComment(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"), index=True)

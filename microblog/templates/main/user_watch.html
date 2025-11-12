@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="profile">
+  <h1>{{ user.name }}'s Profile</h1>
+
+  <div class="profile-card">
+    <dl class="readonly">
+      <div><dt>User-ID</dt><dd>{{ user.id }}</dd></div>
+      <div><dt>Email Address</dt><dd>{{ user.email }}</dd></div>
+      <div><dt>Name</dt><dd>{{ user.name }}</dd></div>
+      <div><dt>About me:</dt><dd>{{ user.description }}</dd></div>
+    </dl>
+  </div>
+
+  <h2>Details</h2>
+  <form class="profile-form" action="#" method="post" novalidate>
+    <label>
+      Email
+      <input type="email" value="{{ user.email }}" required disabled>
+    </label>
+
+    <label>
+      Name
+      <input type="text" value="{{ user.name }}" maxlength="64" required disabled>
+    </label>
+
+    <label>
+      Description
+      <textarea rows="3" maxlength="512" disabled>{{ user.description or "" }}</textarea>
+    </label>
+
+    <fieldset disabled>
+      <legend>Change password (optional)</legend>
+      <input type="password" placeholder="New password">
+      <input type="password" placeholder="Confirm new password">
+    </fieldset>
+
+    <button class="btn btn--primary" type="button" disabled>Save changes</button>
+  </form>
+
+  <h2>Posts published by {{ user.name }}</h2>
+  <ul class="post-list">
+    {% for p in user.posts %}
+      <li>
+        <a href="{{ url_for('main.user_profile', user_id=p.user.id) }}">{{ p.user.name }}</a>:
+        {{ p.text }} <small>· {{ p.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+      </li>
+    {% else %}
+      <li>No posts yet.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -87,7 +87,6 @@
         <section id="comments" class="trip-comments">
         <h3 class="trip-comments__title">Message Board</h3>
 
-        <!-- Create comment -->
         <form class="trip-comments__form"
                 method="post"
                 action="{{ url_for('main.new_message', trip_id=trip.id) }}">

@@ -62,17 +62,63 @@ def user_profile(user_id):
     ).scalar_one_or_none() 
     if not user:
         abort(404)
-    return render_template("main/profile.html", user=user)
 
-# Optional: accept the POST to simulate an update (no DB persistence)
+        # get_id() can be a string; cast for a robust comparison
+    is_owner = (
+        flask_login.current_user.is_authenticated
+        and int(flask_login.current_user.get_id()) == user.id
+    )
+
+    template = "main/profile.html" if is_owner else "main/user_watch.html"
+    return render_template(template, user=user)
+
 @bp.route("/user/<int:user_id>/edit", methods=["POST"])
+@flask_login.login_required
 def edit_user(user_id):
-    # read form values (just to demonstrate)
+    # Ownership check (get_id() may be a string)
+    try:
+        current_id = int(flask_login.current_user.get_id())
+    except (TypeError, ValueError):
+        abort(401)
+    if current_id != int(user_id):
+        abort(403)
+
+    u = db.session.get(model.User, user_id)
+    if not u:
+        abort(404)
+
+    # Read fields
     email = (request.form.get("email") or "").strip()
     name = (request.form.get("name") or "").strip()
-    description = request.form.get("description") or ""
-    # pretend we saved:
-    flash("Profile updated (demo). No DB persistence yet.", "success")
+    desc = request.form.get("description") or ""
+    pw = request.form.get("password") or ""
+    pw2 = request.form.get("password2") or ""
+
+    # Basic validation
+    if not email or not name:
+        flash("Email and name are required.", "error")
+        return redirect(url_for("main.user_profile", user_id=user_id))
+
+    if pw or pw2:
+        if pw != pw2:
+            flash("Passwords do not match.", "error")
+            return redirect(url_for("main.user_profile", user_id=user_id))
+        # TODO: hash in production
+        u.password = pw
+
+    # Apply changes
+    u.email = email
+    u.name = name
+    u.description = desc
+
+    # Commit with proper error handling for unique email
+    try:
+        db.session.commit()
+        flash("Profile updated.", "success")
+    except IntegrityError:
+        db.session.rollback()
+        flash("That email is already in use.", "error")
+
     return redirect(url_for("main.user_profile", user_id=user_id))
 
 
