@@ -341,7 +341,28 @@ def leave_trip(trip_id):
         db.session.commit()
     return redirect(url_for("main.trip", trip_id=trip_id))
 
+@bp.route("/finalize_trip/<int:trip_id>")
+@flask_login.login_required
+def finalize_trip(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip.status = "Done"
+    trip.is_open = False
+    db.session.commit()
+    flash("Trip finalized successfully!", "success")
+    return redirect(url_for("main.trip", trip_id=trip.id))
 
+@bp.route("/cancel_trip/<int:trip_id>")
+@flask_login.login_required
+def cancel_trip(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip.status = "Canceled"
+    db.session.commit()
+    flash("Trip canceled successfully!", "success")
+    return redirect(url_for("main.index"))
 
 @bp.route("/message", methods=["POST"])
 @flask_login.login_required

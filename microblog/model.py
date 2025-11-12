@@ -10,7 +10,7 @@ import flask_login
 
 from . import db
 
-TripStatus = Enum("Planning", "Happening", "Done", name="trip_status")
+TripStatus = Enum("Planning", "Happening", "Done", "Canceled", name="trip_status")
 TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type")
 # RestaurantType = Enum("Italian", "Chinese", "Asian", "American", "Pastry")
 

@@ -83,6 +83,18 @@
             {% else %}
                 <span class="badge badge-primary">You created this trip</span>
             {% endif %}
+            {% if has_editing_permissions or is_creator %}
+                    <a href = "{{ url_for('main.finalize_trip', trip_id=trip.id) }}" 
+                       class="btn btn-success"
+                       onclick="return confirm('Are you sure you want to finalize this trip? This action cannot be undone.')">
+                        Finalize Trip
+                    </a>
+                    <a href="{{ url_for('main.cancel_trip', trip_id=trip.id) }}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('Are you sure you want to cancel this trip? This action cannot be undone.')">
+                        Cancel Trip
+                    </a>
+            {% endif %}
         </div>
         <section id="comments" class="trip-comments">
         <h3 class="trip-comments__title">Message Board</h3>
