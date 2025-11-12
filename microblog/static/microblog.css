@@ -300,8 +300,6 @@ display: inline-block;
 
 
 
-
-
 .profile { max-width: 720px; margin: 1.5rem auto; font-family: Arial }
 .profile-card dl {
   display: grid;
@@ -313,11 +311,11 @@ display: inline-block;
 .profile-card dt {
   color: #6b7280;
   font-weight: 600;
-  align-self: end; /* keeps labels aligned visually */
+  align-self: center; /* keeps labels aligned visually */
 }
 
 .profile-card dd {
-  padding-top: 0.3rem;
+  padding-top: 0.3rem; align-self: center;
 }
 
 .profile-card, .profile-form { background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
@@ -326,20 +324,33 @@ display: inline-block;
 .profile-form input,
 .profile-form textarea {
   width: 100%;
-  padding: 0.4rem 0.55rem; /* ↓ smaller padding */
-  font-size: 0.9rem; /* ↓ smaller font */
+  padding: 0.4rem 0.55rem;
+  font-size: 0.9rem;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-sizing: border-box;
 }
 
 .profile-form textarea {
-  min-height: 70px; /* smaller default height */
+  min-height: 70px;
 }
 
 .profile-form fieldset { border:1px dashed #e5e7eb; border-radius:8px; padding:.5rem; }
 .post-list { margin-top:1rem; }
-.btn.btn--primary { background:#2563eb; color:#fff; border:none; border-radius:10px; padding:.55rem 1rem; }
+.btn.btn--primary { background:#2563eb; color:#fff; border:none; border-radius:10px; padding:.55rem 1rem; align-self: center }
+
+.edit-profile-btn {background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:.55rem 1rem;
+    display: block;
+    margin: 20px auto; /* centers horizontally */
+    text-align: center;
+}
+
+
+
 /* ===================== AVATAR STYLES and Trip avatars For TRIP POSTS===================== */
 
 .participants-display {

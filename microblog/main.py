@@ -55,10 +55,7 @@ def home():
 
 @bp.route("/user/<int:user_id>", endpoint="user_profile")  # keep endpoint name for existing links
 def user_profile(user_id):
-    """
-    Always render read-only profile (user_watch.html).
-    If the visitor owns this profile, pass is_owner=True so the template shows an 'Edit profile' button.
-    """
+
     user = db.session.execute(
         db.select(model.User).where(model.User.id == user_id)
     ).scalar_one_or_none()
@@ -76,9 +73,7 @@ def user_profile(user_id):
 @bp.get("/user/<int:user_id>/edit")
 @flask_login.login_required
 def edit_profile(user_id):
-    """
-    Owner-only editable view (profile.html).
-    """
+
     user = db.session.get(model.User, user_id)
     if not user:
         abort(404)
@@ -93,9 +88,7 @@ def edit_profile(user_id):
 @bp.post("/user/<int:user_id>/edit")
 @flask_login.login_required
 def edit_user(user_id):
-    """
-    Persist edits to DB. Owner only.
-    """
+
     try:
         current_id = int(flask_login.current_user.get_id())
     except (TypeError, ValueError):
@@ -107,7 +100,6 @@ def edit_user(user_id):
     if not u:
         abort(404)
 
-    # Read fields
     email = (request.form.get("email") or "").strip()
     name = (request.form.get("name") or "").strip()
     desc = request.form.get("description") or ""

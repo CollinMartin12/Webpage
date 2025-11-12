@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="profile">
-  <h1>{{ user.name }}'s Profile</h1>
+  <h1>{{ user.name }}'s Profile - This is readonly(testing purpose)</h1>
 
   <div class="profile-card">
     <dl class="readonly">
@@ -12,35 +12,10 @@
     </dl>
   </div>
 
-  <h2>Details</h2>
-  <form class="profile-form" action="#" method="post" novalidate>
-    <label>
-      Email
-      <input type="email" value="{{ user.email }}" required disabled>
-    </label>
-
-    <label>
-      Name
-      <input type="text" value="{{ user.name }}" maxlength="64" required disabled>
-    </label>
-
-    <label>
-      Description
-      <textarea rows="3" maxlength="512" disabled>{{ user.description or "" }}</textarea>
-    </label>
-
-    <fieldset disabled>
-      <legend>Change password (optional)</legend>
-      <input type="password" placeholder="New password">
-      <input type="password" placeholder="Confirm new password">
-    </fieldset>
-
-    <button class="btn btn--primary" type="button" disabled>Save changes</button>
-  </form>
 
   {% if is_owner %}
     <div style="margin-top: 1rem;">
-      <a class="btn btn--primary" href="{{ url_for('main.edit_profile', user_id=user.id) }}">
+      <a class="edit-profile-btn" href="{{ url_for('main.edit_profile', user_id=user.id) }}">
         Edit profile
       </a>
     </div>
