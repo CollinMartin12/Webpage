@@ -98,6 +98,7 @@ def create_test_data():
                 neighborhood_id=None  # Testing nullable neighborhood
             )
             
+            
             user4 = User(
                 email="david@example.com",
                 name="David Rodriguez",
