@@ -6,6 +6,7 @@ import dateutil.tz
 from flask import Blueprint, render_template, abort
 import flask_login
 from sqlalchemy.orm import selectinload, aliased
+from sqlalchemy.exc import IntegrityError
 
 from . import db
 from . import model
@@ -52,30 +53,49 @@ def home():
     return render_template("main/home.html")
 
 
-@bp.route("/user/<int:user_id>")
-@flask_login.login_required
+@bp.route("/user/<int:user_id>", endpoint="user_profile")  # keep endpoint name for existing links
 def user_profile(user_id):
-    # user = flask_login.current_user
+    """
+    Always render read-only profile (user_watch.html).
+    If the visitor owns this profile, pass is_owner=True so the template shows an 'Edit profile' button.
+    """
     user = db.session.execute(
-        db.select(model.User)
-        .where(model.User.id == user_id)
-    ).scalar_one_or_none() 
+        db.select(model.User).where(model.User.id == user_id)
+    ).scalar_one_or_none()
     if not user:
         abort(404)
 
-        # get_id() can be a string; cast for a robust comparison
     is_owner = (
         flask_login.current_user.is_authenticated
         and int(flask_login.current_user.get_id()) == user.id
     )
 
-    template = "main/profile.html" if is_owner else "main/user_watch.html"
-    return render_template(template, user=user)
+    return render_template("main/user_watch.html", user=user, is_owner=is_owner)
 
-@bp.route("/user/<int:user_id>/edit", methods=["POST"])
+
+@bp.get("/user/<int:user_id>/edit")
+@flask_login.login_required
+def edit_profile(user_id):
+    """
+    Owner-only editable view (profile.html).
+    """
+    user = db.session.get(model.User, user_id)
+    if not user:
+        abort(404)
+
+    if int(flask_login.current_user.get_id()) != user.id:
+        # Non-owners: back to read-only
+        return redirect(url_for("main.user_profile", user_id=user.id))
+
+    return render_template("main/profile.html", user=user)
+
+
+@bp.post("/user/<int:user_id>/edit")
 @flask_login.login_required
 def edit_user(user_id):
-    # Ownership check (get_id() may be a string)
+    """
+    Persist edits to DB. Owner only.
+    """
     try:
         current_id = int(flask_login.current_user.get_id())
     except (TypeError, ValueError):
@@ -97,12 +117,12 @@ def edit_user(user_id):
     # Basic validation
     if not email or not name:
         flash("Email and name are required.", "error")
-        return redirect(url_for("main.user_profile", user_id=user_id))
+        return redirect(url_for("main.edit_profile", user_id=user_id))
 
     if pw or pw2:
         if pw != pw2:
             flash("Passwords do not match.", "error")
-            return redirect(url_for("main.user_profile", user_id=user_id))
+            return redirect(url_for("main.edit_profile", user_id=user_id))
         # TODO: hash in production
         u.password = pw
 
@@ -111,7 +131,7 @@ def edit_user(user_id):
     u.name = name
     u.description = desc
 
-    # Commit with proper error handling for unique email
+    # Commit with unique email handling
     try:
         db.session.commit()
         flash("Profile updated.", "success")

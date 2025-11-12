@@ -38,6 +38,14 @@
     <button class="btn btn--primary" type="button" disabled>Save changes</button>
   </form>
 
+  {% if is_owner %}
+    <div style="margin-top: 1rem;">
+      <a class="btn btn--primary" href="{{ url_for('main.edit_profile', user_id=user.id) }}">
+        Edit profile
+      </a>
+    </div>
+  {% endif %}
+
   <h2>Posts published by {{ user.name }}</h2>
   <ul class="post-list">
     {% for p in user.posts %}
