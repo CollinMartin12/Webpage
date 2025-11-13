@@ -5,6 +5,53 @@
   --ring: rgba(51,115,161,.25);
 }
 
+
+
+/* ===================== GLOBAL BUTTON BASE STYLE ===================== */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px; /* pill shape */
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid var(--brand);
+  background: linear-gradient(135deg, var(--brand), #2a5f85);
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--danger {
+  background: #b91c1c;
+  border-color: #991b1b;
+}
+
+.btn--warning {
+  background: #f59e0b;
+  border-color: #d97706;
+}
+
+.btn--success {
+  background: #16a34a;
+  border-color: #15803d;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--brand), #2a5f85);
+  border-color: var(--brand);
+}
+
+
+
 /* Full-page background & subtle dots */
 .auth{
   position: relative;
@@ -21,6 +68,8 @@
   opacity:.35; pointer-events:none;
 }
 
+/* Main Pages Header Style */
+
 body > header {
   display: flex;                         
   justify-content: space-between;      
@@ -32,34 +81,37 @@ body > header {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 } 
 
-body > header h1 {
+header h1 {
   margin: 0;
   font-size: 1.4rem;
   align-content: center;
 
 }
 
+
+/* Navigation Bar Design */
+
 .topbar {
   display: flex;
-  align-items: center;     /* vertically centers title and links */
+  align-items: center;
   width: 100%;
 }
 
-/* Push the link group to the right */
+
 .nav-links {
-  margin-left: auto;       /* pushes this div all the way right */
+  margin-left: auto;
   display: flex;
-  gap: 0.75rem;            /* spacing between buttons */
+  gap: 0.75rem;
 }
 
-/* Title */
+
 .topbar h1 {
   margin: 0;
   font-size: 1.5rem;
   color: white;
 }
 
-/* Buttons/Links */
+
 .nav-links a {
   color: white;
   background-color: rgba(0, 0, 0, 0.2);
@@ -75,10 +127,12 @@ body > header h1 {
 }
 
 
+/* Nav Bar Buttons */
+
 .btn-home {
   display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -100,7 +154,7 @@ body > header h1 {
 .btn-login{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -121,7 +175,7 @@ display: inline-block;
 .btn-signup{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -142,7 +196,7 @@ display: inline-block;
 .btn-logout{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -164,7 +218,7 @@ display: inline-block;
 .btn-profile{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -183,6 +237,8 @@ display: inline-block;
 }
 
 
+
+
 .auth .content {
   min-height: 100vh;
   display: flex;
@@ -191,6 +247,7 @@ display: inline-block;
 }
 
 /* Card (your .signup-container becomes a glassy card) */
+
 .auth .signup-container{
   width: 100%;
   max-width: 550px;
@@ -298,10 +355,13 @@ display: inline-block;
   .auth .signup-container p{ color:#cbd5e1; }
 }
 
+
+/* Buttons of editing the trips */
+
 .btn-success{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -319,6 +379,8 @@ display: inline-block;
   transform: translateY(1px);
 }
 
+
+/* Profile Styling */
 
 .profile { max-width: 720px; margin: 1.5rem auto; font-family: Arial }
 .profile-card dl {
@@ -450,7 +512,8 @@ display: inline-block;
 
 .trips-container > .trip {
   flex: 1 1 320px;   /* grows, wraps at ~320px */
-  max-width: 360px;  /* optional: prevents super-wide cards */
+  max-width: 360px; border-radius: 100px;
+    /* optional: prevents super-wide cards */
 }
 
 
@@ -471,13 +534,15 @@ display: inline-block;
     overflow: hidden;
 }
 .trip_header {
-    margin-bottom: 15px; border-radius: 100px 100px 0 0;
+    margin-bottom: 15px;
+    border-radius: 100px 100px 0 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-align: center;
     padding: 20px;
     margin: 0;
+    background-color:#3373A1;
 
 }
 
@@ -648,7 +713,7 @@ display: inline-block;
 .btn-warning{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -672,7 +737,7 @@ display: inline-block;
 .btn-danger{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
