@@ -4,6 +4,9 @@
 <div class = "container">
         <h1>Welcome to Microblog Travel!</h1>
         <p>Explore and share your travel experiences with others.</p>
+    <section class = "create-trips">
+        <a href="{{ url_for('main.create_trip') }}" class="btn-success">Create New Trip</a>
+    </section>
     <section>
         <div>
             {% if trips %}
@@ -13,8 +16,6 @@
             {% endif %}
         </div>
     </section>
-    <section class = "create-trips">
-        <a href="{{ url_for('main.create_trip') }}" class="btn btn-success">Create New Trip</a>
-    </section>
+
 </div>
 {% endblock %}

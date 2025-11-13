@@ -67,16 +67,25 @@
                     Edit Trip
                 </a>
             {% endif %}
+
             {% if not is_creator %}
                 {% if is_participant %}
-                    <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}" 
-                    class="btn btn-danger" 
-                    onclick="return confirm('Are you sure you want to leave this trip?')">
-                        Leave Trip
-                    </a>
+
+                    {% if not is_only_editor %}
+                        <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Are you sure you want to leave this trip?')">
+                            Leave Trip
+                        </a>
+                    {% else %}
+                        <span class="text-muted" style="font-size: 0.9em;">
+                            You cannot leave because you are the only editor.
+                        </span>
+                    {% endif %}
+
                 {% else %}
-                    <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}" 
-                    class="btn btn-success">
+                    <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}"
+                       class="btn btn-success">
                         Join Trip
                     </a>
                 {% endif %}

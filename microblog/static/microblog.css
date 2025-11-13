@@ -297,7 +297,26 @@ display: inline-block;
   .auth .signup-container p{ color:#cbd5e1; }
 }
 
+.btn-success{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-success:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
 
+.btn-success:active {
+  transform: translateY(1px);
+}
 
 
 .profile { max-width: 720px; margin: 1.5rem auto; font-family: Arial }

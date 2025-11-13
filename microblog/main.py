@@ -164,8 +164,20 @@ def trip(trip_id):
         for participant in trip.participants
     )
 
-    return render_template("main/trip.html", trip=trip, is_participant=is_participant, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
+    # Count how many participants have editing permissions
+    editor_count = sum(1 for p in trip.participants if p.editing_permissions)
 
+    # Determine if the current user is the only editor
+    is_only_editor = has_editing_permissions and editor_count == 1
+
+    return render_template(
+        "main/trip.html",
+        trip=trip,
+        is_participant=is_participant,
+        is_creator=is_creator,
+        has_editing_permissions=has_editing_permissions,
+        is_only_editor=is_only_editor
+    )
 
 
 
@@ -349,8 +361,24 @@ def leave_trip(trip_id):
         )
     ).scalar_one_or_none()
     if participant:
+
+        # Count how many editors the trip has
+        editors = db.session.execute(
+            db.select(model.Trip_participants)
+            .where(
+                model.Trip_participants.trip_id == trip_id,
+                model.Trip_participants.editing_permissions == True
+            )
+        ).scalars().all()
+
+        # If user is the only editor, prevent leaving
+        if participant.editing_permissions and len(editors) == 1:
+            flash("You are the only editor of this trip. Assign another editor before leaving.", "error")
+            return redirect(url_for("main.trip", trip_id=trip_id))
+
         db.session.delete(participant)
         db.session.commit()
+
     return redirect(url_for("main.trip", trip_id=trip_id))
 
 
