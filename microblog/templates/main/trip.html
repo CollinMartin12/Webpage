@@ -63,7 +63,7 @@
         <div class="trip-actions">
             {% if has_editing_permissions %}
                 <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}" 
-                   class="btn btn-warning">
+                   class="btn-warning">
                     Edit Trip
                 </a>
             {% endif %}
@@ -73,7 +73,7 @@
 
                     {% if not is_only_editor %}
                         <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}"
-                           class="btn btn-danger"
+                           class="btn-danger"
                            onclick="return confirm('Are you sure you want to leave this trip?')">
                             Leave Trip
                         </a>

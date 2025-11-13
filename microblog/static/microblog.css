@@ -21,7 +21,7 @@
   opacity:.35; pointer-events:none;
 }
 
-header {
+body > header {
   display: flex;                         
   justify-content: space-between;      
   align-items: center;
@@ -32,10 +32,11 @@ header {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 } 
 
-header h1 {
+body > header h1 {
   margin: 0;
   font-size: 1.4rem;
   align-content: center;
+
 }
 
 .topbar {
@@ -590,6 +591,7 @@ display: inline-block;
     font-size: 2.2rem;
     margin-bottom: 25px;
     font-family: fantasy;
+    border-radius: 15px;
 }
 
 .trip-details-title {
@@ -597,18 +599,19 @@ display: inline-block;
     font-size: 1.6rem;
     margin-bottom: 10px;
     font-weight: bold;
+    background: #6b7280;
 
 }
-
 .status {
     text-align: center;
     padding: 5px 15px;
-    display: inline-block;
-    border-radius: 15px;
+    display: block;
+    width: fit-content;
+    margin: 0 auto 15px auto;
+    border-radius: 20px;
     font-weight: 600;
     color: white;
-    background: #2a5f85;
-    margin-bottom: 15px;
+    background: #0f243e;
 }
 
 
@@ -642,3 +645,94 @@ display: inline-block;
 }
 
 
+.btn-warning{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-warning:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-warning:active {
+  transform: translateY(1px);
+}
+
+
+
+
+.btn-danger{
+display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;                 /* makes it perfectly round-edged */
+  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #3373A1;
+  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  transition: all 0.15s ease;
+}
+.btn-danger:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+}
+
+
+
+/* Comment container */
+.trip-comment {
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #e0e6ed;
+    padding-bottom: 0.8rem;
+    margin-top: 1.2rem;
+}
+
+/* Header layout */
+.trip-comment__hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.3rem;
+}
+
+/* USERNAME */
+.trip-comment__author {
+    font-weight: 700;
+    color: #0b3a60;
+    font-size: 1.05rem;
+    transition: color 0.2s ease;
+    padding-top: 20px;
+}
+
+/* Hover effect to show it’s clickable */
+.trip-comment__author:hover {
+    color: #1b4d6b;                 /* darker blue */
+    text-decoration: underline;
+}
+
+/* Timestamp */
+.trip-comment__time {
+    font-size: 0.85rem;
+    color: #7a7a7a;
+}
+
+/* Comment body */
+.trip-comment__content {
+    font-size: 1rem;
+    color: #222;                    /* black-ish */
+    line-height: 1.4rem;
+    margin-left: 0.3rem;
+}
