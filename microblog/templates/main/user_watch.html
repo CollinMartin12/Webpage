@@ -1,27 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="profile">
-  <h1>{{ user.name }}'s Profile - This is readonly(testing purpose)</h1>
+  <h1 class="header-profile">{{ user.name }}'s Profile - This is readonly(testing purpose)</h1>
 
-  <div class="profile-card">
-    <dl class="readonly">
-      <div><dt>User-ID</dt><dd>{{ user.id }}</dd></div>
-      <div><dt>Email Address</dt><dd>{{ user.email }}</dd></div>
-      <div><dt>Name</dt><dd>{{ user.name }}</dd></div>
-      <div><dt>About me:</dt><dd>{{ user.description }}</dd></div>
-    </dl>
-  </div>
+ <div class="profile-card">
+    <div class="profile-vertical">
+
+        <div class="profile-field">
+            <h4>Email</h4>
+            <div class="profile-value">{{ user.email }}</div>
+        </div>
+
+        <div class="profile-field">
+            <h4>Name</h4>
+            <div class="profile-value">{{ user.name }}</div>
+        </div>
+
+        <div class="profile-field">
+            <h4>User ID</h4>
+            <div class="profile-value">{{ user.id }}</div>
+        </div>
+
+        <div class="profile-field">
+            <h4>About Me</h4>
+            <div class="profile-value">{{ user.description }}</div>
+        </div>
+
+    </div>
+</div>
+
 
 
   {% if is_owner %}
-    <div style="margin-top: 1rem;">
-      <a class="edit-profile-btn" href="{{ url_for('main.edit_profile', user_id=user.id) }}">
+    <div class="center-button" style="margin-top: 1rem;">
+      <a class="btn btn--primary" href="{{ url_for('main.edit_profile', user_id=user.id) }}">
         Edit profile
       </a>
     </div>
   {% endif %}
 
-  <h2>Posts published by {{ user.name }}</h2>
+  <h2 class="post-header">Posts published by {{ user.name }}</h2>
   <ul class="post-list">
     {% for p in user.posts %}
       <li>

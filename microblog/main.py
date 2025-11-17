@@ -48,9 +48,39 @@ def explore():
             t.image_url = url_for('static', filename='img/image.jpg')
     return render_template("main/home.html", trips=trips)
 
+
+
 @bp.route("/home")
+@flask_login.login_required
 def home():
-    return render_template("main/home.html")
+    user = flask_login.current_user
+
+    # Trips where the user is a participant
+    my_trips = (
+        db.session.execute(
+            db.select(model.Trip)
+            .join(model.Trip_participants)
+            .where(model.Trip_participants.user_id == user.id)
+        )
+        .scalars()
+        .all()
+    )
+
+    # All open trips
+    open_trips = (
+        db.session.execute(
+            db.select(model.Trip)
+            .where(model.Trip.is_open == True)
+        )
+        .scalars()
+        .all()
+    )
+
+    return render_template(
+        "main/home.html",
+        my_trips=my_trips,
+        open_trips=open_trips
+    )
 
 
 @bp.route("/user/<int:user_id>", endpoint="user_profile")  # keep endpoint name for existing links
@@ -315,6 +345,57 @@ def edit_trip(trip_id):
     trip_types = db.session.execute(db.select(model.TripType)).scalars().all()
 
     return render_template("edit_trip.html", trip=trip, cities=cities, neighborhoods=neighborhoods, trip_types=trip_types, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
+
+
+
+@bp.route("/trip/<int:trip_id>/meetup/create", methods=["GET", "POST"])
+@flask_login.login_required
+def create_meetup(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip not found")
+
+    user = flask_login.current_user
+
+    # Check editing permissions
+    is_creator = trip.creator_id == user.id
+    has_editing_permissions = is_creator or any(
+        p.user_id == user.id and p.editing_permissions
+        for p in trip.participants
+    )
+
+    if not has_editing_permissions:
+        flash("You do not have permission to create meetups for this trip.", "error")
+        return redirect(url_for("main.trip", trip_id=trip_id))
+
+    if request.method == "POST":
+        content = request.form.get("content")
+        location = request.form.get("location")
+        city_id = request.form.get("city_id")
+        date = request.form.get("date")
+        time = request.form.get("time")
+
+        new_meetup = model.Meetups(
+            trip_id=trip_id,
+            user_id=user.id,
+            content=content,
+            location=location,
+            city_id=int(city_id),
+            date=datetime.datetime.strptime(date, "%Y-%m-%d").date(),
+            time=datetime.datetime.strptime(time, "%H:%M").time(),
+            status="PLANNING"
+        )
+
+        db.session.add(new_meetup)
+        db.session.commit()
+
+        flash("Meetup created successfully!", "success")
+        return redirect(url_for("main.trip", trip_id=trip_id))
+
+    # For dropdown list
+    cities = db.session.execute(db.select(model.City)).scalars().all()
+
+    return render_template("main/meetup.html", trip=trip, cities=cities)
 
 
 

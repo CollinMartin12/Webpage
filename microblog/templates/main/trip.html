@@ -1,125 +1,129 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class ="trip-details-container">
+<div class="trip-details-container">
     <main>
+
         <header>
             <h1>Trip Details</h1>
         </header>
+
         <div>
-           {% set trip = trip %}
-          <h3 class="trip-details-title">
-              {{ trip.destination_city.name if trip.destination_city else "Unknown City" }} - {{ trip.trip_type.name if trip.trip_type else "Unknown Type" }}
-          </h3>
-            <div class = "status">
+            {% set trip = trip %}
+            <h3 class="trip-details-title">
+                {{ trip.destination_city.name if trip.destination_city else "Unknown City" }}
+                -
+                {{ trip.trip_type.name if trip.trip_type else "Unknown Type" }}
+            </h3>
+
+            <div class="status">
                 {{ trip.status }}
             </div>
         </div>
+
         <div class="trip-meta">
-            <p><i> Posted at {{ trip.created_at }}</i></p>
-            <p> {{trip.departure_city.name if trip.departure_city else "TBD"}} -> {{trip.destination_city.name if trip.destination_city else "TBD"}}</p>
-            <p><i> Budget: {{ trip.budget if trip.budget else "NA" }}</i></p>
-            <p><i> Max Participants: {{ trip.max_participants if trip.max_participants else "Unlimited" }}</i></p>
+            <p><i>Posted at {{ trip.created_at }}</i></p>
+            <p>
+                {{ trip.departure_city.name if trip.departure_city else "TBD" }}
+                ->
+                {{ trip.destination_city.name if trip.destination_city else "TBD" }}
+            </p>
+            <p><i>Budget: {{ trip.budget if trip.budget else "NA" }}</i></p>
+            <p><i>Max Participants: {{ trip.max_participants if trip.max_participants else "Unlimited" }}</i></p>
         </div>
 
-            <div class="trip-details-image">
-                <img src="{{ trip.picture if trip.picture else '' }}">
-            </div>
-            <h3 class="trip-description-title">About this Trip:</h3>
-            <p class="trip-description">{{ trip.description }}</p>
+        <div class="trip-details-image">
+            <img src="{{ trip.picture if trip.picture else '' }}">
+        </div>
 
+        <h3 class="trip-description-title">About this Trip:</h3>
+        <p class="trip-description">{{ trip.description }}</p>
+
+        <!-- Participants -->
         <div class="participants-display">
-            <span>Participants: </span>
+            <span>Participants:</span>
+
             {% if trip.participants | length > 0 %}
                 <div class="participant-avatars">
                     <div class="avatar-small">
                         {% for participant in trip.participants[:4] %}
-                            <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}" alt="{{ participant.name }}">
+                            <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}"
+                                 alt="{{ participant.name }}">
                         {% endfor %}
                     </div>
+
                     {% if trip.participants | length > 4 %}
-                        <span class= "participant-count">+{{ trip.participants | length - 4 }}</span>
+                        <span class="participant-count">
+                            +{{ trip.participants | length - 4 }}
+                        </span>
                     {% endif %}
                 </div>
             {% else %}
                 <span>No participants yet</span>
             {% endif %}
         </div>
-        <div class = "meetups_section">
-            <h3>Meetups ({{ trip.meetups|length }})</h3>
-            {% if trip.meetups | length > 0 %}
-                <ul>
-                    {% for meetup in trip.meetups %}
-                        <li>
-                            <strong>{{ meetup.title }}</strong> - {{ meetup.date }} at {{ meetup.location }}
-                            <p>{{ meetup.description }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No meetups scheduled yet.</p>
-            {% endif %}
-        </div>
-        <div class="trip-actions">
-            {% if has_editing_permissions %}
-                <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}" 
-                   class="btn btn--warning">
-                    Edit Trip
-                </a>
-            {% endif %}
 
-            {% if not is_creator %}
-                {% if is_participant %}
+        <!-- Meetups Section -->
+        <div class="trip-action-row">
 
-                    {% if not is_only_editor %}
-                        <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}"
-                           class="btn btn--danger"
-                           onclick="return confirm('Are you sure you want to leave this trip?')">
-                            Leave Trip
-                        </a>
-                    {% else %}
-                        <span class="text-muted" style="font-size: 0.9em;">
-                            You cannot leave because you are the only editor.
-                        </span>
-                    {% endif %}
+    {% if has_editing_permissions %}
+        <a href="{{ url_for('main.create_meetup', trip_id=trip.id) }}"
+           class="btn btn--primary">
+            Create Meetup
+        </a>
+    {% endif %}
 
-                {% else %}
-                    <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}"
-                       class="btn btn-success">
-                        Join Trip
-                    </a>
-                {% endif %}
-            {% else %}
-                <span class="badge badge-primary">You created this trip</span>
-            {% endif %}
-        </div>
+    {% if has_editing_permissions %}
+        <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}"
+           class="btn btn--warning">
+            Edit Trip
+        </a>
+    {% endif %}
+
+    {% if is_creator %}
+        <span class="creator-label">You created this trip</span>
+    {% endif %}
+
+</div>
+
+
+        <!-- Comments Section -->
         <section id="comments" class="trip-comments">
-        <h3 class="trip-comments__title">Message Board</h3>
 
-        <form class="trip-comments__form"
-                method="post"
-                action="{{ url_for('main.new_message', trip_id=trip.id) }}">
-            <input type="hidden" name="trip_id" value="{{ trip.id }}">
-            <textarea name="content" rows="3" maxlength="1000"
-                    placeholder="Write a message…" required></textarea>
-            <div class="trip-comments__form-actions">
-            <button type="submit">Post</button>
-            </div>
-        </form>
-        {% if is_creator or is_participant%}
-            <div class="trip-comments__list">
-                {% for comment in trip.comments %}
-                {% include 'messages.html' %}
-                {% else %}
-                <p class="trip-comments__empty">No messages yet.</p>
-                {% endfor %}
-            </div>
-            </section>
-        {% else %}
-            <p class="trip-comments__empty">Join the trip to view and post messages.</p>
-        {% endif %}
+            <h3 class="trip-comments__title">Message Board</h3>
+
+            <form class="trip-comments__form"
+                  method="post"
+                  action="{{ url_for('main.new_message', trip_id=trip.id) }}">
+
+                <input type="hidden" name="trip_id" value="{{ trip.id }}">
+
+                <textarea name="content"
+                          rows="3"
+                          maxlength="1000"
+                          placeholder="Write a message…"
+                          required></textarea>
+
+                <div class="trip-comments__form-actions">
+                    <button type="submit">Post</button>
+                </div>
+            </form>
+
+            {% if is_creator or is_participant %}
+                <div class="trip-comments__list">
+                    {% for comment in trip.comments %}
+                        {% include 'messages.html' %}
+                    {% else %}
+                        <p class="trip-comments__empty">No messages yet.</p>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="trip-comments__empty">
+                    Join the trip to view and post messages.
+                </p>
+            {% endif %}
+        </section>
+
     </main>
-
-
 </div>
 {% endblock %}

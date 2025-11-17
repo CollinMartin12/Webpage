@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="trip-details-container">
+    <h2>Create Meetup for Trip to {{ trip.destination_city.name }}</h2>
+
+    <form method="POST" class="meetup-form">
+
+        <label>Description</label>
+        <textarea name="content" required></textarea>
+
+        <label>Location</label>
+        <input type="text" name="location" required>
+
+        <label>City</label>
+        <select name="city_id" required>
+            {% for city in cities %}
+                <option value="{{ city.id }}">{{ city.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Date</label>
+        <input type="date" name="date" required>
+
+        <label>Time</label>
+        <input type="time" name="time" required>
+
+        <button class="btn btn--primary" type="submit">Create Meetup</button>
+        <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn--danger">Cancel</a>
+
+    </form>
+</div>
+{% endblock %}

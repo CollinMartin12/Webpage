@@ -2,14 +2,59 @@
 
 {% block content %}
 <section class="home-page">
-  <h1>Welcome to Our Travel App!</h1>
-  <p>
-    Plan trips, connect with travelers, and explore new destinations.<br>
-      In this page, you'll be able to explore open trips, create your own or join meetups!
+
+
+  <p class="description-home">
+    In this page, you can see your current trips and join open trips!<br>
   </p>
 
-  <div class="trip-explain">
-    <img src="{{ url_for('static', filename='img/Image.jpg') }}" alt="Travel image">
+
+  <div class="home-columns">
+
+      <!-- My Trips -->
+      <div class="home-column">
+          <h2 class="column-title">My Trips</h2>
+
+          {% if my_trips %}
+              {% for trip in my_trips %}
+                  <div class="trip-card">
+                      <a href="{{ url_for('main.trip', trip_id=trip.id) }}">
+                          <h3>{{ trip.destination_city.name }}</h3>
+                      </a>
+
+                      <p>{{ trip.description }}</p>
+                  </div>
+              {% endfor %}
+          {% else %}
+              <p>You are not participating in any trips yet.</p>
+          {% endif %}
+      </div>
+
+
+      <div class="home-column">
+          <h2 class="column-title">Open Trips</h2>
+
+          {% if open_trips %}
+              {% for trip in open_trips %}
+
+                  <div class="trip-card">
+                    <div class="trip-card-header">
+                        <a href="{{ url_for('main.trip', trip_id=trip.id) }}">
+                            <h3>{{ trip.destination_city.name }}</h3>
+                        </a>
+                        <span class="trip-status">{{ trip.status }}</span>
+                    </div>
+
+                      <p>{{ trip.description }}</p>
+                  </div>
+
+              {% endfor %}
+          {% else %}
+              <p>No open trips available.</p>
+          {% endif %}
+      </div>
+
   </div>
+
 </section>
 {% endblock %}

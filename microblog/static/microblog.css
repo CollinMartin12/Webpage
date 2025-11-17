@@ -52,7 +52,7 @@
 
 
 
-/* Full-page background & subtle dots */
+/* ----------------Full-page background & subtle dots--------------- */
 .auth{
   position: relative;
   background:
@@ -68,7 +68,7 @@
   opacity:.35; pointer-events:none;
 }
 
-/* Main Pages Header Style */
+/* -----Main Pages Header Style----- */
 
 body > header {
   display: flex;                         
@@ -89,7 +89,7 @@ header h1 {
 }
 
 
-/* Navigation Bar Design */
+/* --------Navigation Bar Design------- */
 
 .topbar {
   display: flex;
@@ -127,7 +127,7 @@ header h1 {
 }
 
 
-/* Nav Bar Buttons */
+/* ---------Nav Bar Buttons-------- */
 
 .btn-home {
   display: inline-block;
@@ -237,7 +237,7 @@ display: inline-block;
 }
 
 
-
+/* --------------------Signup and Login pages------------------ */
 
 .auth .content {
   min-height: 100vh;
@@ -382,25 +382,50 @@ display: inline-block;
 
 /* Profile Styling */
 
-.profile { max-width: 720px; margin: 1.5rem auto; font-family: Arial }
-.profile-card dl {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  row-gap: 0.8rem;
-  column-gap: 1.8rem;
+.header-profile{
+    text-align: center;
+
 }
 
-.profile-card dt {
-  color: #6b7280;
-  font-weight: 600;
-  align-self: center; /* keeps labels aligned visually */
+.profile-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    max-width: 600px;
+    margin: 20px auto;   /* center the whole card */
 }
 
-.profile-card dd {
-  padding-top: 0.3rem; align-self: center;
+.profile-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    max-width: 500px;
+    margin: 0 auto;               /* center the whole card */
+    padding: 20px;
+    text-align: center;
 }
 
-.profile-card, .profile-form { background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+.profile-field {
+    text-align: center;
+}
+
+.profile-field h4 {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    font-weight: 700;
+    color: #0b3a60;
+}
+
+.profile-value {
+    padding: 10px 0;
+    border-top: 1px solid #d0d7e2;
+    font-size: 1rem;
+    color: #333;
+}
+
+
+.profile-form { background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
 .profile-card dt { color:#6b7280; }
 .profile-form { display:grid; gap:.6rem; margin-top:1rem; justify-content: center;}
 .profile-form input,
@@ -418,19 +443,16 @@ display: inline-block;
 }
 
 .profile-form fieldset { border:1px dashed #e5e7eb; border-radius:8px; padding:.5rem; }
-.post-list { margin-top:1rem; }
+.post-list { margin-top:1rem; text-align: center }
 .btn.btn--primary { background:#2563eb; color:#fff; border:none; border-radius:10px; padding:.55rem 1rem; align-self: center }
 
-.edit-profile-btn {background:#2563eb;
-    color:#fff;
-    border:none;
-    border-radius:10px;
-    padding:.55rem 1rem;
-    display: block;
-    margin: 20px auto; /* centers horizontally */
+.center-button {
     text-align: center;
 }
 
+.post-header{
+    text-align: center;
+}
 
 
 /* ===================== AVATAR STYLES and Trip avatars For TRIP POSTS===================== */
@@ -604,7 +626,7 @@ display: inline-block;
 .btn-primary{
 display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px;                 /* makes it perfectly round-edged */
+  border-radius: 999px;
   background: linear-gradient(135deg, #3373A1, #2a5f85);
   color: #fff;
   font-weight: 700;
@@ -633,6 +655,21 @@ display: inline-block;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     font-family: sans-serif;
 }
+
+.trip-action-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;       /* spacing between items */
+    padding: 10px 0;
+    flex-wrap: wrap; /* prevents overflow on small screens */
+}
+
+.creator-label {
+    font-size: 0.9rem;
+    color: #444;
+    font-weight: 500;
+}
+
 
 .trip-meta {
     background-color: #e3f1ff !important;   /* light blue */
@@ -801,3 +838,115 @@ display: inline-block;
     line-height: 1.4rem;
     margin-left: 0.3rem;
 }
+
+
+.create-trips{
+    align-self: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+/* ===================== HOME PAGE TABS ===================== */
+
+/* === Two-column layout for home page === */
+.home-columns {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 30px;
+    padding: 0 20px;
+}
+
+/* Each column */
+.home-column {
+    flex: 1;
+    max-width: 550px;
+}
+
+/* Column titles */
+.column-title {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    font-family: fantasy;
+    text-align: center;
+    border-radius: 50px;
+
+}
+
+/* Column titles */
+.description-home{
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: center;
+    border-radius: 50px;
+
+
+}
+
+/* Trip card container */
+.trip-card {
+    position: relative;
+    background: #f7f7f7;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    transition: transform 0.15s ease;
+}
+
+
+/* Header (title + status) */
+.trip-card-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Status pill (top-right) */
+.trip-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    background: #8CBFED;
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 14px;
+    font-weight: 300;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.trip-card:hover {
+    transform: translateY(-3px);
+}
+
+.trip-card a {
+    color: var(--brand);
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.trip-card a:hover {
+    text-decoration: underline;
+}
+
+/* === Mobile responsiveness === */
+@media (max-width: 900px) {
+    .home-columns {
+        flex-direction: column;
+        align-items: center;
+    }
+    .home-column {
+        max-width: 100%;
+    }
+}
+
+

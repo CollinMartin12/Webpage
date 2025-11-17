@@ -4,13 +4,32 @@
     <h1>{{ user.name }} 's Profile</h1>
 
     <div class="profile-card">
-        <dl class="readonly">
-            <div><dt>My User-ID</dt><dd>{{ user.id }}</dd></div>
-            <div><dt>Email Address</dt><dd>{{ user.email}}</dd></div>
-            <div><dt>Name</dt><dd>{{ user.name }}</dd></div>
-            <div><dt>About me:</dt><dd>{{ user.description }}</dd></div>
-        </dl>
+        <div class="profile-vertical">
+
+            <div class="profile-field">
+                <h4>Email</h4>
+                <div class="profile-value">{{ user.email }}</div>
+            </div>
+
+            <div class="profile-field">
+                <h4>Name</h4>
+                <div class="profile-value">{{ user.name }}</div>
+            </div>
+
+            <div class="profile-field">
+                <h4>User ID</h4>
+                <div class="profile-value">{{ user.id }}</div>
+            </div>
+
+            <div class="profile-field">
+                <h4>About Me</h4>
+                <div class="profile-value">{{ user.description }}</div>
+            </div>
+
+        </div>
     </div>
+
+
    <h2>Edit your details</h2>
   <form class="profile-form"
         action="{{ url_for('main.edit_user', user_id=user.id) }}"
