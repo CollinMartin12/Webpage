@@ -10,7 +10,7 @@ import flask_login
 
 from . import db
 
-TripStatus = Enum("Planning", "Happening", "Done", name="trip_status")
+TripStatus = Enum("Planning", "Happening", "Done", "Canceled", name="trip_status")
 TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type")
 # RestaurantType = Enum("Italian", "Chinese", "Asian", "American", "Pastry")
 
@@ -117,9 +117,14 @@ class Trip(db.Model):
     destination_neighborhood: Mapped[Optional["Neighborhood"]] = relationship(foreign_keys=[destination_neighborhood_id])
 
     # TIMING
+    start_date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
+    end_date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
     definite_date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
     status: Mapped[str] = mapped_column(TripStatus, default="PLANNING", index=True)
+
     status_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+    status = mapped_column(TripStatus, default="Planning", index=True)
 
     # DETAILS
     budget: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
