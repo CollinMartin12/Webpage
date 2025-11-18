@@ -235,9 +235,25 @@ def create_trip():
         restaurant_name = request.form.get("restaurant_name") or None
         definite_date = request.form.get("definite_date")
         budget = request.form.get("budget")
+        start_date = request.form.get("start_date")
+        end_date = request.form.get("end_date")
         picture = request.form.get("picture") or None
         max_participants = request.form.get("max_participants")
         is_open = request.form.get("is_open") == "on"
+
+                # Date Checks
+        if not start_date and not end_date:
+            if not definite_date:
+                flash("Please provide at least a start date, end date, or definite date.", "error")
+                return redirect(url_for("main.create_trip"))
+        elif not end_date < start_date:
+            flash("End date cannot be earlier than start date.", "error")
+            return redirect(url_for("main.create_trip"))
+        elif not definite_date:
+            if not start_date or not end_date:
+                flash("Please provide both start and end dates if no definite date is given.", "error")
+                return redirect(url_for("main.create_trip"))
+
 
         new_trip = model.Trip(
             creator_id=flask_login.current_user.id,
@@ -249,13 +265,17 @@ def create_trip():
             description=description,
             restaurant_name=restaurant_name,
             definite_date=datetime.datetime.strptime(definite_date, "%Y-%m-%d").date() if definite_date else None,
+            start_date=datetime.datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None,
+            end_date=datetime.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None,
             budget=float(budget) if budget else None,
             picture=picture,
             max_participants=int(max_participants) if max_participants else None,
-            is_open=is_open,
+            is_open = request.form.get("is_open") == "True",
+            status = request.form.get("status"),              
             created_at=datetime.datetime.now(dateutil.tz.UTC),
             status_time=datetime.datetime.now(dateutil.tz.UTC)
         )
+
         db.session.add(new_trip)
         db.session.commit()
         flash("Trip created successfully!", "success")
@@ -344,8 +364,9 @@ def edit_trip(trip_id):
     neighborhoods = db.session.execute(db.select(model.Neighborhood)).scalars().all()
     trip_types = db.session.execute(db.select(model.TripType)).scalars().all()
 
-    return render_template("edit_trip.html", trip=trip, cities=cities, neighborhoods=neighborhoods, trip_types=trip_types, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
+    trip_statuses = [status for status in model.TripStatus.enums]
 
+    return render_template("edit_trip.html", trip=trip, cities=cities, neighborhoods=neighborhoods, trip_types=trip_types, trip_statuses=trip_statuses, is_creator=is_creator, has_editing_permissions=has_editing_permissions)
 
 
 @bp.route("/trip/<int:trip_id>/meetup/create", methods=["GET", "POST"])
@@ -462,6 +483,41 @@ def leave_trip(trip_id):
 
     return redirect(url_for("main.trip", trip_id=trip_id))
 
+
+@bp.route("/finalize_trip/<int:trip_id>")
+@flask_login.login_required
+def finalize_trip(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip.status = "Done"
+    trip.is_open = False
+    db.session.commit()
+    flash("Trip finalized successfully!", "success")
+    return redirect(url_for("main.trip", trip_id=trip.id))
+
+@bp.route("/cancel_trip/<int:trip_id>")
+@flask_login.login_required
+def cancel_trip(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip.status = "Canceled"
+    db.session.commit()
+    flash("Trip canceled successfully!", "success")
+    return redirect(url_for("main.trip", trip_id=trip.id))
+
+@bp.route("/reopen_trip/<int:trip_id>")
+@flask_login.login_required
+def reopen_trip(trip_id):
+    trip = db.session.get(model.Trip, trip_id)
+    if not trip:
+        abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip.is_open = True
+    trip.status = "Planning"
+    db.session.commit()
+    flash("Trip reopened successfully!", "success")
+    return redirect(url_for("main.trip", trip_id=trip.id))
 
 
 @bp.route("/message", methods=["POST"])
