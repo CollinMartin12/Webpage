@@ -62,8 +62,8 @@
         <div class="trip-status">
             <label for="is_open">Trip Status:</label>
             <select id="is_open" name="is_open">
-                <option value= True {% if trip.is_open %}selected{% endif %}>Open</option>
-                <option value= False {% if not trip.is_open %} selected{% endif %}>Closed</option>
+                <option value= 'True' {% if trip.is_open %}selected{% endif %}>Open</option>
+                <option value= 'False' {% if not trip.is_open %} selected{% endif %}>Closed</option>
             </select>   
         </div>
 
