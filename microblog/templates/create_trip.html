@@ -3,97 +3,504 @@
 {% block content %}
 <div class="container">
     <h2>Create New Trip</h2>
-    <form class="Trip-form" action="{{ url_for('main.create_trip') }}" method="post" novalidate>
-        <div class="form-group">
-            <label for="departure_city_id">Departure City (Optional):</label>
-            <select class="form-control" id="departure_city_id" name="departure_city_id">
-                <option value="">Select departure city</option>
-                {% for city in cities %}
-                    <option value="{{ city.id }}">{{ city.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="departure_neighborhood_id">Departure Neighborhood (Optional):</label>
-            <select class="form-control" id="departure_neighborhood_id" name="departure_neighborhood_id">
-                <option value="">Select departure neighborhood</option>
-                {% for neighborhood in neighborhoods %}
-                    <option value="{{ neighborhood.id }}">{{ neighborhood.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <p>Please fill out the form below to create a new trip.</p>
+    <div class = "basic_info">
+        <form class="Trip-form" action="{{ url_for('main.create_trip') }}" method="post" novalidate>
+            
+            
+            <h3>Trip Basics</h3>
+            <p>Plan your food stops, mark what’s final and what’s still undecided, and choose who can join.</p>
+            <div> 
+                <label for="title">Trip Name:</label>
+                <input type="text" class="form-control" id="title" name="title" maxlength="100" required placeholder="Enter trip name">
+            </div>
 
-        <div class="form-group">
-            <label for="destination_city_id">Destination City:</label>
-            <select class="form-control" id="destination_city_id" name="destination_city_id" required>
-                <option value="">Select destination city</option>
-                {% for city in cities %}
-                    <option value="{{ city.id }}">{{ city.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="trip_statuses">Trip Decision Status:</label>
+                <select class="form-control" id="trip_statuses" name="trip_statuses" required>
+                    <option value="">Select trip decision status</option>
+                    {% for status in trip_statuses %}
+                        <option value="{{ status }}" {% if status == 'Just Ideas' %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="destination_neighborhood_id">Destination Neighborhood (Optional):</label>
-            <select class="form-control" id="destination_neighborhood_id" name="destination_neighborhood_id">
-                <option value="">Select destination neighborhood</option>
-                {% for neighborhood in neighborhoods %}
-                    <option value="{{ neighborhood.id }}">{{ neighborhood.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div>
+                <label>Date Type:</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="date_type" id="date_fixed" value="Fixed" required>
+                            <label class="form-check-label" for="date_fixed">Fixed</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="date_type" id="date_range" value="Range" required checked>
+                            <label class="form-check-label" for="date_range">Range</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="view-fixed-date" style="display: none;">
+                    <div class="form-group">
+                        <label for="definite_date">Date:</label>
+                        <input type="date" class="form-control" id="definite_date" name="definite_date">
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="trip_type_id">Trip Type:</label>
-            <select class="form-control" id="trip_type_id" name="trip_type_id">
-                <option value="">Select trip type</option>
-                {% for trip_type in trip_types %}
-                    <option value="{{ trip_type.id }}">{{ trip_type.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+                <div id="view-range-date" style="display: none;">
+                    <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date">
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea class="form-control" id="description" name="description" rows="4" maxlength="256" required placeholder="Describe your trip..."></textarea>
-        </div>
+            <!-- 4. Main Location (Departure) -->
+            <div class="form-group">
+                <h3>Main Location</h3>
+                <label for="departure_city_id">Departure City (Optional):</label>
+                <select class="form-control" id="departure_city_id" name="departure_city_id">
+                    <option value="">Select departure city</option>
+                    {% for city in cities %}
+                        <option value="{{ city.id }}">{{ city.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="restaurant_name">Restaurant Name (Optional):</label>
-            <input type="text" class="form-control" id="restaurant_name" name="restaurant_name" maxlength="256">
-        </div>
+            <!-- 5. Destination -->
+            <div>
+                <h3>Destination</h3>
+                <label>Choose your destination type:</label>
 
-        <div class="form-group">
-            <label for="definite_date">Date:</label>
-            <input type="date" class="form-control" id="definite_date" name="definite_date">
-        </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="destination_type" id="destination_fixed" value="Fixed" required checked>
+                        <label class="form-check-label" for="destination_fixed">Final</label>
+                    </div>
+                    <div class = "form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="destination_type" id="destination_open" value="Open" required>
+                        <label class="form-check-label" for="destination_open">Open Destination</label>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="budget">Budget ($):</label>
-            <input type="number" class="form-control" id="budget" name="budget" step="0.01" min="0">
-        </div>
+                <div id="final-destination-section" style="display: none;">
+                    <div class="form-group">
+                        <label for="destination_city_id">Final Destination City:</label>
+                        <select class="form-control" id="destination_city_id" name="destination_city_id">
+                            <option value="">Select final destination city</option>
+                            {% for city in cities %}
+                                <option value="{{ city.id }}">{{ city.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id="final-destination-open" style="display: none;">
+                    <div class="form-group">
+                        <label for="trip_preferences">Trip Preferences:</label>
+                        <input type="text" class="form-control" id="trip_preferences" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'">
+                    </div>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="picture">Picture URL (Optional):</label>
-            <input type="url" class="form-control" id="picture" name="picture" maxlength="512">
-        </div>
+            <!-- Trip Type - Always visible -->
+            <div class="form-group">
+                <label for="trip_type">Trip Type:</label>
+                <select class="form-control" id="trip_type" name="trip_type">
+                    <option value="">Select trip type</option>
+                    {% for trip_type in trip_types %}
+                        <option value="{{ trip_type }}">{{ trip_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="max_participants">Max Participants:</label>
-            <input type="number" class="form-control" id="max_participants" name="max_participants" min="1">
-        </div>
+            <!-- Food Details -->
+            <div class="trip_details">
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" maxlength="256" required placeholder="Friends trip focusing on tapas, bars, and a good time..."></textarea>
+                </div>
+            </div> 
+            <div>
+                <div>
+                    <div class="form-group">
+                        <label for="max_participants">Max Participants (Optional):</label>
+                        <input type="number" class="form-control" id="max_participants" name="max_participants" min="1" placeholder="Leave empty for unlimited">
+                    </div>
+                </div>
+                
+            </div>
+            <!-- Additional trip details based on planning status -->
+                
+                <div class="hidden" id="view-final" style="display: none;">
+                    <h3>Final Trip Details</h3>
+                    <div class="additional_info">
+                        <div class="form-group">
+                            <label for="restaurant_name">Restaurant Name:</label>
+                            <input type="text" class="form-control" id="restaurant_name" name="restaurant_name" maxlength="256">
+                        </div>
 
-        <div class="form-group">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_open" name="is_open" checked>
-                <label class="form-check-label" for="is_open">Trip is open for participants</label>
+                        <div class="form-group">
+                            <label for="budget">Budget ($):</label>
+                            <input type="number" class="form-control" id="budget" name="budget" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_open_final" name="is_open" checked>
+                                <label class="form-check-label" for="is_open_final">Trip is open for participants</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden" id="view-tentative" style="display: none;">
+                    <h3>Tentative Trip Details</h3>
+                    <div class="additional_info">
+                        <h3>Additional Information</h3>
+                        <div class="form-group">
+                            <label for="restaurant_name_tentative">Restaurant Name:</label>
+                            <input type="text" class="form-control" id="restaurant_name_tentative" name="restaurant_name" maxlength="256">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="budget_tentative">Budget ($):</label>
+                            <input type="number" class="form-control" id="budget_tentative" name="budget" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_open_tentative" name="is_open" checked>
+                                <label class="form-check-label" for="is_open_tentative">Trip is open for participants</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div class="hidden" id="view-to-decide" style="display: none;">
+                    <h3>To Decide Trip Details</h3>
+                    <div class="additional_info">
+                        <h3>Additional Information</h3>
+                        <div class="info-display">
+                            <p><strong>Restaurant Name:</strong> To be decided</p>
+                        </div>
+
+                        <div class="info-display">
+                            <p><strong>Budget:</strong> To be decided</p>
+                        </div>
+
+                        <div class="info-display">
+                            <p><strong>Trip Status:</strong> Open for participants (can be changed later)</p>
+                        </div>
+
+                        <div class="info-display">
+                            <p><em>These details will be finalized later through collaboration with participants.</em></p>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Food Stops Section -->
+<!-- Food Stops Section -->
+<section>
+    <div>
+        <div>
+            <h2>Food stops</h2>
+            <p>
+                Add each restaurant, bar, or food event. Mark whether it's final, tentative, or still to decide.
+            </p>
+        </div>
+    </div>
+
+    <div id="stopsContainer">
+        <!-- Stop Card Template -->
+        <div data-stop-index="0">
+
+            <div>
+                <div>
+                    <label>Stop name</label>
+                    <input
+                        type="text"
+                        name="stops[0][name]"
+                        maxlength="256"
+                        placeholder="Tapas at Bar X"
+                    />
+                </div>
+                <div>
+                    <label>Restaurant / place</label>
+                    <input
+                        type="text"
+                        name="stops[0][place]"
+                        maxlength="256"
+                        placeholder="Bar X"
+                    />
+                </div>
+            </div>
+
+            <!-- Date & Time -->
+            <div>
+                <div>
+                    <label>Date</label>
+                    <input
+                        type="date"
+                        name="stops[0][date]"
+                    />
+                </div>
+                <div>
+                    <label>Time</label>
+                    <input
+                        type="time"
+                        name="stops[0][time]"
+                    />
+                </div>
+            </div>
+
+            <!-- Address & Budget -->
+            <div>
+                <div>
+                    <label>Address / link</label>
+                    <input
+                        type="text"
+                        name="stops[0][address]"
+                        maxlength="512"
+                        placeholder="Address or Google Maps link"
+                    />
+                </div>
+                <div>
+                    <label>Budget per person</label>
+                    <div>
+                        <span>€</span>
+                        <input
+                            type="number"
+                            name="stops[0][budget_per_person]"
+                            step="0.01"
+                            min="0"
+                            placeholder="25.00"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label>Notes</label>
+                <textarea
+                    name="stops[0][notes]"
+                    maxlength="1000"
+                    rows="2"
+                    placeholder="Reservation reference, dietary restrictions, special requests..."
+                ></textarea>
+            </div>
+
+            <!-- Hidden order field -->
+            <input type="hidden" name="stops[0][order]" value="0" class="stop-order" />
+
+            <!-- Actions -->
+            <div>
+                <button type="button" class="remove-stop" style="display: none;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Remove stop
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Create Trip</button>
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+    <!-- Add Stop Button -->
+    <button type="button" id="addStopBtn">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Add another stop
+    </button>
+
+</section>
+
+<div>
+    <button type="submit">Create Trip</button>
+    <a href="{{ url_for('main.index') }}">Cancel</a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[name="planning_status"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+
+            document.getElementById('view-final').style.display = 'none';
+            document.getElementById('view-tentative').style.display = 'none';
+            document.getElementById('view-to-decide').style.display = 'none';
+            
+            if (this.value === 'Final') {
+                document.getElementById('view-final').style.display = 'block';
+            } else if (this.value === 'Tentative') {
+                document.getElementById('view-tentative').style.display = 'block';
+            } else if (this.value === 'To Decide') {
+                document.getElementById('view-to-decide').style.display = 'block';
+            }
+        });
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const specificSection = document.getElementById('specific-people-section');
+    const openSection = document.getElementById('open-attendance-section');
+    const soloSection = document.getElementById('solo-attendance-section');
+
+    function hideAll() {
+        if (specificSection) specificSection.style.display = 'none';
+        if (openSection) openSection.style.display = 'none';
+        if (soloSection) soloSection.style.display = 'none';
+    }
+
+    hideAll();
+
+    document.querySelectorAll('input[name="attendance_type"]').forEach(radio => {
+        radio.addEventListener('click', function() {
+            hideAll();
+
+            if (this.value === 'With Specific People') {
+                if (specificSection) specificSection.style.display = 'block';
+            } else if (this.value === 'Open for all') {  // Changed from 'Open' to 'Open for all'
+                if (openSection) openSection.style.display = 'block';
+            } else if (this.value === 'Going-Solo') {  // Changed from 'Solo' to 'Going-Solo'
+                if (soloSection) soloSection.style.display = 'block';
+            }
+        });
+    });
+});
+
+    
+document.addEventListener('DOMContentLoaded', function() {
+    let stopCount = 1;
+    
+    document.getElementById('addStopBtn').addEventListener('click', function() {
+        // Copy first stop
+        const template = document.querySelector('[data-stop-index="0"]');
+        const newStop = template.cloneNode(true);
+        
+        // Change index
+        newStop.setAttribute('data-stop-index', stopCount);
+        
+        newStop.innerHTML = newStop.innerHTML.replace(/stops\[0\]/g, `stops[${stopCount}]`);
+        
+        // Clear inputs
+        newStop.querySelectorAll('input, textarea').forEach(input => {
+            if (input.type !== 'radio') {
+                input.value = '';
+            } else {
+                input.checked = input.value === 'Just Ideas';
+            }
+        });
+        
+        // Add to page
+        document.getElementById('stopsContainer').appendChild(newStop);
+        stopCount++;
+        
+        // Update numbers
+        updateNumbers();
+    });
+    
+    // Remove stop
+    document.getElementById('stopsContainer').addEventListener('click', function(e) {
+        if (e.target.closest('.remove-stop')) {
+            e.target.closest('[data-stop-index]').remove();
+            updateNumbers();
+        }
+    });
+    
+    function updateNumbers() {
+        const stops = document.querySelectorAll('[data-stop-index]');
+        stops.forEach((stop, i) => {
+            stop.querySelector('.stop-number').textContent = `${i + 1}. Food stop`;
+            stop.querySelector('.stop-order').value = i;
+            stop.querySelector('.remove-stop').style.display = stops.length > 1 ? 'block' : 'none';
+        });
+    }
+    
+    updateNumbers();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dateFixed = document.getElementById('date_fixed');
+    const dateRange = document.getElementById('date_range');
+    const definiteDate = document.getElementById('definite_date');
+    const startDate = document.getElementById('start_date');
+    const endDate = document.getElementById('end_date');
+    
+    // Function to handle date type changes
+    function handleDateTypeChange(value) {
+        document.getElementById('view-fixed-date').style.display = 'none';
+        document.getElementById('view-range-date').style.display = 'none';
+        
+        // Remove all required attributes first
+        if (definiteDate) definiteDate.removeAttribute('required');
+        if (startDate) startDate.removeAttribute('required');
+        if (endDate) endDate.removeAttribute('required');
+        
+        if (value === 'Fixed') {
+            document.getElementById('view-fixed-date').style.display = 'block';
+            if (definiteDate) definiteDate.setAttribute('required', 'required');
+        } else if (value === 'Range') {
+            document.getElementById('view-range-date').style.display = 'block';
+            if (startDate) startDate.setAttribute('required', 'required');
+            if (endDate) endDate.setAttribute('required', 'required');
+        }
+    }
+    
+    // Show range date section by default since it's preselected
+    handleDateTypeChange('Range');
+    
+    document.querySelectorAll('input[name="date_type"]').forEach(radio => {
+        radio.addEventListener('click', function() {
+            handleDateTypeChange(this.value);
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const destinationCitySelect = document.getElementById('destination_city_id');
+    
+    // Function to handle destination type changes
+    function handleDestinationTypeChange(value) {
+        // Hide all destination sections
+        document.getElementById('final-destination-section').style.display = 'none';
+        document.getElementById('final-destination-list').style.display = 'none';
+        document.getElementById('final-destination-open').style.display = 'none';
+        
+        // Remove required attribute by default
+        if (destinationCitySelect) destinationCitySelect.removeAttribute('required');
+        
+        // Show the correct section
+        if (value === 'Fixed') {
+            document.getElementById('final-destination-section').style.display = 'block';
+            if (destinationCitySelect) destinationCitySelect.setAttribute('required', 'required');
+        } else if (value === 'Range') {
+            document.getElementById('final-destination-list').style.display = 'block';
+        } else if (value === 'Open') {
+            document.getElementById('final-destination-open').style.display = 'block';
+        }
+    }
+    
+    // Show final destination section by default since it's preselected
+    handleDestinationTypeChange('Fixed');
+    
+    document.querySelectorAll('input[name="destination_type"]').forEach(radio => {
+        radio.addEventListener('click', function() {
+            handleDestinationTypeChange(this.value);
+        });
+    });
+    
+    // Add form submission handler for debugging
+    const form = document.querySelector('.Trip-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitting with data:');
+            const formData = new FormData(form);
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

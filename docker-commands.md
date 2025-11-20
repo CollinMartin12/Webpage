@@ -36,6 +36,7 @@ docker compose restart mariadb
 # Reset database completely and repopulate
 docker compose down -v
 docker compose up -d
+docker exec -it microblog_web python -c "from microblog import create_app; from microblog.model import db; app = create_app(); app.app_context().push(); db.create_all(); print('Tables created!')"
 docker exec -it microblog_web python test_data.py
 
 # Stop and remove everything (containers, networks, volumes)

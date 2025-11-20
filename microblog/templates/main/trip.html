@@ -63,7 +63,7 @@
 
         <div class="trip-actions">
             <!-- Edit button - should disappear for EVERYONE if trip is finalized/canceled -->
-            {% if has_editing_permissions and trip.status != "Canceled" and trip.status != "Done" %}
+            {% if has_editing_permissions %}
                 <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}" 
                 class="btn btn--warning">
                     Edit Trip
@@ -143,6 +143,10 @@
                 onclick="return confirm('Are you sure you want to reopen this trip?')">
                     Reopen Trip
                 </a>
+            {% endif %}
+
+            {% if trip.is_open %}
+                <a href = "{{ url_for('main.cancel_trip', trip_id=trip.id) }}" class="btn btn-secondary">Close trip to new participants</a>
             {% endif %}
 
             <!-- Status messages for non-creators -->
