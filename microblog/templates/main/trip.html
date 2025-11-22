@@ -9,7 +9,7 @@
         <div>
            {% set trip = trip %}
           <h3 class="trip-details-title">
-              {{ trip.destination_city.name if trip.destination_city else "Unknown City" }} - {{ trip.trip_type.name if trip.trip_type else "Unknown Type" }}
+              {{ trip.destination_city.name if trip.destination_city else "Unknown City" }}  {{ trip.trip_type.name if trip.trip_type else "Unknown Type" }}
           </h3>
             <div class = "status">
                 {{ trip.status }}
@@ -45,6 +45,8 @@
                 <span>No participants yet</span>
             {% endif %}
         </div>
+
+
         <div class = "meetups_section">
             <h3>Meetups ({{ trip.meetups|length }})</h3>
             {% if trip.meetups | length > 0 %}
@@ -59,6 +61,36 @@
             {% else %}
                 <p>No meetups scheduled yet.</p>
             {% endif %}
+        </div>
+
+        <div class="stops_section">
+            <h3>Stops in the Way({{ trip.stops|length }})</h3>
+
+            {% if trip.stops|length > 0 %}
+                <ul>
+                    {% for stop in trip.stops %}
+                        <li>
+                            <strong>{{ stop.name }}</strong>
+                            {% if stop.place %}- {{ stop.place }}{% endif %}
+                            <br>
+                            {% if stop.date %}{{ stop.date }}{% endif %}
+                            {% if stop.time %}{{ stop.time.strftime("%H:%M") }}{% endif %}
+                            {% if stop.address %}
+                                <br>📍 {{ stop.address }}
+                            {% endif %}
+                            {% if stop.budget_per_person %}
+                                <br>Budget per person: €{{ stop.budget_per_person }}
+                            {% endif %}
+                            {% if stop.notes %}
+                                <p><strong>Nice to Know:  </strong>{{ stop.notes }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No food stops added yet.</p>
+            {% endif %}
+
         </div>
 
         <div class="trip-actions">

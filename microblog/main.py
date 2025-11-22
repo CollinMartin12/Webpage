@@ -165,7 +165,8 @@ def trip(trip_id):
         db.select(model.Trip)
         .options(
             selectinload(model.Trip.participants),
-            selectinload(model.Trip.comments).selectinload(model.TripComment.author)
+            selectinload(model.Trip.comments).selectinload(model.TripComment.author),
+            selectinload(model.Trip.stops)
         )
         .where(model.Trip.id == trip_id)
     ).scalar_one_or_none()

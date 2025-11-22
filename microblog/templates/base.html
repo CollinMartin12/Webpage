@@ -12,13 +12,13 @@
       <h1>Web Application Project Collin + Noa</h1>
       <div class ="nav-links">
           {% if current_user.is_authenticated %}
-        <a href="{{ url_for('main.home') }}" class="btn-home">Home</a>
-        <a href = " {{ url_for('main.index') }}" class="btn-trips">Trips</a>
-        <a href="{{ url_for('main.user_profile', user_id=current_user.id) }}" class="btn-profile">Profile</a>
-        <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
+        <a href="{{ url_for('main.home') }}" class="btn--primary">Home</a>
+        <a href = " {{ url_for('main.index') }}" class="btn--primary">Trips</a>
+        <a href="{{ url_for('main.user_profile', user_id=current_user.id) }}" class="btn--primary">Profile</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn--primary">Logout</a>
       {% else %}
-        <a href="{{ url_for('auth.signup') }}" class="btn-signup">Sign Up</a>
-        <a href="{{ url_for('auth.login') }}" class="btn btn--primary">Log In</a>
+        <a href="{{ url_for('auth.signup') }}" class="btn--primary">Sign Up</a>
+        <a href="{{ url_for('auth.login') }}" class="btn--primary">Log In</a>
       {% endif %}
       </div>
     </nav>

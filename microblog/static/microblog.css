@@ -1,7 +1,12 @@
 /* ===================== AUTH PAGES (scoped) ===================== */
 :root{
-  --brand:#3373A1;          /* primary */
-  --accent:#f97316;         /* warm foodie accent */
+  --main:#561F37;
+  --second:#F97316;
+    --third: #C97B3B;
+    --fourth: #dcdbdb;
+    --fifth:#2A2A2A;
+
+
   --ring: rgba(51,115,161,.25);
 }
 
@@ -15,8 +20,8 @@
   color: #fff;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid var(--brand);
-  background: linear-gradient(135deg, var(--brand), #2a5f85);
+  border: 1px solid var(--main);
+  background: linear-gradient(135deg, var(--main), var(--fourth));
   box-shadow: 0 4px 10px rgba(51,115,161,0.25);
   transition: all 0.15s ease;
 }
@@ -46,8 +51,8 @@
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--brand), #2a5f85);
-  border-color: var(--brand);
+  background: linear-gradient(135deg, var(--main), var(--fourth));
+  border-color: var(--main);
 }
 
 
@@ -76,7 +81,7 @@ body > header {
   align-items: center;
     font-family: fantasy;
   padding: 1rem 2rem;                    
-  background: #3373A1;                  
+  background: var(--main);
   color: #fff;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 } 
@@ -133,11 +138,11 @@ header h1 {
   display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--fourth), var(--main));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid #3373A1;
+  border: 1px solid var(--main);
   box-shadow: 0 4px 10px rgba(51,115,161,0.25);
   transition: all 0.15s ease;
 }
@@ -155,12 +160,12 @@ header h1 {
 display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--main), var(--third));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid #3373A1;
-  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
+  border: 1px solid var(--main);
+  box-shadow: 0 4px 10px rgba(80, 26, 37, 0.25);
   transition: all 0.15s ease;
 }
 .btn-login:hover {
@@ -176,7 +181,7 @@ display: inline-block;
 display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--main), var(--third));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -197,7 +202,7 @@ display: inline-block;
 display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--main), var(--third));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -219,7 +224,7 @@ display: inline-block;
 display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--main), var(--third));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -298,7 +303,7 @@ display: inline-block;
 }
 .auth input:hover{ background: #ffffff; }
 .auth input:focus{
-  border-color: var(--brand);
+  border-color: var(--main);
   box-shadow: 0 0 0 4px var(--ring); /* accessible focus halo */
 }
 
@@ -308,8 +313,8 @@ display: inline-block;
   width: 100%;
   padding: .7rem 1rem;
   border-radius: 14px;              /* <- rounded button */
-  border: 1px solid var(--brand);
-  background: linear-gradient(135deg, var(--brand), #2a5f85);
+  border: 1px solid var(--main);
+  background: linear-gradient(135deg, var(--main), var(--fifth));
   color: #fff; font-weight: 800;
   text-align: center; text-decoration: none;
   line-height: 1;
@@ -322,11 +327,11 @@ display: inline-block;
 
 .auth .signup-container p{
   margin-top: 12px;
-  color: #475569;
+  color: var(--fifth);
   text-align: center;
 }
 .auth .signup-container p a{
-  color: var(--brand);
+  color: var(--main);
   font-weight: 700;
   text-decoration: none;
 }
@@ -336,8 +341,8 @@ display: inline-block;
 @media (prefers-color-scheme: dark){
   .auth{
     background:
-      radial-gradient(900px 500px at 90% -10%, rgba(51,115,161,.28), transparent 60%),
-      radial-gradient(700px 600px at -10% 110%, rgba(249,115,22,.20), transparent 60%),
+      radial-gradient(900px 500px at 90% -10%, rgba(112, 22, 48, 0.28), transparent 60%),
+      radial-gradient(700px 600px at -10% 110%, rgba(75, 34, 8, 0.2), transparent 60%),
       #0b1220;
   }
   .auth::after{ opacity:.2; }
@@ -346,10 +351,10 @@ display: inline-block;
     border-color: #1f2937;
   }
   .auth .notification{
-    background: #0f243e; border-color:#173a63; color:#cfe6ff;
+    background: var(--fourth); border-color:var(--third); color: var(--second);
   }
   .auth input{
-    background:#0f172a; border-color:#334155; color:#e2e8f0;
+    background: #590d1f; border-color:#334155; color:#e2e8f0;
   }
   .auth input:hover{ background:#0b1220; }
   .auth .signup-container p{ color:#cbd5e1; }
@@ -362,7 +367,7 @@ display: inline-block;
 display: inline-block;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
+  background: linear-gradient(135deg, var(--main), var(--fifth));
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -414,7 +419,7 @@ display: inline-block;
     font-size: 1.1rem;
     margin-bottom: 6px;
     font-weight: 700;
-    color: #0b3a60;
+    color: var(--main);
 }
 
 .profile-value {
@@ -444,7 +449,7 @@ display: inline-block;
 
 .profile-form fieldset { border:1px dashed #e5e7eb; border-radius:8px; padding:.5rem; }
 .post-list { margin-top:1rem; text-align: center }
-.btn.btn--primary { background:#2563eb; color:#fff; border:none; border-radius:10px; padding:.55rem 1rem; align-self: center }
+
 
 .center-button {
     text-align: center;
@@ -527,9 +532,11 @@ display: inline-block;
 .trips-container {
   display: flex;
   flex-wrap: wrap;
+    justify-content: center;
   gap: 20px;
   width: min(1200px, 100%);
   margin: 20px auto;
+
 }
 
 .trips-container > .trip {
@@ -564,9 +571,20 @@ display: inline-block;
     text-align: center;
     padding: 20px;
     margin: 0;
-    background-color:#3373A1;
+    background-color:var(--main); radialGradient();
+    color: var(--fourth);
 
 }
+
+.trips-wrapper {
+    display: flex;
+    justify-content: center;   /* centers the trip cards horizontally */
+    align-items: flex-start;   /* optional: aligns tops of cards */
+    gap: 40px;                 /* spacing between cards */
+    flex-wrap: wrap;           /* allows cards to move to new rows on smaller screens */
+    padding: 20px 0;
+}
+
 
 .trip_header > div {
     border-radius: 24px;
@@ -591,6 +609,7 @@ display: inline-block;
     margin-top: auto;
     padding-top: 15px;
     border-top: 1px solid #eee;
+    text-align: center;
 }
 
 .trip_destination {
@@ -623,18 +642,7 @@ display: inline-block;
 }
 
 
-.btn-primary{
-display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
-  color: #fff;
-  font-weight: 700;
-  text-decoration: none;
-  border: 1px solid #3373A1;
-  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
-  transition: all 0.15s ease;
-}
+
 .btn-primary:hover {
   filter: brightness(0.97);
   transform: translateY(-1px);
@@ -644,10 +652,11 @@ display: inline-block;
   transform: translateY(1px);
 }
 
-.trips-container > * { outline: 1px  blue; border-radius: 80px;}
+.trips-container > * { outline: 1px  var(--main); border-radius: 80px;}
 
 .trip-details-container {
-    max-width: 900px;
+    max-width: 500px;
+    align-items: center;
     margin: 40px auto;
     padding: 30px;
     border-radius: 30px;
@@ -672,19 +681,28 @@ display: inline-block;
 
 
 .trip-meta {
-    background-color: #e3f1ff !important;   /* light blue */
-    border: 1px solid #c7dff7;
+    background-color: var(--fourth) !important;
+    border: 2px solid var(--main);
     border-radius: 18px;
-    padding: 15px 20px;
-    margin: 20px 0;
+    padding: 5px 5px;
+    margin: 5px 0;
     line-height: 1.6;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-    font-family: fantasy;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+
+    text-align: center;
+
+
 }
 
 .trip-meta p {
     margin: 6px 0 !important;
     font-size: 1.05rem;
+
+}
+
+.container_title{
+    justify-content: center;
+    text-align: center;
 }
 
 
@@ -701,7 +719,7 @@ display: inline-block;
     font-size: 1.6rem;
     margin-bottom: 10px;
     font-weight: bold;
-    background: #6b7280;
+    background: #ffffff;
 
 }
 .status {
@@ -713,7 +731,7 @@ display: inline-block;
     border-radius: 20px;
     font-weight: 600;
     color: white;
-    background: #0f243e;
+    background: var(--main);
 }
 
 
@@ -747,50 +765,12 @@ display: inline-block;
 }
 
 
-.btn-warning{
-display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
-  color: #fff;
-  font-weight: 700;
-  text-decoration: none;
-  border: 1px solid #3373A1;
-  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
-  transition: all 0.15s ease;
-}
-.btn-warning:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
-}
-
-.btn-warning:active {
-  transform: translateY(1px);
-}
 
 
 
 
-.btn-danger{
-display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #3373A1, #2a5f85);
-  color: #fff;
-  font-weight: 700;
-  text-decoration: none;
-  border: 1px solid #3373A1;
-  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
-  transition: all 0.15s ease;
-}
-.btn-danger:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
-}
 
-.btn-danger:active {
-  transform: translateY(1px);
-}
+
 
 
 
@@ -888,7 +868,7 @@ display: inline-block;
 /* Trip card container */
 .trip-card {
     position: relative;
-    background: #f7f7f7;
+    background: var(--fourth);
     padding: 15px;
     margin: 15px 0;
     border-radius: 16px;
@@ -911,7 +891,7 @@ display: inline-block;
     top: 0;
     right: 0;
 
-    background: #8CBFED;
+    background: var(--main);
     color: white;
     padding: 6px 12px;
     font-size: 0.8rem;
@@ -928,7 +908,7 @@ display: inline-block;
 }
 
 .trip-card a {
-    color: var(--brand);
+    color: var(--main);
     font-weight: bold;
     text-decoration: none;
     font-size: 1.1rem;
