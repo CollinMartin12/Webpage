@@ -6,7 +6,7 @@
         <div>Type: {{ trip.trip_type.name }}</div>
         <div><i>Posted at {{ trip.created_at }}</i></div>
         <div class="user_info">
-          <div>
+          <div class="creator_trip">
             <a href="{{ url_for('main.user_profile', user_id=trip.creator.id) }}"
                style="text-decoration:none; color:inherit;">
               {{ trip.creator.name }}
@@ -18,7 +18,10 @@
   </header>
 
   <section class="trip_info">
-    <span>{{ trip.description }}</span>
+      <div class="trip-info-box">
+          <p class="trip-description">{{ trip.description }}</p>
+      </div>
+
     <div class="image">
       <img src="{{ trip.picture if trip.picture else '' }}" alt="">
     </div>
@@ -42,9 +45,9 @@
       {% endif %}
     </div>
 
-    <span>Max Participants: {{ trip.max_participants }}</span>
-    <span>There are currently {{ trip.meetups|length }} meetups</span>
-    <span>Budget: {{ trip.budget }}</span>
+   <div class="info-field">Max Participants: {{ trip.max_participants }}</div>
+   <div class="info-field">Meetups: {{ trip.meetups|length }}</div>
+   <div class="info-field">Budget: {{ trip.budget }}</div>
 
     <div class="trip-actions">
       <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn-primary">View Details</a>

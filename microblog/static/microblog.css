@@ -1,6 +1,7 @@
 /* ===================== AUTH PAGES (scoped) ===================== */
 :root{
   --main:#561F37;
+    --mainlight:#FFF2F2;
   --second:#F97316;
     --third: #C97B3B;
     --fourth: #dcdbdb;
@@ -8,6 +9,7 @@
 
 
   --ring: rgba(51,115,161,.25);
+    --main-transparent: rgba(86, 31, 55, 0.5);
 }
 
 
@@ -91,6 +93,10 @@ header h1 {
   font-size: 1.4rem;
   align-content: center;
 
+}
+
+body {
+    font-family: Arial;
 }
 
 
@@ -545,7 +551,15 @@ display: inline-block;
     /* optional: prevents super-wide cards */
 }
 
+.user_info {
+    width: 100%;
+    text-align: center;
+}
 
+.creator_trip{
+    width: 100%;
+    text-align: center;
+}
 
 .trip {
     flex: 1 1 calc(33.333% - 20px); /* 3 columns on desktop */
@@ -604,6 +618,7 @@ display: inline-block;
 
 .trip_footer {
     display: flex;
+    width: 100%;
     flex-direction: column;
     gap: 5px;
     margin-top: auto;
@@ -618,6 +633,45 @@ display: inline-block;
   margin: 0;
   border-radius: 50px;
   font-family: fantasy;
+}
+
+.trip-info-box {
+    background-color: var(--mainlight);
+    border-radius: 16px;
+    margin: 12px 0;
+    width: 100%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.trip-description {
+    margin: 0;
+    line-height: 1.5;
+
+}
+
+.trip_info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* spacing between boxes */
+    padding: 20px;
+}
+
+.info-field {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.participants-display {
+    width: 100%;
+    display: flex;
+    justify-content: center;   /* centers horizontally */
+    align-items: center;       /* aligns vertically */
+    gap: 8px;                  /* adds space between label + avatars */
 }
 
 .trip_info img {

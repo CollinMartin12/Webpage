@@ -18,7 +18,7 @@
         <div class="trip-meta">
             <p><i> Posted at {{ trip.created_at }}</i></p>
             <p> {{trip.departure_city.name if trip.departure_city else "TBD"}} -> {{trip.destination_city.name if trip.destination_city else "TBD"}}</p>
-            <p><i> Budget: {{ trip.budget if trip.budget else "NA" }}</i></p>
+            <p><i> Budget : {{ trip.budget if trip.budget else "NA" }} </i></p>
             <p><i> Max Participants: {{ trip.max_participants if trip.max_participants else "Unlimited" }}</i></p>
         </div>
 
@@ -26,7 +26,10 @@
                 <img src="{{ trip.picture if trip.picture else '' }}">
             </div>
             <h3 class="trip-description-title">About this Trip:</h3>
-            <p class="trip-description">{{ trip.description }}</p>
+            <div class = "trip-description-box">
+                 <p class="trip-description">{{ trip.description }}</p>
+            </div>
+
 
         <div class="participants-display">
             <span>Participants: </span>
