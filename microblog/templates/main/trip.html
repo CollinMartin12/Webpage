@@ -1,234 +1,252 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class ="trip-details-container">
-    <main>
-        <header>
-            <h1>Trip Details</h1>
-        </header>
-        <div>
-           {% set trip = trip %}
-          <h3 class="trip-details-title">
-              {{ trip.destination_city.name if trip.destination_city else "Unknown City" }}  {{ trip.trip_type.name if trip.trip_type else "Unknown Type" }}
-          </h3>
-            <div class = "status">
-                {{ trip.status }}
-            </div>
-        </div>
-        <div class="trip-meta">
-            <p><i> Posted at {{ trip.created_at }}</i></p>
-            <p> {{trip.departure_city.name if trip.departure_city else "TBD"}} -> {{trip.destination_city.name if trip.destination_city else "TBD"}}</p>
-            <p><i> Budget : {{ trip.budget if trip.budget else "NA" }} </i></p>
-            <p><i> Max Participants: {{ trip.max_participants if trip.max_participants else "Unlimited" }}</i></p>
-        </div>
-
-            <div class="trip-details-image">
-                <img src="{{ trip.picture if trip.picture else '' }}">
-            </div>
-            <h3 class="trip-description-title">About this Trip:</h3>
-            <div class = "trip-description-box">
-                 <p class="trip-description">{{ trip.description }}</p>
-            </div>
-
-
-        <div class="participants-display">
-            <span>Participants: </span>
-            {% if trip.participants | length > 0 %}
-                <div class="participant-avatars">
-                    <div class="avatar-small">
-                        {% for participant in trip.participants[:4] %}
-                            <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}" alt="{{ participant.name }}">
-                        {% endfor %}
-                    </div>
-                    {% if trip.participants | length > 4 %}
-                        <span class= "participant-count">+{{ trip.participants | length - 4 }}</span>
+<main class="trip-container">
+    <div class="trip-content-wrapper">
+        <div class="top_left_trip">
+            <header class="trip-details-header">
+                <h1>Trip Details</h1>
+            </header>
+            
+            {% set trip = trip %}
+            
+            <div class="trip-header-row">
+                <h3 class="trip-details-title">
+                    {{ trip.title if trip.title else "Unknown Title" }} 
+                </h3>
+                <div class="trip-status">
+                    {% if trip.is_cancelled %}
+                        <span class="badge badge-danger">Cancelled</span>
+                    {% elif trip.is_finalized %}
+                        <span class="badge badge-success">Finalized</span>
+                    {% elif not trip.is_open %}
+                        <span class="badge badge-secondary">Closed to New Participants</span>
+                    {% else %}
+                        <span class="badge badge-primary">Open to New Participants</span>
                     {% endif %}
                 </div>
-            {% else %}
-                <span>No participants yet</span>
-            {% endif %}
+            </div>
+            
+            <div class="trip-small-details">
+                <p>Destination: {{trip.destination_city.name if trip.destination_city else "TBD"}} | </p>
+                <p>Budget: {{ trip.budget if trip.budget else "NA" }} | </p>
+                <p>Max Participants: {{ trip.max_participants if trip.max_participants else "Unlimited" }}</p>
+            </div>
         </div>
 
+        <div class="trip-picture">
+            <img src="{{ trip.image_file if trip.image_file else '/static/images/Tokyo.jpg' }}" alt="{{ trip.title }}">
+        </div>
+    </div>
 
-        <div class = "meetups_section">
-            <h3>Meetups ({{ trip.meetups|length }})</h3>
-            {% if trip.meetups | length > 0 %}
-                <ul>
-                    {% for meetup in trip.meetups %}
-                        <li>
-                            <strong>{{ meetup.title }}</strong> - {{ meetup.date }} at {{ meetup.location }}
-                            <p>{{ meetup.description }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No meetups scheduled yet.</p>
-            {% endif %}
+</div>
+
+    <div class="trip-info-row">
+        <div class="trip-description">
+            <h3>About Trip</h3>
+            <p>{{ trip.description if trip.description else "No description provided." }}</p>
         </div>
 
-        <div class="stops_section">
-            <h3>Stops in the Way({{ trip.stops|length }})</h3>
+        <div class="trip-stops">
+            <h3>Stops in the Way ({{ trip.stops|length }})</h3>
 
             {% if trip.stops|length > 0 %}
-                <ul>
-                    {% for stop in trip.stops %}
-                        <li>
-                            <strong>{{ stop.name }}</strong>
-                            {% if stop.place %}- {{ stop.place }}{% endif %}
-                            <br>
-                            {% if stop.date %}{{ stop.date }}{% endif %}
-                            {% if stop.time %}{{ stop.time.strftime("%H:%M") }}{% endif %}
-                            {% if stop.address %}
-                                <br>📍 {{ stop.address }}
-                            {% endif %}
-                            {% if stop.budget_per_person %}
-                                <br>Budget per person: €{{ stop.budget_per_person }}
-                            {% endif %}
-                            {% if stop.notes %}
-                                <p><strong>Nice to Know:  </strong>{{ stop.notes }}</p>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% for stop in trip.stops %}
+                    <div class="stop-item">
+                        <strong>{{ stop.name }}</strong>
+                        {% if stop.date or stop.time %}
+                            <span class="trip-stop-time">
+                                {% if stop.date %}{{ stop.date }}{% endif %}
+                                {% if stop.time %} {{ stop.time.strftime("%H:%M") }}{% endif %}
+                            </span>
+                        {% endif %}
+                        {% if stop.place %}<div>{{ stop.place }}</div>{% endif %}
+                        {% if stop.address %}<div><strong>Address:</strong> {{ stop.address }}</div>{% endif %}
+                        {% if stop.budget_per_person %}<div><strong>Budget:</strong> €{{ stop.budget_per_person }}</div>{% endif %}
+                        {% if stop.notes %}<div><strong>Notes:</strong> {{ stop.notes }}</div>{% endif %}
+                    </div>
+                {% endfor %}
             {% else %}
                 <p>No food stops added yet.</p>
             {% endif %}
-
         </div>
 
-        <div class="trip-actions">
-            <!-- Edit button - should disappear for EVERYONE if trip is finalized/canceled -->
-            {% if has_editing_permissions %}
-                <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}" 
-                class="btn btn--warning">
-                    Edit Trip
-                </a>
-            {% endif %}
-
-            {% if not is_creator %}
-                {% if is_participant %}
-                    <!-- Leave button - only for active trips -->
-                    {% if trip.is_open and trip.status != "Canceled" and trip.status != "Done" %}
-                        {% if not is_only_editor %}
-                            <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}"
-                            class="btn btn--danger"
-                            onclick="return confirm('Are you sure you want to leave this trip?')">
-                                Leave Trip
-                            </a>
-                        {% else %}
-                            <span class="text-muted" style="font-size: 0.9em;">
-                                You cannot leave because you are the only editor.
-                            </span>
-                        {% endif %}
-                    {% else %}
-                        <span class="text-muted" style="font-size: 0.9em;">
-                            {% if trip.status == "Canceled" %}
-                                This trip has been canceled.
-                            {% elif trip.status == "Done" %}
-                                This trip has been completed.
-                            {% else %}
-                                Trip is no longer active for changes. {{trip.is_open}}
+        <div class="column">
+            <div class="trip-meetups">
+                <h3>Meetups ({{ trip.meetups|length }})</h3>
+                {% if trip.meetups|length > 0 %}
+                    {% for meetup in trip.meetups %}
+                        <div class="meetup-item">
+                            <strong>{{ meetup.location }}</strong>
+                            {% if meetup.date or meetup.time %}
+                                <span class="trip-meetup-time">
+                                    {% if meetup.date %}{{ meetup.date }}{% endif %}
+                                    {% if meetup.time %} {{ meetup.time.strftime("%H:%M") }}{% endif %}
+                                </span>
                             {% endif %}
-                        </span>
-                    {% endif %}
+                            {% if meetup.city.name %}<div>{{ meetup.city.name }}</div>{% endif %}
+                            {% if meetup.content %}<div><strong>Notes:</strong> {{ meetup.content }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
                 {% else %}
-                    <!-- Join button - only for active trips -->
-                    {% if trip.is_open and trip.status != "Canceled" and trip.status != "Done" %}
-                        <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}"
-                        class="btn btn-success">
-                            Join Trip
-                        </a>
-                    {% else %}
-                        <span class="text-muted" style="font-size: 0.9em;">
-                            {% if trip.status == "Canceled" %}
-                                This trip has been canceled.
-                            {% elif trip.status == "Done" %}
-                                This trip has been completed.
-                            {% else %}
-                                This trip is closed to new participants.
-                            {% endif %}
-                        </span>
-                    {% endif %}
+                    <p>No meetups added yet.</p>
                 {% endif %}
-            {% else %}
-                <span class="badge badge-primary">You created this trip</span>
-            {% endif %}
+            </div>
 
-            <!-- Admin actions - Only show for creators/editors on Planning trips -->
-            {% if (has_editing_permissions or is_creator) and trip.status == "Planning" %}
-                {% if trip.is_open %}
-                    <a href="{{ url_for('main.finalize_trip', trip_id=trip.id) }}" 
-                    class="btn btn-success"
-                    onclick="return confirm('Are you sure you want to finalize this trip? This action cannot be undone.')">
-                        Finalize Trip
+            <div class="trip-comments">
+                <h3 class="trip-comments__title">Message Board</h3>
+
+                {% if (is_creator or is_participant) and not trip.is_cancelled and not trip.is_finalized %}
+                    <form class="trip-comments__form"
+                            method="post"
+                            action="{{ url_for('main.new_message', trip_id=trip.id) }}">
+                        <input type="hidden" name="trip_id" value="{{ trip.id }}">
+                        <textarea name="content" rows="3" maxlength="1000"
+                                placeholder="Write a message…" required></textarea>
+                        <div class="trip-comments__form-actions">
+                            <button type="submit">Post</button>
+                        </div>
+                    </form>
+                {% elif trip.is_cancelled or trip.is_finalized %}
+                    <p class="text-muted">
+                        <em>Message board is read-only for {{ "canceled" if trip.is_cancelled else "finalized" }} trips.</em>
+                    </p>
+                {% endif %}
+
+                {% if is_creator or is_participant %}
+                    <div class="trip-comments__list">
+                        {% for comment in trip.comments %}
+                            {% include 'messages.html' %}
+                        {% else %}
+                            <p class="trip-comments__empty">No messages yet.</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="trip-comments__empty">Join the trip to view and post messages.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="participants-column">
+            <div class="participants-display">
+                <h3>Participants</h3>
+                {% if participants | length > 0 %}
+                    <div class="participant-avatars">
+                        <div class="avatar-small">
+                            {% for participant in participants[:4] %}
+                                <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}" alt="{{ participant.name }}">
+                            {% endfor %}
+                        </div>
+                        {% if participants | length > 4 %}
+                            <span class="participant-count">+{{ participants | length - 4 }}</span>
+                        {% endif %}
+                    </div>
+                {% else %} 
+                    <span>No participants yet</span>
+                {% endif %}
+                
+                <details>
+                    <summary>View All ({{ participants|length }})</summary>
+                    <ul>
+                    {% for participant in participants %}
+                        <li><a href="{{ url_for('main.user_profile', user_id=participant.id) }}">{{ participant.name }}</a></li>
+                    {% else %}
+                        <li>No participants yet</li>
+                    {% endfor %}
+                    </ul>
+                </details>
+            </div>
+
+            <div class="trip-actions">
+                {% if has_editing_permissions and not trip.is_cancelled and not trip.is_finalized %}
+                    <a href="{{ url_for('main.edit_trip', trip_id=trip.id) }}" 
+                    class="btn btn--warning">
+                        Edit Trip
                     </a>
                 {% endif %}
 
-                <a href="{{ url_for('main.cancel_trip', trip_id=trip.id) }}" 
-                class="btn btn-danger"
-                onclick="return confirm('Are you sure you want to cancel this trip? This action cannot be undone.')">
-                    Cancel Trip
-                </a>
-            {% endif %}
-
-            <!-- Reopen button - Only for creators on canceled trips -->
-            {% if trip.status == "Canceled" and is_creator %}
-                <a href="{{ url_for('main.reopen_trip', trip_id=trip.id) }}" 
-                class="btn btn-warning"
-                onclick="return confirm('Are you sure you want to reopen this trip?')">
-                    Reopen Trip
-                </a>
-            {% endif %}
-
-            {% if trip.is_open %}
-                <a href = "{{ url_for('main.cancel_trip', trip_id=trip.id) }}" class="btn btn-secondary">Close trip to new participants</a>
-            {% endif %}
-
-            <!-- Status messages for non-creators -->
-            {% if trip.status == "Canceled" and not is_creator %}
-                <p class="text-muted">This trip has been <strong>canceled</strong>. Only the creator can reopen it.</p>
-            {% elif trip.status == "Done" %}
-                <p class="text-muted">This trip has been <strong>completed</strong>.</p>
-            {% endif %}
-        </div>
-
-        <!-- Message Board - Read-only for finalized/canceled trips -->
-        <section id="comments" class="trip-comments">
-            <h3 class="trip-comments__title">Message Board</h3>
-            
-            <!-- Only show form for participants on active trips -->
-            {% if (is_creator or is_participant) and trip.status != "Canceled" and trip.status != "Done" %}
-                <form class="trip-comments__form"
-                        method="post"
-                        action="{{ url_for('main.new_message', trip_id=trip.id) }}">
-                    <input type="hidden" name="trip_id" value="{{ trip.id }}">
-                    <textarea name="content" rows="3" maxlength="1000"
-                            placeholder="Write a message…" required></textarea>
-                    <div class="trip-comments__form-actions">
-                        <button type="submit">Post</button>
-                    </div>
-                </form>
-            {% elif trip.status == "Canceled" or trip.status == "Done" %}
-                <p class="text-muted">
-                    <em>Message board is read-only for {{ "canceled" if trip.status == "Canceled" else "completed" }} trips.</em>
-                </p>
-            {% endif %}
-
-            <!-- Show messages to participants -->
-            {% if is_creator or is_participant %}
-                <div class="trip-comments__list">
-                    {% for comment in trip.comments %}
-                        {% include 'messages.html' %}
+                {% if not is_creator %}
+                    {% if is_participant %}
+                        {% if not trip.is_cancelled and not trip.is_finalized %}
+                            {% if not is_only_editor %}
+                                <a href="{{ url_for('main.leave_trip', trip_id=trip.id) }}"
+                                class="btn btn--danger"
+                                onclick="return confirm('Are you sure you want to leave this trip?')">
+                                    Leave Trip
+                                </a>
+                            {% else %}
+                                <span class="text-muted" style="font-size: 0.9em;">
+                                    You cannot leave because you are the only editor.
+                                </span>
+                            {% endif %}
+                        {% endif %}
                     {% else %}
-                        <p class="trip-comments__empty">No messages yet.</p>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="trip-comments__empty">Join the trip to view and post messages.</p>
-            {% endif %}
-        </section>
-    </main>
+                        {% if trip.is_open and not trip.is_cancelled and not trip.is_finalized %}
+                            <a href="{{ url_for('main.join_trip', trip_id=trip.id) }}"
+                            class="btn btn-success">
+                                Join Trip
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <span class="badge badge-primary">You created this trip</span>
+                {% endif %}
 
+                {% if has_editing_permissions or is_creator %}
+                    {% if not trip.is_cancelled and not trip.is_finalized %}
+                        <a href="{{ url_for('main.finalize_trip', trip_id=trip.id) }}" 
+                        class="btn btn-success"
+                        onclick="return confirm('Are you sure you want to finalize this trip? This action cannot be undone.')">
+                            Finalize Trip
+                        </a>
+                        
+                        <a href="{{ url_for('main.cancel_trip', trip_id=trip.id) }}" 
+                        class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to cancel this trip? This action cannot be undone.')">
+                            Cancel Trip
+                        </a>
+                        
+                        {% if trip.is_open %}
+                            <a href="{{ url_for('main.close_trip', trip_id=trip.id) }}" 
+                            class="btn btn-secondary"
+                            onclick="return confirm('Close this trip to new participants?')">
+                                Close to New Participants
+                            </a>
+                        {% endif %}
+                        {% if not trip.is_open %}
+                            <a href="{{ url_for('main.reopen_trip', trip_id=trip.id) }}" 
+                            class="btn btn-secondary"
+                            onclick="return confirm('Reopen this trip to new participants?')">
+                                Reopen to New Participants
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
 
-</div>
+                {% if trip.is_cancelled and is_creator %}
+                    <a href="{{ url_for('main.reopen_trip', trip_id=trip.id) }}" 
+                    class="btn btn-warning"
+                    onclick="return confirm('Are you sure you want to reopen this trip?')">
+                        Reopen Trip
+                    </a>
+                {% endif %}
+
+                {% if trip.is_cancelled %}
+                    <p class="text-muted">
+                        This trip has been <strong>canceled</strong>. 
+                        {% if not is_creator %}Only the creator can reopen it.{% endif %}
+                    </p>
+                {% elif trip.is_finalized %}
+                    <p class="text-muted">This trip has been <strong>finalized</strong>.</p>
+                {% elif not trip.is_open and not is_creator and not is_participant %}
+                    <p class="text-muted">This trip is <strong>closed</strong> to new participants.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <p><i>Posted at {{ trip.created_at }}</i></p>
+
+</main>
+
 {% endblock %}

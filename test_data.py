@@ -213,13 +213,14 @@ def create_test_data():
                 budget=300.0,
                 description="Paella cooking class adventure",
                 restaurant_name=None,
-                picture=None,
+                picture="static/images/Tokyo.jpg",
                 trip_preferences="Traditional Spanish, Cooking classes",
                 max_participants=6,
                 is_open=True,
                 is_cancelled=False,
                 trip_type="lunch",
-                trip_state="active",
+                trip_state="active"
+
             )
 
             trip3 = Trip(
@@ -371,7 +372,6 @@ def create_test_data():
                 address="Plaça de les Olles, 8, Barcelona",
                 budget_per_person=35.0,
                 notes="Famous for seafood tapas. Arrive early!",
-                status="Just Ideas",
                 order=1,
             )
 
@@ -384,7 +384,6 @@ def create_test_data():
                 address="Carrer de l'Arc de Sant Ramon del Call, 11, Barcelona",
                 budget_per_person=5.0,
                 notes="Best coffee in the Gothic Quarter",
-                status="Rough Draft",
                 order=0,
             )
 
@@ -397,7 +396,6 @@ def create_test_data():
                 address="Carrer de la Pau, 25, Valencia",
                 budget_per_person=85.0,
                 notes="Includes market tour and lunch",
-                status="Final Plan",
                 order=1,
             )
 
@@ -410,7 +408,6 @@ def create_test_data():
                 address="Calle Lineros, Seville",
                 budget_per_person=20.0,
                 notes="Traditional tapas bar, cash only",
-                status="Just Ideas",
                 order=0,
             )
 

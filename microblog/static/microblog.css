@@ -4,7 +4,7 @@
     --mainlight:#FFF2F2;
   --second:#F97316;
     --third: #C97B3B;
-    --fourth: #dcdbdb;
+    --fourth: white;
     --fifth:#2A2A2A;
 
 
@@ -643,9 +643,6 @@ display: inline-block;
     box-shadow: 0 3px 8px rgba(0,0,0,0.05);
 }
 
-.trip-description {
-    margin: 0;
-    line-height: 1.5;
 
 }
 
@@ -709,7 +706,7 @@ display: inline-block;
 .trips-container > * { outline: 1px  var(--main); border-radius: 80px;}
 
 .trip-details-container {
-    max-width: 500px;
+    max-width: 800px;
     align-items: center;
     margin: 40px auto;
     padding: 30px;
@@ -734,6 +731,7 @@ display: inline-block;
 }
 
 
+
 .trip-meta {
     background-color: var(--fourth) !important;
     border: 2px solid var(--main);
@@ -743,7 +741,7 @@ display: inline-block;
     line-height: 1.6;
     box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 
-    text-align: center;
+    text-align: Left;
 
 
 }
@@ -768,13 +766,10 @@ display: inline-block;
     border-radius: 15px;
 }
 
-.trip-details-title {
-    text-align: center;
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-    font-weight: bold;
-    background: #ffffff;
-
+.trip-details-header h1{
+    text-align: left;
+    font-size: 3.0rem;
+    margin-bottom: 2px;
 }
 .status {
     text-align: center;
@@ -812,11 +807,6 @@ display: inline-block;
     font-weight: bold;
 }
 
-/* --- Description text --- */
-.trip-description {
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
 
 
 
@@ -939,23 +929,36 @@ display: inline-block;
     align-items: flex-start;
 }
 
-/* Status pill (top-right) */
-.trip-status {
-    position: absolute;
-    top: 0;
-    right: 0;
-
-    background: var(--main);
-    color: white;
-    padding: 6px 12px;
-    font-size: 0.8rem;
-    border-radius: 14px;
-    font-weight: 300;
-
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.trip-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
+
+.trip-details-title {
+    margin: 0;
+    font-size: 1.7rem;
+  }
+
+.trip-status {
+    margin-left: 0;
+}
+
+.trip-small-details {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    color: rgb(46, 40, 40);
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+.trip-small-details p {
+    margin: 0;
+}
+
+
 
 .trip-card:hover {
     transform: translateY(-3px);
@@ -972,15 +975,731 @@ display: inline-block;
     text-decoration: underline;
 }
 
-/* === Mobile responsiveness === */
-@media (max-width: 900px) {
-    .home-columns {
-        flex-direction: column;
-        align-items: center;
-    }
-    .home-column {
-        max-width: 100%;
-    }
+
+/* Create trip */
+
+/* --- Main Layout --- */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+/* --- Form General --- */
+.Trip-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.Trip-form h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    color: #333;
+}
+
+.Trip-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Input Fields */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding doesn't break width */
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* --- Radio Buttons & Checkboxes --- */
+.form-check-inline {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.form-check-input {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* --- Section Containers --- */
+.basic_info, 
+.trip_details, 
+.additional_info {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+/* --- Dynamic Status Info (To Decide/Tentative) --- */
+.info-display {
+    background-color: #e2e6ea;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #6c757d;
+}
+
+.info-display p {
+    margin: 0;
+}
+
+/* --- Food Stops Section --- */
+#stopsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Styling the individual stop card based on the data attribute */
+#stopsContainer > div[data-stop-index] {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Grid layout for inputs inside a stop card */
+#stopsContainer > div > div {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Make input columns equal width */
+#stopsContainer > div > div > div {
+    flex: 1;
+}
+
+/* Currency wrapper alignment */
+#stopsContainer div > span {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+/* --- Buttons --- */
+#addStopBtn {
+    width: 100%;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 2px dashed #ccc;
+    color: #555;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+#addStopBtn:hover {
+    background-color: #e9ecef;
+    border-color: #999;
+}
+
+.remove-stop {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.remove-stop:hover {
+    text-decoration: underline;
+}
+
+/* --- Submit & Cancel Actions --- */
+button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+a[href*="main.index"] {
+    color: #6c757d;
+    text-decoration: none;
+}
+
+a[href*="main.index"]:hover {
+    text-decoration: underline;
+}
+
+/* Utility */
+.hidden {
+    display: none;
+}
+
+/* ===================== COMPACT TRIP FORM ===================== */
+
+/* Main container adjustments */
+.container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+/* Two-column grid for basic info */
+.trip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.trip-grid-left,
+.trip-grid-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Compact form controls */
+.form-control-compact {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+
+.form-control-compact:focus {
+    border-color: var(--main);
+    outline: none;
+}
+
+.form-control-compact::placeholder {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* Compact form groups */
+.trip-grid .form-group,
+.stop-grid .form-group {
+    margin-bottom: 0;
+}
+
+.trip-grid label,
+.stop-grid label,
+.form-section label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+/* Radio groups more compact */
+.radio-group-compact {
+    display: flex;
+    gap: 15px;
+}
+
+.radio-group-compact .form-check-inline {
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+/* Form sections */
+.form-section {
+    background: #f9f9f9;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    margin: 0 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Stop cards */
+.stop-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.stop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stop-number {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--main);
+    font-weight: 600;
+}
+
+/* Stop grid - two columns */
+.stop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.stop-grid-left,
+.stop-grid-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Remove button */
+.remove-stop {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+}
+
+.remove-stop:hover {
+    text-decoration: underline;
+}
+
+/* Add stop button */
+.add-stop-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border: 2px dashed #ccc;
+    color: #555;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.add-stop-btn:hover {
+    background-color: #e9ecef;
+    border-color: #999;
+}
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+}
+
+.btn-cancel {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.btn-cancel:hover {
+    text-decoration: underline;
 }
 
 
+.flash-messages {
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #17a2b8;
+  color: #0c5460;
+}
+
+
+details {
+    margin: 1rem 0;
+}
+
+details summary {
+    cursor: pointer;
+    padding: 0.5rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+details summary:hover {
+    background-color: #e0e0e0;
+}
+
+details summary h3 {
+    display: inline;
+    margin: 0;
+}
+
+details[open] summary {
+    margin-bottom: 0.5rem;
+}
+
+.top_left_trip {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.7em;
+    font-weight: 600;
+    line-height: 1;
+    color: black;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+}
+
+.badge-danger {
+    background-color: #f5d3d6;
+}
+
+.badge-success {
+    background-color: #d4edda;
+}
+
+.badge-secondary {
+    background-color: #e2e3e5;
+}
+
+.badge-primary {
+    background-color: #d1ecf1;
+}
+
+.trip-details-image {
+  align-items: right;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.trip-description h3 {
+  margin-top: 0;
+}
+
+.trip-stop-time {
+  font-weight: 400;
+  color: var(--primary);
+  font-style: italic;
+  float: right;
+  font-size: 0.85rem;
+}
+
+.stop-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+  overflow: hidden; /* Clear floats */
+}
+
+.stop-item:last-child {
+  border-bottom: none;
+}
+
+.stop-item strong {
+  display: inline;
+  margin-bottom: 0;
+}
+
+.stop-item div {
+  font-size: 0.85rem;
+  margin: 0.15rem 0;
+  clear: both; /* Prevent other divs from wrapping around float */
+}
+
+.trip-meetups {
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  width: 350px;
+  height: 300px;
+  margin-left: 0;
+  padding: 0.5rem;
+  overflow-y: auto;
+  border: 1px solid grey; 
+}
+
+.trip-meetup-time {
+  font-weight: 400;
+  color: var(--primary);
+  font-style: italic;
+  float: right;
+  font-size: 0.85rem;
+}
+
+.meetup-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+  overflow: hidden; /* Clear floats */
+}
+
+.meetup-item:last-child {
+  border-bottom: none;
+}
+
+.meetup-item strong {
+  display: inline;
+  margin-bottom: 0;
+}
+
+.meetup-item div {
+  font-size: 0.85rem;
+  margin: 0.15rem 0;
+  clear: both; /* Prevent other divs from wrapping around float */
+}
+
+.trip-comments {
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  width: 350px;
+  height: 300px;
+  margin-left: 0;
+  padding: 0.5rem;
+  overflow-y: auto; 
+  border: 1px solid grey;
+}
+/* here is the comment form box. make it wide for the div and the post button to the side */
+.trip-comments__form {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.trip-comments__form textarea {
+  flex: 1;
+  min-width: 0;
+  max-width: 180px;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.92rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  resize: vertical;
+  height: 32px;
+}
+
+.trip-comments__form button {
+  white-space: nowrap;
+  background: var(--main);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+
+.trip-info-row {
+    display: flex !important;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.trip-description {
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  width: 350px;
+  height: 300px;
+  padding: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid grey;
+}
+
+.trip-stops {
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  width: 350px;
+  height: 635px;
+  padding: 0.5rem;
+  overflow-y: auto;
+  flex-shrink: 0;
+  border: 1px solid grey;
+}
+
+
+.participants-column {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.participants-display {
+    text-align: left;
+    font-size: .9rem;
+    line-height: 1.6;
+    border-radius: 0.375rem;
+    background-color: var(--fourth);
+    width: 300px;
+    padding: 0.5rem;
+    margin-bottom: 15px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    border: 1px solid grey;
+}
+
+.trip-actions {
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  width: 300px;
+  height: 200px;
+  padding: 0.5rem;
+  overflow-y: auto;
+  flex-shrink: 0;
+  border: 1px solid grey;
+}
+
+.trip-container {
+    background-color: #f0f4f6fa;
+    width: 100%;
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: sans-serif;
+    text-align: center;
+}
+.trip-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.top_left_trip {
+    flex: 1;
+    text-align: left;
+}
+
+.trip-picture {
+    width: 400px;
+    height: 200px;
+    flex-shrink: 0;
+    padding: 20px;
+}
+
+.trip-picture img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+    object-fit: cover;
+}

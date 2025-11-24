@@ -17,6 +17,8 @@ TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type")
 AttendanceType = Enum("Going-Solo", "With Specific People", "Open for all", name="attendance_type")
 Visibility = Enum("Open", "Friends-Only", name="visibility_type")
 TripStatus = Enum("Just Ideas", "Rough Draft", "Final Plan", name="trip_status")
+StopType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="stop_type")
+
 class Neighborhood(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(256))
@@ -109,23 +111,20 @@ class TripStop(db.Model):
     trip: Mapped["Trip"] = relationship(back_populates="stops")
     
     # Basic info
-    name: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)  # "Tapas at Bar X"
-    place: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)  # "Bar X"
+    name: Mapped[Optional[str]] = mapped_column(String(256), nullable=True) 
+    place: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)  
     
     # Timing
     date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
     time: Mapped[Optional[time_type]] = mapped_column(Time, nullable=True)
-    
     # Details
     address: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     budget_per_person: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-    
-    # Status for each stop reference enum above
-    status: Mapped[str] = mapped_column(TripStatus, default="Planning", index=True)
-    
+    stop_type: Mapped[Optional[str]] = mapped_column(StopType, nullable=True, index=True)
+    stop_status: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0, index=True)
-    
+    destination_type: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=datetime.datetime.utcnow)
 
 class Trip(db.Model):
@@ -172,6 +171,8 @@ class Trip(db.Model):
     max_participants: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     is_open: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_cancelled: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    is_finalized: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    # Additional state info
     trip_state: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     # Relations
     participants: Mapped[List["Trip_participants"]] = relationship(back_populates="trip", cascade="all, delete-orphan")
@@ -180,7 +181,6 @@ class Trip(db.Model):
     comments: Mapped[List["TripComment"]] = relationship(back_populates="trip", order_by="TripComment.created_at.desc()", cascade="all, delete-orphan")
     
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=datetime.datetime.utcnow, index=True)
-
 
     stops: Mapped[List["TripStop"]] = relationship(
         back_populates="trip", 
