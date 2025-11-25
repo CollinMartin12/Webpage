@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="profile">
-  <h1 class="header-profile">{{ user.name }}'s Profile - This is readonly(testing purpose)</h1>
+  <h1 class="header-profile">{{ user.name }}'s Profile</h1>
+
+
 
  <div class="profile-card">
     <div class="profile-vertical">
+
+          <div class="profile-field" style="text-align: center;">
+        <img
+          src="{{ user.profile_picture or url_for('static', filename='default-avatar.png') }}"
+          alt="{{ user.name }}'s profile photo"
+          class="profile-photo-preview"
+        >
+      </div>
 
         <div class="profile-field">
             <h4>Email</h4>

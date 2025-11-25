@@ -28,7 +28,7 @@
   </section>
 
   <div class="trip_footer">
-    <div class="participants-display">
+    <div class="participants-display-small">
       <span>Participants: </span>
       {% if trip.participants | length > 0 %}
         <div class="participant-avatars">
@@ -49,7 +49,7 @@
    <div class="info-field">Meetups: {{ trip.meetups|length }}</div>
    <div class="info-field">Budget: {{ trip.budget }}</div>
 
-    <div class="trip-actions">
+    <div class="trip-actions-btn">
       <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn-primary">View Details</a>
     </div>
   </div>

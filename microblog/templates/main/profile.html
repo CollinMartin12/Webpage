@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
     <section class ="profile">
-    <h1>{{ user.name }} 's Profile</h1>
+    <h1 class="header-profile">{{ user.name }} 's Profile</h1>
 
     <div class="profile-card">
         <div class="profile-vertical">
+            <div class="profile-field" style="text-align: center;">
+                <img
+                  src="{{ user.profile_picture or url_for('static', filename='default-avatar.png') }}"
+                  alt="{{ user.name }}'s profile photo"
+                  class="profile-photo-preview"
+                >
+              </div>
 
             <div class="profile-field">
                 <h4>Email</h4>
@@ -30,10 +37,13 @@
     </div>
 
 
-   <h2>Edit your details</h2>
-  <form class="profile-form"
+   <h2 class="edit-profile-header">Edit your details</h2>
+ <form class="profile-form"
         action="{{ url_for('main.edit_user', user_id=user.id) }}"
-        method="post" novalidate>
+        method="post"
+        enctype="multipart/form-data"
+        novalidate>
+
     <label>
       Email
       <input type="email" name="email" value="{{ user.email }}" required>
@@ -50,6 +60,11 @@
                 placeholder="Tell others about you">{{ user.description or "" }}</textarea>
     </label>
 
+      <label>
+      Profile Photo
+      <input type="file" name="profile_picture" accept="image/*">
+    </label>
+
     <fieldset>
       <legend>Change password (optional)</legend>
       <input type="password" name="password" placeholder="New password">
@@ -59,7 +74,7 @@
     <button class="btn btn--primary" type="submit">Save changes</button>
   </form>
 
-  <h2>Posts published by {{ user.name }}</h2>
+  <h2 class="edit-profile-header">Posts published by {{ user.name }}</h2>
   <ul class="post-list">
     {% for p in user.posts %}
       <li>

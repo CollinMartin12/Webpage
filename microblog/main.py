@@ -1,4 +1,4 @@
-from flask import redirect, url_for, request, flash
+from flask import redirect, url_for, request, flash, current_app
 from collections import UserList
 import datetime
 import dateutil.tz
@@ -106,6 +106,10 @@ def edit_profile(user_id):
     return render_template("main/profile.html", user=user)
 
 
+
+
+
+
 @bp.post("/user/<int:user_id>/edit")
 @flask_login.login_required
 def edit_user(user_id):
@@ -143,6 +147,34 @@ def edit_user(user_id):
     u.email = email
     u.name = name
     u.description = desc
+
+    file = request.files.get("profile_picture")
+    if file and file.filename:
+        from werkzeug.utils import secure_filename
+        import os
+
+        allowed_ext = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+        filename = secure_filename(file.filename)
+        _, ext = os.path.splitext(filename)
+        ext = ext.lower()
+
+        if ext not in allowed_ext:
+            flash("Invalid image type. Please upload JPG, PNG, GIF, or WEBP.", "error")
+            return redirect(url_for("main.edit_profile", user_id=user_id))
+
+        # Folder inside static/
+        upload_dir = os.path.join(
+            current_app.root_path, "static", "uploads", "profile_pictures"
+        )
+        os.makedirs(upload_dir, exist_ok=True)
+
+        # Unique filename based on user id
+        new_filename = f"user_{user_id}{ext}"
+        file_path = os.path.join(upload_dir, new_filename)
+        file.save(file_path)
+
+        # Save relative path in DB (for use in templates)
+        u.profile_picture = f"/static/uploads/profile_pictures/{new_filename}"
 
     # Commit with unique email handling
     try:
