@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Test Data Script for Microblog Application (with Trip_invitations)
-==================================================================
-This script inserts test data into all tables to verify the database schema is working correctly.
-Run this script after your database is initialized.
+Comprehensive Test Data Script for Trip Planning Application
+=============================================================
+This script creates a rich, realistic dataset with extensive test data
+for users, trips, stops, meetups, comments, and relationships.
 
 Usage:
-  python test_data.py
-  python test_data.py clear   # to wipe test data
+  python test_data.py              # Create test data
+  python test_data.py clear        # Clear all test data
+  python test_data.py stats        # Show database statistics
 """
 
-from datetime import date, time
+from datetime import date, time, datetime, timedelta
+import random
 
 from microblog import create_app
 from microblog.model import (
@@ -29,13 +31,404 @@ from microblog.model import (
 )
 
 
+# Rich test data definitions
+CITIES_DATA = [
+    "Madrid", "Barcelona", "Valencia", "Seville", "Bilbao",
+    "Granada", "Málaga", "Zaragoza", "Alicante", "Córdoba",
+    "Murcia", "San Sebastián", "Salamanca", "Toledo", "Santander"
+]
+
+NEIGHBORHOODS_DATA = {
+    "Madrid": ["Centro", "Malasaña", "Chueca", "Retiro", "Salamanca", "Chamberí"],
+    "Barcelona": ["Gràcia", "Eixample", "Ciutat Vella", "Born", "Raval", "Gótico"],
+    "Valencia": ["Ciutat Vella", "Ruzafa", "El Carmen", "Benimaclet", "Campanar"],
+    "Seville": ["Triana", "Alameda", "Nervión", "Macarena", "Santa Cruz"],
+    "San Sebastián": ["Parte Vieja", "Gros", "Centro", "Amara"]
+}
+
+USERS_DATA = [
+    {
+        "email": "elena.garcia@example.com",
+        "name": "Elena García",
+        "description": "Food photographer passionate about traditional Spanish cuisine. Love discovering hidden gems!",
+        "city": "Madrid",
+        "neighborhood": "Malasaña",
+        "interests": ["Food Photography", "Traditional Tapas", "Wine Pairing", "Culinary History"]
+    },
+    {
+        "email": "marcos.silva@example.com",
+        "name": "Marcos Silva",
+        "description": "Chef and restaurant consultant. Always on the hunt for the next Michelin star experience.",
+        "city": "Barcelona",
+        "neighborhood": "Eixample",
+        "interests": ["Fine Dining", "Molecular Gastronomy", "Catalan Cuisine", "Chef Networking"]
+    },
+    {
+        "email": "sofia.rodriguez@example.com",
+        "name": "Sofía Rodríguez",
+        "description": "Travel blogger writing about sustainable food tourism. Vegetarian exploring Spain.",
+        "city": "Valencia",
+        "neighborhood": "Ruzafa",
+        "interests": ["Vegetarian Cuisine", "Farm-to-Table", "Sustainable Tourism", "Food Blogging"]
+    },
+    {
+        "email": "diego.martin@example.com",
+        "name": "Diego Martín",
+        "description": "Local food tour guide in Seville. Expert on Andalusian tapas culture and sherry.",
+        "city": "Seville",
+        "neighborhood": "Triana",
+        "interests": ["Tapas Culture", "Sherry Tasting", "Local History", "Andalusian Cuisine"]
+    },
+    {
+        "email": "lucia.torres@example.com",
+        "name": "Lucía Torres",
+        "description": "Wine sommelier and educator. Organizing wine tours across Spanish wine regions.",
+        "city": "Barcelona",
+        "neighborhood": "Gràcia",
+        "interests": ["Wine Education", "Rioja Region", "Wine Tours", "Spanish Varietals"]
+    },
+    {
+        "email": "javier.lopez@example.com",
+        "name": "Javier López",
+        "description": "Pintxos enthusiast from San Sebastián. Former chef, now food culture researcher.",
+        "city": "San Sebastián",
+        "neighborhood": "Parte Vieja",
+        "interests": ["Pintxos", "Basque Cuisine", "Gastronomy Research", "Cider Houses"]
+    },
+    {
+        "email": "carmen.hernandez@example.com",
+        "name": "Carmen Hernández",
+        "description": "University student studying nutrition. Love brunch spots and healthy Mediterranean food.",
+        "city": "Madrid",
+        "neighborhood": "Chueca",
+        "interests": ["Healthy Eating", "Brunch Culture", "Mediterranean Diet", "Food Science"]
+    },
+    {
+        "email": "pablo.sanchez@example.com",
+        "name": "Pablo Sánchez",
+        "description": "Street food lover and market explorer. Always looking for authentic local experiences.",
+        "city": "Valencia",
+        "neighborhood": "El Carmen",
+        "interests": ["Street Food", "Local Markets", "Food History", "Budget Travel"]
+    },
+    {
+        "email": "andrea.moreno@example.com",
+        "name": "Andrea Moreno",
+        "description": "Pastry chef specializing in traditional Spanish desserts. Sweet tooth always active!",
+        "city": "Barcelona",
+        "neighborhood": "Born",
+        "interests": ["Pastry Arts", "Traditional Desserts", "Chocolate", "Bakery Culture"]
+    },
+    {
+        "email": "fernando.ruiz@example.com",
+        "name": "Fernando Ruiz",
+        "description": "Food journalist covering restaurant openings and culinary trends in Spain.",
+        "city": "Madrid",
+        "neighborhood": "Salamanca",
+        "interests": ["Food Journalism", "Restaurant Reviews", "Culinary Trends", "Chef Interviews"]
+    },
+    {
+        "email": "isabel.jimenez@example.com",
+        "name": "Isabel Jiménez",
+        "description": "Expat from Mexico exploring Spanish-Latin fusion. Cooking instructor on weekends.",
+        "city": "Seville",
+        "neighborhood": "Alameda",
+        "interests": ["Fusion Cuisine", "Mexican Food", "Cooking Classes", "Cultural Exchange"]
+    },
+    {
+        "email": "ramon.gil@example.com",
+        "name": "Ramón Gil",
+        "description": "Seafood fanatic living near the coast. Marine biologist who loves coastal gastronomy.",
+        "city": "San Sebastián",
+        "neighborhood": "Gros",
+        "interests": ["Seafood", "Coastal Cuisine", "Sustainable Fishing", "Marine Biology"]
+    },
+    {
+        "email": "natalia.castro@example.com",
+        "name": "Natalia Castro",
+        "description": "Organic food advocate and farmers market organizer. Passionate about local produce.",
+        "city": "Valencia",
+        "neighborhood": "Benimaclet",
+        "interests": ["Organic Food", "Farmers Markets", "Seasonal Cooking", "Zero Waste"]
+    },
+    {
+        "email": "miguel.ortiz@example.com",
+        "name": "Miguel Ortiz",
+        "description": "Beer enthusiast exploring craft breweries. Also love pairing beer with traditional food.",
+        "city": "Madrid",
+        "neighborhood": "Centro",
+        "interests": ["Craft Beer", "Beer Pairing", "Brewery Tours", "Pub Culture"]
+    },
+    {
+        "email": "laura.navarro@example.com",
+        "name": "Laura Navarro",
+        "description": "Culinary student documenting my journey through Spanish regional cuisines.",
+        "city": "Barcelona",
+        "neighborhood": "Raval",
+        "interests": ["Culinary School", "Regional Cuisine", "Recipe Development", "Food Styling"]
+    }
+]
+
+TRIPS_DATA = [
+    {
+        "title": "Ultimate Tapas Crawl - Old Madrid",
+        "description": "Authentic tapas experience through historic Madrid neighborhoods, visiting 6-7 classic tabernas",
+        "destination_city": "Madrid",
+        "possible_cities": "Madrid",
+        "start_date": date.today() + timedelta(days=15),
+        "end_date": date.today() + timedelta(days=15),
+        "budget": 45.0,
+        "restaurant_name": "Casa Lucio",
+        "trip_type": "dinner",
+        "trip_preferences": "Traditional Spanish, Local atmosphere, No tourists",
+        "max_participants": 8,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Valencia Paella Master Class",
+        "description": "Learn to cook authentic Valencian paella with a local chef, including market tour and wine pairing",
+        "destination_city": "Valencia",
+        "possible_cities": "Valencia, Albufera",
+        "start_date": date.today() + timedelta(days=22),
+        "end_date": date.today() + timedelta(days=22),
+        "budget": 95.0,
+        "restaurant_name": "La Pepica",
+        "trip_type": "lunch",
+        "trip_preferences": "Traditional paella, Rice dishes, Local wine",
+        "max_participants": 12,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "San Sebastián Pintxos Marathon",
+        "description": "Epic pintxos tour through the Parte Vieja, hitting the best bars with a local guide",
+        "destination_city": "San Sebastián",
+        "possible_cities": "San Sebastián",
+        "start_date": date.today() + timedelta(days=30),
+        "end_date": date.today() + timedelta(days=31),
+        "budget": 75.0,
+        "restaurant_name": "La Cuchara de San Telmo",
+        "trip_type": "dinner",
+        "trip_preferences": "Pintxos, Basque cuisine, Txakoli wine",
+        "max_participants": 10,
+        "is_open": True,
+        "attendance_type": "With Specific People",
+        "visibility": "Friends-Only",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Barcelona Brunch Club - Gothic Quarter",
+        "description": "Exploring the best brunch spots in the Gothic Quarter and Born neighborhoods",
+        "destination_city": "Barcelona",
+        "possible_cities": "Barcelona",
+        "start_date": date.today() + timedelta(days=8),
+        "end_date": date.today() + timedelta(days=8),
+        "budget": 28.0,
+        "trip_type": "Brunch",
+        "trip_preferences": "Specialty coffee, Avocado toast, Artisanal bakeries",
+        "max_participants": 6,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Rough Draft"
+    },
+    {
+        "title": "Michelin Star Tasting Experience - Basque Country",
+        "description": "Three-day culinary journey visiting Michelin-starred restaurants in San Sebastián and Bilbao",
+        "destination_city": "San Sebastián",
+        "possible_cities": "San Sebastián, Bilbao, Getaria",
+        "start_date": date.today() + timedelta(days=45),
+        "end_date": date.today() + timedelta(days=47),
+        "budget": 450.0,
+        "restaurant_name": "Arzak",
+        "trip_type": "dinner",
+        "trip_preferences": "Fine dining, Tasting menus, Wine pairing, Modern Basque",
+        "max_participants": 4,
+        "is_open": True,
+        "attendance_type": "With Specific People",
+        "visibility": "Friends-Only",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Seville Flamenco & Food Night",
+        "description": "Traditional Andalusian dinner followed by authentic flamenco show in Triana",
+        "destination_city": "Seville",
+        "possible_cities": "Seville",
+        "start_date": date.today() + timedelta(days=18),
+        "end_date": date.today() + timedelta(days=18),
+        "budget": 65.0,
+        "restaurant_name": "Abantal",
+        "trip_type": "dinner",
+        "trip_preferences": "Andalusian cuisine, Flamenco culture, Sherry wine",
+        "max_participants": 12,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Wine & Cheese Pairing Workshop",
+        "description": "Intimate workshop exploring Spanish cheeses with perfect wine pairings, led by a sommelier",
+        "destination_city": "Madrid",
+        "possible_cities": "Madrid",
+        "start_date": date.today() + timedelta(days=12),
+        "end_date": date.today() + timedelta(days=12),
+        "budget": 55.0,
+        "trip_type": "Brunch",
+        "trip_preferences": "Wine education, Artisan cheese, Small groups",
+        "max_participants": 8,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Valencia Market to Table Experience",
+        "description": "Morning at Mercado Central followed by cooking fresh ingredients at a local chef's home",
+        "destination_city": "Valencia",
+        "possible_cities": "Valencia",
+        "start_date": date.today() + timedelta(days=25),
+        "end_date": date.today() + timedelta(days=25),
+        "budget": 70.0,
+        "restaurant_name": "Central Market",
+        "trip_type": "lunch",
+        "trip_preferences": "Fresh produce, Home cooking, Sustainable food",
+        "max_participants": 6,
+        "is_open": True,
+        "attendance_type": "With Specific People",
+        "visibility": "Friends-Only",
+        "trip_state": "Rough Draft"
+    },
+    {
+        "title": "Barcelona Chocolate & Pastry Tour",
+        "description": "Sweet afternoon exploring historic chocolate shops and modern patisseries in Barcelona",
+        "destination_city": "Barcelona",
+        "possible_cities": "Barcelona",
+        "start_date": date.today() + timedelta(days=10),
+        "end_date": date.today() + timedelta(days=10),
+        "budget": 35.0,
+        "trip_type": "Brunch",
+        "trip_preferences": "Desserts, Chocolate, Pastries, Coffee",
+        "max_participants": 10,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Seafood Extravaganza - Galician Coast",
+        "description": "Fresh seafood feast exploring coastal restaurants and fishing villages near Santander",
+        "destination_city": "Santander",
+        "possible_cities": "Santander, Castro Urdiales",
+        "start_date": date.today() + timedelta(days=35),
+        "end_date": date.today() + timedelta(days=36),
+        "budget": 85.0,
+        "trip_type": "lunch",
+        "trip_preferences": "Fresh fish, Shellfish, Coastal views, Albariño wine",
+        "max_participants": 8,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Just Ideas"
+    },
+    {
+        "title": "Madrid Street Food Festival",
+        "description": "Exploring food trucks and street vendors at the monthly Madrid food market",
+        "destination_city": "Madrid",
+        "possible_cities": "Madrid",
+        "start_date": date.today() + timedelta(days=5),
+        "end_date": date.today() + timedelta(days=5),
+        "budget": 25.0,
+        "trip_type": "lunch",
+        "trip_preferences": "Street food, International fusion, Budget-friendly",
+        "max_participants": 15,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Traditional Andalusian Breakfast Tour",
+        "description": "Morning tour of Seville's best breakfast spots featuring churros, tostadas, and coffee",
+        "destination_city": "Seville",
+        "possible_cities": "Seville",
+        "start_date": date.today() + timedelta(days=14),
+        "end_date": date.today() + timedelta(days=14),
+        "budget": 18.0,
+        "trip_type": "Breakfast",
+        "trip_preferences": "Traditional breakfast, Coffee culture, Local bakeries",
+        "max_participants": 8,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Vegan Tapas Innovation Night",
+        "description": "Discovering Barcelona's innovative vegan tapas scene in Raval and Gràcia",
+        "destination_city": "Barcelona",
+        "possible_cities": "Barcelona",
+        "start_date": date.today() + timedelta(days=20),
+        "end_date": date.today() + timedelta(days=20),
+        "budget": 40.0,
+        "trip_type": "dinner",
+        "trip_preferences": "Vegan, Plant-based, Innovative cuisine, Sustainable",
+        "max_participants": 6,
+        "is_open": True,
+        "attendance_type": "With Specific People",
+        "visibility": "Friends-Only",
+        "trip_state": "Rough Draft"
+    },
+    {
+        "title": "Craft Beer & Pintxos Pairing",
+        "description": "Exploring Madrid's craft beer scene with perfect pintxos pairings at each stop",
+        "destination_city": "Madrid",
+        "possible_cities": "Madrid",
+        "start_date": date.today() + timedelta(days=28),
+        "end_date": date.today() + timedelta(days=28),
+        "budget": 42.0,
+        "trip_type": "dinner",
+        "trip_preferences": "Craft beer, Beer pairing, Casual atmosphere",
+        "max_participants": 10,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Final Plan"
+    },
+    {
+        "title": "Cordoba Culinary Heritage Tour",
+        "description": "Day trip exploring Cordoba's Jewish quarter with traditional Sephardic and Moorish cuisine",
+        "destination_city": "Córdoba",
+        "possible_cities": "Córdoba",
+        "start_date": date.today() + timedelta(days=40),
+        "end_date": date.today() + timedelta(days=40),
+        "budget": 60.0,
+        "trip_type": "lunch",
+        "trip_preferences": "Historical cuisine, Cultural heritage, Walking tour",
+        "max_participants": 12,
+        "is_open": True,
+        "attendance_type": "Open for all",
+        "visibility": "Open",
+        "trip_state": "Just Ideas"
+    }
+]
+
+
 def create_test_data():
+    """Create comprehensive test data for the trip planning application"""
     app = create_app()
     with app.app_context():
-        print("🧪 Creating test data...")
+        print("=" * 70)
+        print("🚀 COMPREHENSIVE TEST DATA CREATION")
+        print("=" * 70)
         
-        # First, clear any existing test data to avoid duplicates
-        print("🧹 Clearing existing data first...")
+        # Clear existing data first
+        print("\n🧹 Clearing existing data...")
         try:
             TripComment.query.delete()
             Meetups.query.delete()
@@ -49,421 +442,383 @@ def create_test_data():
             Neighborhood.query.delete()
             City.query.delete()
             db.session.commit()
-            print("✅ Cleared existing data")
+            print("   ✅ Cleared existing data")
         except Exception as e:
-            print(f"⚠️  Note: Error clearing data (probably first run): {e}")
+            print(f"   ⚠️  Note: {e}")
             db.session.rollback()
 
         try:
-            # 1. Create Cities (check for existing first)
-            print("📍 Creating cities...")
-            city_names = ["Madrid", "Barcelona", "Valencia", "Seville", "Bilbao"]
+            # 1. Create Cities
+            print("\n📍 Creating cities...")
             cities = {}
-            
-            for city_name in city_names:
-                existing_city = City.query.filter_by(name=city_name).first()
-                if existing_city:
-                    cities[city_name.lower()] = existing_city
-                    print(f"   City '{city_name}' already exists")
-                else:
-                    new_city = City(name=city_name)
-                    db.session.add(new_city)
-                    db.session.flush()  # Get the ID without committing
-                    cities[city_name.lower()] = new_city
-                    print(f"   Created city '{city_name}'")
-            
+            for city_name in CITIES_DATA:
+                city = City(name=city_name)
+                db.session.add(city)
+                db.session.flush()
+                cities[city_name] = city
+                print(f"   ✓ {city_name}")
             db.session.commit()
-            print(f"✅ Total cities in database: {City.query.count()}")
-            
-            # Create references to cities for later use
-            madrid = cities['madrid']
-            barcelona = cities['barcelona']
-            valencia = cities['valencia']
-            seville = cities['seville']
-            bilbao = cities['bilbao']
+            print(f"   ✅ Created {len(cities)} cities")
 
-            # 2. Create Neighborhoods (check for existing first)
-            print("🏘️ Creating neighborhoods...")
-            neighborhood_names = ["Centro", "Malasaña", "Chueca", "Gràcia", "Eixample", "Ciutat Vella"]
+            # 2. Create Neighborhoods
+            print("\n🏘️  Creating neighborhoods...")
             neighborhoods = {}
-            
-            for neighborhood_name in neighborhood_names:
-                existing_neighborhood = Neighborhood.query.filter_by(name=neighborhood_name).first()
-                if existing_neighborhood:
-                    neighborhoods[neighborhood_name.lower().replace('ñ', 'n').replace('à', 'a')] = existing_neighborhood
-                    print(f"   Neighborhood '{neighborhood_name}' already exists")
-                else:
-                    new_neighborhood = Neighborhood(name=neighborhood_name)
-                    db.session.add(new_neighborhood)
-                    db.session.flush()  # Get the ID without committing
-                    neighborhoods[neighborhood_name.lower().replace('ñ', 'n').replace('à', 'a')] = new_neighborhood
-                    print(f"   Created neighborhood '{neighborhood_name}'")
-            
+            neighborhood_count = 0
+            for city_name, neighborhood_list in NEIGHBORHOODS_DATA.items():
+                for neighborhood_name in neighborhood_list:
+                    neighborhood = Neighborhood(name=neighborhood_name)
+                    db.session.add(neighborhood)
+                    db.session.flush()
+                    neighborhoods[f"{city_name}-{neighborhood_name}"] = neighborhood
+                    neighborhood_count += 1
+                    print(f"   ✓ {neighborhood_name} ({city_name})")
             db.session.commit()
-            print(f"✅ Total neighborhoods in database: {Neighborhood.query.count()}")
-            
-            # Create references to neighborhoods for later use
-            centro = neighborhoods['centro']
-            malasana = neighborhoods['malasana']
-            chueca = neighborhoods['chueca']
-            gracia = neighborhoods['gracia']
-            eixample = neighborhoods['eixample']
-            ciutat_vella = neighborhoods['ciutat vella']
+            print(f"   ✅ Created {neighborhood_count} neighborhoods")
 
-            # 3. Create Users (check for existing first)
-            print("👥 Creating users...")
-            user_data = [
-                ("alice@example.com", "Alice Johnson", "hashed_password_123", "Food lover from Madrid", madrid.id, centro.id, None),
-                ("bob@example.com", "Bob Martinez", "hashed_password_456", "Chef exploring Spanish cuisine", barcelona.id, gracia.id, "/static/images/bob_profile.jpg"),
-                ("carol@example.com", "Carol Smith", "hashed_password_789", "Travel blogger and foodie", valencia.id, None, None),
-                ("david@example.com", "David Rodriguez", "hashed_password_101", "Local food guide", None, None, "/static/images/david_profile.jpg"),
-            ]
-            
+            # 3. Create Users
+            print("\n👥 Creating users...")
             users = []
-            for email, name, password, description, city_id, neighborhood_id, profile_picture in user_data:
-                existing_user = User.query.filter_by(email=email).first()
-                if existing_user:
-                    users.append(existing_user)
-                    print(f"   User '{email}' already exists")
-                else:
-                    new_user = User(
-                        email=email,
-                        name=name,
-                        password=password,
-                        description=description,
-                        city_id=city_id,
-                        neighborhood_id=neighborhood_id,
-                        profile_picture=profile_picture,
-                    )
-                    db.session.add(new_user)
-                    db.session.flush()  # Get the ID without committing
-                    users.append(new_user)
-                    print(f"   Created user '{email}'")
-            
+            for user_data in USERS_DATA:
+                city = cities.get(user_data["city"])
+                neighborhood_key = f"{user_data['city']}-{user_data.get('neighborhood', '')}"
+                neighborhood = neighborhoods.get(neighborhood_key)
+                
+                user = User(
+                    email=user_data["email"],
+                    name=user_data["name"],
+                    password="hashed_password_" + user_data["name"].replace(" ", "_").lower(),
+                    description=user_data["description"],
+                    city_id=city.id if city else None,
+                    neighborhood_id=neighborhood.id if neighborhood else None,
+                    profile_picture=f"/static/images/users/{user_data['name'].replace(' ', '_').lower()}.jpg"
+                )
+                db.session.add(user)
+                db.session.flush()
+                users.append(user)
+                print(f"   ✓ {user_data['name']} ({user_data['city']})")
             db.session.commit()
-            print(f"✅ Total users in database: {User.query.count()}")
-            
-            # Create references to users for later use
-            user1, user2, user3, user4 = users
+            print(f"   ✅ Created {len(users)} users")
 
             # 4. Create Interests
-            print("💭 Creating interests...")
-            interest1 = Interest(user_id=user1.id, interest="Italian cuisine")
-            interest2 = Interest(user_id=user1.id, interest="Wine tasting")
-            interest3 = Interest(user_id=user2.id, interest="Street food")
-            interest4 = Interest(user_id=user3.id, interest="Vegetarian food")
-            interest5 = Interest(user_id=user4.id, interest="Michelin starred restaurants")
-
-            db.session.add_all(
-                [interest1, interest2, interest3, interest4, interest5]
-            )
+            print("\n💭 Creating interests...")
+            interest_count = 0
+            for i, user_data in enumerate(USERS_DATA):
+                user = users[i]
+                for interest_text in user_data.get("interests", []):
+                    interest = Interest(user_id=user.id, interest=interest_text)
+                    db.session.add(interest)
+                    interest_count += 1
             db.session.commit()
-            print(f"✅ Created {Interest.query.count()} interests")
+            print(f"   ✅ Created {interest_count} interests")
 
-            # 5. Create Following relationships
-            print("👤 Creating following relationships...")
-            follow1 = FollowingAssociation(follower_id=user1.id, followed_id=user2.id)
-            follow2 = FollowingAssociation(follower_id=user1.id, followed_id=user3.id)
-            follow3 = FollowingAssociation(follower_id=user2.id, followed_id=user1.id)
-            follow4 = FollowingAssociation(follower_id=user3.id, followed_id=user4.id)
-
-            db.session.add_all([follow1, follow2, follow3, follow4])
+            # 5. Create Following Relationships
+            print("\n👤 Creating following relationships...")
+            follows = []
+            for i, user in enumerate(users):
+                # Each user follows 3-7 random other users
+                num_follows = random.randint(3, 7)
+                potential_follows = [u for u in users if u.id != user.id]
+                selected_follows = random.sample(potential_follows, min(num_follows, len(potential_follows)))
+                
+                for followed in selected_follows:
+                    follow = FollowingAssociation(
+                        follower_id=user.id,
+                        followed_id=followed.id
+                    )
+                    db.session.add(follow)
+                    follows.append(follow)
             db.session.commit()
-            print(
-                f"✅ Created {FollowingAssociation.query.count()} following relationships"
-            )
+            print(f"   ✅ Created {len(follows)} following relationships")
 
-            # 6. Create Trips (matching new Trip model)
-            print("✈️ Creating trips...")
-            trip1 = Trip(
-                title="Barcelona Food Adventure",
-                creator_id=user1.id,
-                destination_city_id=barcelona.id,
-                possible_cities="Barcelona, Girona",
-                # timing
-                start_date=date(2025, 12, 13),
-                end_date=date(2025, 12, 16),
-                definite_date=date(2025, 12, 15),
-                attendance_type="Open for all",
-                visibility="Open",
-                # details
-                budget=500.0,
-                description="Weekend food tour in Barcelona",
-                restaurant_name="Cal Pep",
-                picture="/static/images/barcelona-food-place.jpeg",
-                trip_preferences="Seafood, Local cuisine",
-                # capacity
-                max_participants=4,
-                is_open=True,
-                is_cancelled=False,
-                trip_type="Brunch",
-                trip_state="active",
-            )
-
-            trip2 = Trip(
-                title="Valencia Paella Experience",
-                creator_id=user2.id,
-                destination_city_id=valencia.id,
-                possible_cities="Valencia",
-                start_date=date(2025, 11, 19),
-                end_date=date(2025, 11, 21),
-                definite_date=date(2025, 11, 20),
-                attendance_type="Open for all",
-                visibility="Open",
-                budget=300.0,
-                description="Paella cooking class adventure",
-                restaurant_name=None,
-                picture="static/images/Tokyo.jpg",
-                trip_preferences="Traditional Spanish, Cooking classes",
-                max_participants=6,
-                is_open=True,
-                is_cancelled=False,
-                trip_type="lunch",
-                trip_state="active"
-
-            )
-
-            trip3 = Trip(
-                title="Seville Tapas Tour",
-                creator_id=user3.id,
-                destination_city_id=seville.id,
-                possible_cities="Seville, Cordoba, Granada",
-                start_date=None,
-                end_date=None,
-                definite_date=None,  # Testing flexible dates
-                attendance_type="Open for all",
-                visibility="Open",
-                budget=800.0,
-                description="Tapas crawl through historic Seville",
-                restaurant_name=None,
-                picture=None,
-                trip_preferences="Tapas, Wine bars, Local spots",
-                max_participants=8,
-                is_open=True,
-                is_cancelled=False,
-                trip_type="dinner",
-                trip_state="planning",
-            )
-
-            db.session.add_all([trip1, trip2, trip3])
+            # 6. Create Trips
+            print("\n✈️  Creating trips...")
+            trips = []
+            for i, trip_data in enumerate(TRIPS_DATA):
+                creator = users[i % len(users)]
+                dest_city = cities.get(trip_data["destination_city"])
+                
+                trip = Trip(
+                    title=trip_data["title"],
+                    creator_id=creator.id,
+                    destination_city_id=dest_city.id if dest_city else None,
+                    possible_cities=trip_data.get("possible_cities"),
+                    start_date=trip_data.get("start_date"),
+                    end_date=trip_data.get("end_date"),
+                    budget=trip_data.get("budget"),
+                    description=trip_data["description"],
+                    restaurant_name=trip_data.get("restaurant_name"),
+                    picture=f"/static/images/trips/trip_{i+1}.jpg",
+                    trip_type=trip_data.get("trip_type"),
+                    trip_preferences=trip_data.get("trip_preferences"),
+                    max_participants=trip_data.get("max_participants"),
+                    is_open=trip_data.get("is_open", True),
+                    attendance_type=trip_data.get("attendance_type", "Open for all"),
+                    visibility=trip_data.get("visibility", "Open"),
+                    trip_state=trip_data.get("trip_state", "Final Plan")
+                )
+                db.session.add(trip)
+                db.session.flush()
+                trips.append(trip)
+                print(f"   ✓ {trip_data['title']}")
             db.session.commit()
-            print(f"✅ Created {Trip.query.count()} trips")
+            print(f"   ✅ Created {len(trips)} trips")
 
             # 7. Create Trip Participants
-            print("🎫 Creating trip participants...")
-            participant1 = Trip_participants(
-                trip_id=trip1.id, user_id=user2.id, editing_permissions=False
-            )
-            participant2 = Trip_participants(
-                trip_id=trip1.id, user_id=user3.id, editing_permissions=True
-            )
-            participant3 = Trip_participants(
-                trip_id=trip2.id, user_id=user1.id, editing_permissions=False
-            )
-            participant4 = Trip_participants(
-                trip_id=trip3.id, user_id=user4.id, editing_permissions=True
-            )
-
-            db.session.add_all(
-                [participant1, participant2, participant3, participant4]
-            )
-            db.session.commit()
-            print(f"✅ Created {Trip_participants.query.count()} trip participants")
-
-            # 8. Create Trip Invitations (new table)
-            print("✉️ Creating trip invitations...")
-            # trip1: bob and carol invited
-            invite1 = Trip_invitations(trip_id=trip1.id, user_id=user2.id)
-            invite2 = Trip_invitations(trip_id=trip1.id, user_id=user3.id)
-            # trip2: alice invited
-            invite3 = Trip_invitations(trip_id=trip2.id, user_id=user1.id)
-            # trip3: david invited
-            invite4 = Trip_invitations(trip_id=trip3.id, user_id=user4.id)
-
-            db.session.add_all([invite1, invite2, invite3, invite4])
-            db.session.commit()
-            print(f"✅ Created {Trip_invitations.query.count()} trip invitations")
-
-            # 9. Create Meetups (matching Meetups model)
-            print("📅 Creating meetups...")
-            meetup1 = Meetups(
-                trip_id=trip1.id,
-                user_id=user1.id,
-                content="Pre-trip planning dinner",
-                location="Café Central",
-                city_id=madrid.id,
-                date=date(2025, 12, 10),
-                time=time(19, 30),
-                status="PLANNING",
-            )
-
-            meetup2 = Meetups(
-                trip_id=trip2.id,
-                user_id=user2.id,
-                content="Market visit before cooking class",
-                location="Mercado Central",
-                city_id=valencia.id,
-                date=date(2025, 11, 20),
-                time=time(10, 0),
-                status="PLANNING",
-            )
-
-            meetup3 = Meetups(
-                trip_id=trip1.id,
-                user_id=user3.id,
-                content="Airport meetup",
-                location="Barcelona Airport T1",
-                city_id=barcelona.id,
-                date=date(2025, 12, 15),
-                time=time(14, 0),
-                status="PLANNING",
-            )
-
-            db.session.add_all([meetup1, meetup2, meetup3])
-            db.session.commit()
-            print(f"✅ Created {Meetups.query.count()} meetups")
-
-            # 10. Create Trip Comments (matching TripComment model)
-            print("💬 Creating trip comments...")
-            comment1 = TripComment(
-                trip_id=trip1.id,
-                author_id=user2.id,
-                content="This sounds amazing! I'm definitely interested in joining.",
-            )
-
-            comment2 = TripComment(
-                trip_id=trip1.id,
-                author_id=user3.id,
-                content=(
-                    "I know some great local spots in Barcelona. "
-                    "Let me share some recommendations!"
-                ),
-            )
-
-            comment3 = TripComment(
-                trip_id=trip2.id,
-                author_id=user1.id,
-                content=(
-                    "I've always wanted to learn how to make authentic paella. "
-                    "Count me in!"
-                ),
-            )
-
-            comment4 = TripComment(
-                trip_id=trip3.id,
-                author_id=user4.id,
-                content=(
-                    "Seville has the best tapas in Spain. I can be your local guide!"
-                ),
-            )
-
-            db.session.add_all([comment1, comment2, comment3, comment4])
-            db.session.commit()
-            print(f"✅ Created {TripComment.query.count()} trip comments")
-
-            # 11. Create Trip Stops (matching TripStop model)
-            print("🛑 Creating trip stops...")
-            stop1 = TripStop(
-                trip_id=trip1.id,
-                name="Lunch at Cal Pep",
-                place="Cal Pep",
-                date=date(2025, 12, 15),
-                time=time(13, 0),
-                address="Plaça de les Olles, 8, Barcelona",
-                budget_per_person=35.0,
-                notes="Famous for seafood tapas. Arrive early!",
-                order=1,
-            )
-
-            stop2 = TripStop(
-                trip_id=trip1.id,
-                name="Coffee at Satan's Coffee Corner",
-                place="Satan's Coffee Corner",
-                date=date(2025, 12, 15),
-                time=time(10, 30),
-                address="Carrer de l'Arc de Sant Ramon del Call, 11, Barcelona",
-                budget_per_person=5.0,
-                notes="Best coffee in the Gothic Quarter",
-                order=0,
-            )
-
-            stop3 = TripStop(
-                trip_id=trip2.id,
-                name="Paella cooking class",
-                place="Valencia Cooking School",
-                date=date(2025, 11, 20),
-                time=time(11, 0),
-                address="Carrer de la Pau, 25, Valencia",
-                budget_per_person=85.0,
-                notes="Includes market tour and lunch",
-                order=1,
-            )
-
-            stop4 = TripStop(
-                trip_id=trip3.id,
-                name="Tapas at Bar El Comercio",
-                place="Bar El Comercio",
-                date=None,
-                time=None,
-                address="Calle Lineros, Seville",
-                budget_per_person=20.0,
-                notes="Traditional tapas bar, cash only",
-                order=0,
-            )
-
-            db.session.add_all([stop1, stop2, stop3, stop4])
-            db.session.commit()
-            print(f"✅ Created {TripStop.query.count()} trip stops")
-
-            print("\n🎉 Test data creation completed successfully!")
-
-            # Verification queries
-            print("\n📊 Database Summary:")
-            print(f"   • Users: {User.query.count()}")
-            print(f"   • Cities: {City.query.count()}")
-            print(f"   • Neighborhoods: {Neighborhood.query.count()}")
-            print(f"   • Trips: {Trip.query.count()}")
-            print(f"   • Trip stops: {TripStop.query.count()}")
-            print(f"   • Interests: {Interest.query.count()}")
-            print(f"   • Following relationships: {FollowingAssociation.query.count()}")
-            print(f"   • Trip participants: {Trip_participants.query.count()}")
-            print(f"   • Trip invitations: {Trip_invitations.query.count()}")
-            print(f"   • Meetups: {Meetups.query.count()}")
-            print(f"   • Trip comments: {TripComment.query.count()}")
-
-            # Test some relationships
-            print("\n🔗 Testing Relationships:")
-            alice = User.query.filter_by(name="Alice Johnson").first()
-            if alice:
-                print(f"   • Alice's interests: {[i.interest for i in alice.interests]}")
-                print(f"   • Alice's city: {alice.city.name if alice.city else 'None'}")
-                print(f"   • Alice's trips created: {len(alice.trips_created)}")
-                print(
-                    f"   • Alice's trip invitations: "
-                    f"{[(inv.trip.title) for inv in alice.trip_invitations]}"
+            print("\n👥 Creating trip participants...")
+            participant_count = 0
+            for trip in trips:
+                # Creator is always a participant
+                creator_participant = Trip_participants(
+                    trip_id=trip.id,
+                    user_id=trip.creator_id,
+                    editing_permissions=True
                 )
+                db.session.add(creator_participant)
+                participant_count += 1
+                
+                # Add 1-5 additional participants
+                num_participants = random.randint(1, min(5, trip.max_participants - 1 if trip.max_participants else 5))
+                potential_participants = [u for u in users if u.id != trip.creator_id]
+                selected_participants = random.sample(potential_participants, min(num_participants, len(potential_participants)))
+                
+                for participant in selected_participants:
+                    trip_participant = Trip_participants(
+                        trip_id=trip.id,
+                        user_id=participant.id,
+                        editing_permissions=random.choice([True, False])
+                    )
+                    db.session.add(trip_participant)
+                    participant_count += 1
+            db.session.commit()
+            print(f"   ✅ Created {participant_count} trip participants")
 
-            barcelona_trip = Trip.query.filter_by(
-                description="Weekend food tour in Barcelona"
-            ).first()
-            if barcelona_trip:
-                print(
-                    f"   • Barcelona trip participants: "
-                    f"{len(barcelona_trip.participants)}"
+            # 8. Create Trip Invitations
+            print("\n📨 Creating trip invitations...")
+            invitation_count = 0
+            for trip in trips:
+                # Some trips have pending invitations
+                if random.random() < 0.6:  # 60% of trips have invitations
+                    num_invitations = random.randint(1, 3)
+                    existing_participant_ids = [p.user_id for p in trip.participants]
+                    potential_invitees = [u for u in users if u.id not in existing_participant_ids]
+                    
+                    if potential_invitees:
+                        selected_invitees = random.sample(
+                            potential_invitees, 
+                            min(num_invitations, len(potential_invitees))
+                        )
+                        
+                        for invitee in selected_invitees:
+                            invitation = Trip_invitations(
+                                trip_id=trip.id,
+                                user_id=invitee.id,
+                                invited_at=datetime.utcnow() - timedelta(days=random.randint(1, 10))
+                            )
+                            db.session.add(invitation)
+                            invitation_count += 1
+            db.session.commit()
+            print(f"   ✅ Created {invitation_count} trip invitations")
+
+            # 9. Create Trip Stops
+            print("\n🛑 Creating trip stops...")
+            stop_templates = [
+                {
+                    "names": ["Breakfast at", "Morning coffee at", "Early bite at"],
+                    "places": ["Local Café", "Artisan Bakery", "Coffee Shop", "Breakfast Bar"],
+                    "budget_range": (5.0, 15.0),
+                    "stop_type": "Breakfast",
+                    "time_range": (time(8, 0), time(11, 0))
+                },
+                {
+                    "names": ["Lunch at", "Midday meal at", "Afternoon dining at"],
+                    "places": ["Tapas Bar", "Restaurant", "Bistro", "Market Hall"],
+                    "budget_range": (15.0, 35.0),
+                    "stop_type": "lunch",
+                    "time_range": (time(13, 0), time(15, 30))
+                },
+                {
+                    "names": ["Dinner at", "Evening meal at", "Sunset dining at"],
+                    "places": ["Fine Restaurant", "Traditional Tavern", "Modern Eatery", "Rooftop Bar"],
+                    "budget_range": (25.0, 75.0),
+                    "stop_type": "dinner",
+                    "time_range": (time(20, 0), time(22, 30))
+                },
+                {
+                    "names": ["Coffee break at", "Dessert at", "Drinks at"],
+                    "places": ["Café", "Pastry Shop", "Wine Bar", "Cocktail Lounge"],
+                    "budget_range": (5.0, 20.0),
+                    "stop_type": None,
+                    "time_range": (time(16, 0), time(19, 0))
+                }
+            ]
+            
+            stop_count = 0
+            for trip in trips:
+                num_stops = random.randint(2, 5)
+                
+                for order in range(num_stops):
+                    template = random.choice(stop_templates)
+                    stop_name_prefix = random.choice(template["names"])
+                    stop_place = random.choice(template["places"])
+                    
+                    stop = TripStop(
+                        trip_id=trip.id,
+                        name=f"{stop_name_prefix} {stop_place}",
+                        place=stop_place,
+                        date=trip.start_date if trip.start_date else None,
+                        time=time(
+                            random.randint(template["time_range"][0].hour, template["time_range"][1].hour),
+                            random.choice([0, 15, 30, 45])
+                        ),
+                        address=f"Calle Example {random.randint(1, 100)}, {trip.destination_city.name if trip.destination_city else 'Madrid'}",
+                        budget_per_person=round(random.uniform(*template["budget_range"]), 2),
+                        notes=random.choice([
+                            "Reservation recommended",
+                            "Walk-ins welcome",
+                            "Cash only",
+                            "Popular spot, arrive early",
+                            "Great for groups",
+                            "Vegetarian options available"
+                        ]),
+                        stop_type=template["stop_type"],
+                        stop_status=random.choice(["Confirmed", "Tentative", "Considering"]),
+                        order=order,
+                        destination_type=random.choice(["Restaurant", "Café", "Bar", "Market"])
+                    )
+                    db.session.add(stop)
+                    stop_count += 1
+            db.session.commit()
+            print(f"   ✅ Created {stop_count} trip stops")
+
+            # 10. Create Meetups
+            print("\n📍 Creating meetups...")
+            meetup_count = 0
+            for trip in trips:
+                # 40% of trips have meetups
+                if random.random() < 0.4:
+                    num_meetups = random.randint(1, 2)
+                    
+                    for _ in range(num_meetups):
+                        participant_user = random.choice([p.user for p in trip.participants])
+                        
+                        meetup = Meetups(
+                            trip_id=trip.id,
+                            user_id=participant_user.id,
+                            content=random.choice([
+                                "Meeting at train station",
+                                "Airport pickup coordination",
+                                "Hotel lobby meetup",
+                                "Starting point for walking tour",
+                                "Pre-dinner drinks location"
+                            ]),
+                            location=random.choice([
+                                "Central Train Station",
+                                "Airport Terminal 1",
+                                "Plaza Mayor",
+                                "Hotel Lobby",
+                                "Metro Station Entrance"
+                            ]),
+                            city_id=trip.destination_city_id if trip.destination_city_id else cities["Madrid"].id,
+                            date=trip.start_date if trip.start_date else date.today() + timedelta(days=10),
+                            time=time(random.randint(9, 18), random.choice([0, 30])),
+                            status=random.choice(["PLANNING", "PLANNING", "HAPPENING"])
+                        )
+                        db.session.add(meetup)
+                        meetup_count += 1
+            db.session.commit()
+            print(f"   ✅ Created {meetup_count} meetups")
+
+            # 11. Create Trip Comments
+            print("\n💬 Creating trip comments...")
+            comment_templates = [
+                "This looks amazing! Count me in!",
+                "I've been to this place before, it's fantastic!",
+                "What time should we meet?",
+                "Can we add a vegetarian option?",
+                "I know a great spot nearby we should check out.",
+                "Is there space for one more person?",
+                "Looking forward to this!",
+                "Do we need reservations?",
+                "I can help with the planning if needed.",
+                "This is exactly what I've been looking for!",
+                "Would love to join but need to check my schedule.",
+                "Great choice of restaurant!",
+                "I heard the chef there is amazing.",
+                "Can we adjust the time slightly?",
+                "Perfect timing for me!",
+                "I'll bring some friends if that's okay.",
+                "What's the dress code?",
+                "Excited to try this cuisine!",
+                "I've wanted to visit this place for ages!",
+                "Let me know if you need help organizing."
+            ]
+            
+            comment_count = 0
+            for trip in trips:
+                num_comments = random.randint(2, 8)
+                
+                # Get potential commenters (participants + some random users)
+                potential_commenters = [p.user for p in trip.participants]
+                additional_commenters = random.sample(
+                    [u for u in users if u not in potential_commenters], 
+                    min(3, len(users) - len(potential_commenters))
                 )
-                print(
-                    f"   • Barcelona trip meetups: {len(barcelona_trip.meetups)}"
-                )
-                print(
-                    f"   • Barcelona trip invitations: "
-                    f"{len(barcelona_trip.invitations)}"
-                )
-                print(
-                    f"   • Barcelona trip stops: {len(barcelona_trip.stops)}"
-                )
+                potential_commenters.extend(additional_commenters)
+                
+                for _ in range(min(num_comments, len(potential_commenters))):
+                    commenter = random.choice(potential_commenters)
+                    
+                    comment = TripComment(
+                        trip_id=trip.id,
+                        author_id=commenter.id,
+                        content=random.choice(comment_templates)
+                    )
+                    db.session.add(comment)
+                    comment_count += 1
+            db.session.commit()
+            print(f"   ✅ Created {comment_count} trip comments")
+
+            # Final Summary
+            print("\n" + "=" * 70)
+            print("🎉 TEST DATA CREATION COMPLETED SUCCESSFULLY!")
+            print("=" * 70)
+            
+            print("\n📊 DATABASE STATISTICS:")
+            print(f"   • Users:                 {User.query.count():>4}")
+            print(f"   • Cities:                {City.query.count():>4}")
+            print(f"   • Neighborhoods:         {Neighborhood.query.count():>4}")
+            print(f"   • Trips:                 {Trip.query.count():>4}")
+            print(f"   • Trip Stops:            {TripStop.query.count():>4}")
+            print(f"   • Interests:             {Interest.query.count():>4}")
+            print(f"   • Following:             {FollowingAssociation.query.count():>4}")
+            print(f"   • Trip Participants:     {Trip_participants.query.count():>4}")
+            print(f"   • Trip Invitations:      {Trip_invitations.query.count():>4}")
+            print(f"   • Meetups:               {Meetups.query.count():>4}")
+            print(f"   • Trip Comments:         {TripComment.query.count():>4}")
+            
+            # Sample relationship tests
+            print("\n🔗 SAMPLE RELATIONSHIP TESTS:")
+            sample_user = users[0]
+            print(f"\n   User: {sample_user.name}")
+            print(f"   • Interests: {', '.join([i.interest for i in sample_user.interests])}")
+            print(f"   • Following: {len(sample_user.following)} users")
+            print(f"   • Followers: {len(sample_user.followers)} users")
+            print(f"   • Trips Created: {len(sample_user.trips_created)}")
+            print(f"   • Trip Participations: {len(sample_user.trip_participations)}")
+            print(f"   • Trip Invitations: {len(sample_user.trip_invitations)}")
+            
+            sample_trip = trips[0]
+            print(f"\n   Trip: {sample_trip.title}")
+            print(f"   • Participants: {len(sample_trip.participants)}")
+            print(f"   • Stops: {len(sample_trip.stops)}")
+            print(f"   • Comments: {len(sample_trip.comments)}")
+            print(f"   • Meetups: {len(sample_trip.meetups)}")
+            print(f"   • Invitations: {len(sample_trip.invitations)}")
+            
+            print("\n" + "=" * 70)
 
         except Exception as e:
-            print(f"❌ Error creating test data: {e}")
+            print(f"\n❌ ERROR: {e}")
             db.session.rollback()
             raise e
 
@@ -472,29 +827,80 @@ def clear_test_data():
     """Clear all test data from the database"""
     app = create_app()
     with app.app_context():
-        print("🧹 Clearing all test data...")
+        print("=" * 70)
+        print("🧹 CLEARING ALL TEST DATA")
+        print("=" * 70)
 
-        # Delete in reverse order of dependencies
-        TripComment.query.delete()
-        Meetups.query.delete()
-        TripStop.query.delete()
-        Trip_participants.query.delete()
-        Trip_invitations.query.delete()
-        Trip.query.delete()
-        FollowingAssociation.query.delete()
-        Interest.query.delete()
-        User.query.delete()
-        Neighborhood.query.delete()
-        City.query.delete()
+        try:
+            print("\n   Deleting trip comments...")
+            TripComment.query.delete()
+            print("   Deleting meetups...")
+            Meetups.query.delete()
+            print("   Deleting trip stops...")
+            TripStop.query.delete()
+            print("   Deleting trip participants...")
+            Trip_participants.query.delete()
+            print("   Deleting trip invitations...")
+            Trip_invitations.query.delete()
+            print("   Deleting trips...")
+            Trip.query.delete()
+            print("   Deleting following relationships...")
+            FollowingAssociation.query.delete()
+            print("   Deleting interests...")
+            Interest.query.delete()
+            print("   Deleting users...")
+            User.query.delete()
+            print("   Deleting neighborhoods...")
+            Neighborhood.query.delete()
+            print("   Deleting cities...")
+            City.query.delete()
 
-        db.session.commit()
-        print("✅ All test data cleared!")
+            db.session.commit()
+            
+            print("\n" + "=" * 70)
+            print("✅ ALL TEST DATA CLEARED SUCCESSFULLY!")
+            print("=" * 70)
+            
+        except Exception as e:
+            print(f"\n❌ ERROR: {e}")
+            db.session.rollback()
+            raise e
+
+
+def show_stats():
+    """Display database statistics"""
+    app = create_app()
+    with app.app_context():
+        print("=" * 70)
+        print("📊 DATABASE STATISTICS")
+        print("=" * 70)
+        
+        print(f"\n   Users:                 {User.query.count():>4}")
+        print(f"   Cities:                {City.query.count():>4}")
+        print(f"   Neighborhoods:         {Neighborhood.query.count():>4}")
+        print(f"   Trips:                 {Trip.query.count():>4}")
+        print(f"   Trip Stops:            {TripStop.query.count():>4}")
+        print(f"   Interests:             {Interest.query.count():>4}")
+        print(f"   Following:             {FollowingAssociation.query.count():>4}")
+        print(f"   Trip Participants:     {Trip_participants.query.count():>4}")
+        print(f"   Trip Invitations:      {Trip_invitations.query.count():>4}")
+        print(f"   Meetups:               {Meetups.query.count():>4}")
+        print(f"   Trip Comments:         {TripComment.query.count():>4}")
+        
+        print("\n" + "=" * 70)
 
 
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 1 and sys.argv[1] == "clear":
-        clear_test_data()
+    if len(sys.argv) > 1:
+        command = sys.argv[1].lower()
+        if command == "clear":
+            clear_test_data()
+        elif command == "stats":
+            show_stats()
+        else:
+            print(f"Unknown command: {command}")
+            print("Usage: python test_data.py [clear|stats]")
     else:
         create_test_data()

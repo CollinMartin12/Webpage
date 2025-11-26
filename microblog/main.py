@@ -418,7 +418,13 @@ def edit_trip(trip_id):
             
             max_participants = request.form.get("max_participants")
             trip.max_participants = int(max_participants) if max_participants else None
-            
+            editing_participants_ids = request.form.getlist("edit_permissions")
+            # Update participants' editing permissions
+            for participant in trip.participants:
+                if str(participant.user_id) in editing_participants_ids:
+                    participant.editing_permissions = True
+                else:
+                    participant.editing_permissions = False
             # Delete existing stops
             db.session.execute(
                 db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
@@ -465,6 +471,7 @@ def edit_trip(trip_id):
                     'order': int(request.form.get(f"stops[{i}][stop_order]", i)),
                     'stop_status': stop_status
                 })
+                
             
             if stops_to_create:
                 db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
@@ -481,11 +488,12 @@ def edit_trip(trip_id):
             db.session.rollback()
             flash(f"Error updating trip: {str(e)}", "error")
             return redirect(url_for("main.edit_trip", trip_id=trip_id))
-    
+    users = db.session.execute(db.select(model.User)).scalars().all()
     stop_types = [stop_type for stop_type in model.StopType.enums]
     cities = db.session.execute(db.select(model.City)).scalars().all()
-    users = db.session.execute(db.select(model.User)).scalars().all()
-    
+    trip_participants = db.session.execute(
+        db.select(model.Trip_participants).where(model.Trip_participants.trip_id == trip_id)
+    ).scalars().all()
     stops = db.session.execute(
         db.select(model.TripStop).where(model.TripStop.trip_id == trip_id).order_by(model.TripStop.order)
     ).scalars().all()
@@ -493,6 +501,12 @@ def edit_trip(trip_id):
     date_type = "Range"
     if trip.definite_date:
         date_type = "Fixed"
+        
+    is_creator = trip.creator_id == flask_login.current_user.id
+    has_editing_permissions = is_creator or any(
+        p.user_id == flask_login.current_user.id and p.editing_permissions
+        for p in trip.participants
+    )
     
     
     return render_template(
@@ -503,6 +517,9 @@ def edit_trip(trip_id):
         users=users,
         stops=stops,
         date_type=date_type,
+        participants=trip_participants,
+        has_editing_permissions=has_editing_permissions,
+        is_creator=is_creator
     )
 
 @bp.route("/trip/<int:trip_id>/meetup/create", methods=["GET", "POST"])

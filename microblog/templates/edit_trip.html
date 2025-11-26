@@ -55,6 +55,28 @@
                 </div>
             </div>
         </div>
+        <!-- here add who gets editing permissions | a list of all participants with a checkbox by their name-->
+        <div class="form-group">
+            <label for="edit_permissions">Edit Permissions</label>
+            <div id="edit_permissions">
+            {% for participant in participants %}
+                {# Check if this specific participant is NOT the creator (creator always has permissions, so no checkbox needed) #}
+                {% if participant.user.id != trip.creator_id %}
+                    <div class="form-check">
+                        <input class="form-check-input" 
+                            type="checkbox" 
+                            id="edit_permission_{{ participant.user.id }}" 
+                            name="edit_permissions" 
+                            value="{{ participant.user.id }}"
+                            {% if participant.editing_permissions %}checked{% endif %}>
+                        <label class="form-check-label" for="edit_permission_{{ participant.user.id }}">
+                            {{ participant.user.name }}
+                        </label>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
 
         <!-- Stops Section -->
         <div class="form-section">

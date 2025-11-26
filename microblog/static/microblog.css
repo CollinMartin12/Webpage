@@ -38,8 +38,10 @@
 }
 
 .btn--danger {
-  background: #b91c1c;
-  border-color: #991b1b;
+  background: rgb(243, 241, 241);
+  border-color: gray;
+  border-radius: 8px;
+  color: black;
 }
 
 .btn--warning {
@@ -47,14 +49,32 @@
   border-color: #d97706;
 }
 
-.btn--success {
-  background: #16a34a;
-  border-color: #15803d;
+.btn-leave {
+  background: rgb(243, 241, 241);
+  border-color: red;
+  border-radius: 8px;
+  border-width: 1px;
+  color: black;
 }
 
+.btn-success {
+  background: #0b3a60;
+  border-color: black;
+  border-radius: 8px;
+  color: white;
+}
+/* 
 .btn--primary {
   background: linear-gradient(135deg, var(--main), var(--fourth));
   border-color: var(--main);
+} */
+
+/* make this a rectangle button with little spacing */
+.btn--primary {
+  background: rgb(243, 241, 241);
+  border-color: gray;
+  border-radius: 8px;
+  color: black;
 }
 
 
@@ -220,15 +240,15 @@ body {
 .auth input:hover{ background: #ffffff; }
 .auth input:focus{
   border-color: var(--main);
-  box-shadow: 0 0 0 4px var(--ring); /* accessible focus halo */
+  box-shadow: 0 0 0 4px var(--ring); 
 }
 
-/* Primary button (uses your existing .btn-primary class) */
+
 .auth .btn-primary{
   display: inline-block;
   width: 100%;
   padding: .7rem 1rem;
-  border-radius: 14px;              /* <- rounded button */
+  border-radius: 14px;             
   border: 1px solid var(--main);
   background: linear-gradient(135deg, var(--main), var(--fifth));
   color: #fff; font-weight: 800;
@@ -253,7 +273,6 @@ body {
 }
 .auth .signup-container p a:hover{ text-decoration: underline; }
 
-/* Dark mode */
 @media (prefers-color-scheme: dark){
   .auth{
     background:
@@ -277,30 +296,6 @@ body {
 }
 
 
-/* Buttons of editing the trips */
-
-.btn-success{
-display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--main), var(--fifth));
-  color: #fff;
-  font-weight: 700;
-  text-decoration: none;
-  border: 1px solid #3373A1;
-  box-shadow: 0 4px 10px rgba(51,115,161,0.25);
-  transition: all 0.15s ease;
-}
-.btn-success:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
-}
-
-.btn-success:active {
-  transform: translateY(1px);
-}
-
-
 /* Profile Styling */
 
 .header-profile{
@@ -313,7 +308,7 @@ display: inline-block;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 10px 6px 18px rgba(0,0,0,.06);
-    max-width: 500px;
+    max-width: 450px;
     margin: 20px auto;   /* center the whole card */
 }
 
@@ -321,7 +316,7 @@ display: inline-block;
     display: flex;
     flex-direction: column;
     gap: 25px;
-    max-width: 500px;
+    max-width: 450px;
     margin: 0 auto;
     padding: 20px;
     text-align: center;
@@ -424,9 +419,24 @@ display: inline-block;
     object-fit: cover;
 }
 
-.participant-count {
-    color: grey;
-    font-size: 0.9em;
+.participants-display {
+    text-align: left;
+    font-size: .9rem;
+    line-height: 1.6;
+    border-radius: 0.375rem;
+    background-color: var(--fourth);
+    flex-grow: 1;
+    padding: 0.5rem;
+    margin-bottom: 15px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+.participants-display h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .trip_destination {
@@ -475,7 +485,7 @@ display: inline-block;
 }
 
 .trips-container > .trip {
-  flex: 1 1 320px;   /* grows, wraps at ~320px */
+  flex: 1 1 320px; 
   max-width: 360px; border-radius: 100px;
     /* optional: prevents super-wide cards */
 }
@@ -568,8 +578,8 @@ display: inline-block;
   background-color: var(--fourth);
   margin: 1px auto;
   width: fit-content;
-    border-radius: 50px;
-  max-width: 80%;
+  border-radius: 50px;
+  max-width: 100%;
   box-shadow: 0 10px 10px rgba(0,0,0,0.05);
   text-align: center;
 }
@@ -592,13 +602,6 @@ display: inline-block;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.participants-display {
-    width: fit-content;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-}
 
 .trip_info img {
   width: 100%;
@@ -608,12 +611,6 @@ display: inline-block;
   font-family: fantasy;
 }
 
-.participants-display {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-}
 
 .avatar-small img {
   width: 28px;
@@ -696,6 +693,7 @@ display: inline-block;
 }
 
 .trip-details-header h1{
+    color: rgb(2, 2, 36);
     text-align: left;
     font-size: 3.0rem;
     margin-bottom: 2px;
@@ -713,19 +711,31 @@ display: inline-block;
 }
 
 
-/* --- Trip image --- */
-.trip-details-image {
-    width: 100%;
-    max-height: 350px;
-    overflow: hidden;
-    border-radius: 40px;
-    margin: 20px 0;
+.trip-picture {
+    /* 1. Force exact dimensions */
+    width: 600px;
+    height: 200px;
+
+    /* 2. Prevent the layout from squishing it */
+    flex-shrink: 0; 
+    flex-grow: 0;
+
+    /* 3. Cosmetic styling */
+    padding: 10px;
+    border-radius: 12px;
+    overflow: hidden; /* clean edges */
 }
 
-.trip-details-image img {
+.trip-picture img {
+    /* 4. Force image to fill the container completely */
     width: 100%;
-    object-fit: cover;
+    height: 100%;
+
+    /* 5. Crop the image to fit without distortion */
+    object-fit: cover; 
+    
     display: block;
+    border-radius: 12px;
 }
 
 /* --- Section titles --- */
@@ -867,7 +877,7 @@ display: inline-block;
 
 .trip-details-title {
     margin: 0;
-    font-size: 1.7rem;
+    font-size: 2.2rem;
   }
 
 .trip-status {
@@ -1105,7 +1115,7 @@ a[href*="main.index"]:hover {
 
 /* Two-column grid for basic info */
 .trip-grid {
-    display: grid;
+    display: flex;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
     background: #f9f9f9;
@@ -1116,9 +1126,10 @@ a[href*="main.index"]:hover {
 
 .trip-grid-left,
 .trip-grid-right {
+    flex: 1; 
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1rem;
 }
 
 /* Compact form controls */
@@ -1219,9 +1230,10 @@ a[href*="main.index"]:hover {
 
 .stop-grid-left,
 .stop-grid-right {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1rem;
 }
 
 /* Remove button */
@@ -1441,17 +1453,24 @@ details[open] summary {
 
 .trip-meetups {
   text-align: left;
-  font-size: .9rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 15px;
   border-radius: 0.375rem;
   background-color: var(--fourth);
-  width: 350px;
+  flex-grow: 1;
+  max-width: 450px;
   height: 300px;
   margin-left: 0;
   padding: 0.5rem;
   overflow-y: auto;
   border: 1px solid grey; 
+  border-radius:10px
+}
+.trip-meetups h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .trip-meetup-time {
@@ -1485,17 +1504,24 @@ details[open] summary {
 
 .trip-comments {
   text-align: left;
-  font-size: .9rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 15px;
   border-radius: 0.375rem;
   background-color: var(--fourth);
-  width: 350px;
+  flex-grow: 1;
+  max-width: 450px;
   height: 300px;
   margin-left: 0;
   padding: 0.5rem;
   overflow-y: auto; 
   border: 1px solid grey;
+  border-radius: 10px;
+}
+.trip-comments h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 /* here is the comment form box. make it wide for the div and the post button to the side */
 .trip-comments__form {
@@ -1517,7 +1543,7 @@ details[open] summary {
 
 .trip-comments__form button {
   white-space: nowrap;
-  background: var(--main);
+  background: #0b3a60;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -1530,24 +1556,33 @@ details[open] summary {
 
 .trip-description-individual {
   text-align: left;
-  font-size: .9rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   border-radius: 0.375rem;
   background-color: var(--fourth);
-  width: 350px;
+  flex-grow:3;
+  max-width: 450px;
   height: 300px;
   padding: 0.5rem;
   overflow: hidden;
   flex-shrink: 0;
   border: 1px solid grey;
+  border-radius: 10px;
 }
-
+.trip-description-individual h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
 .trip-info-row {
     display: flex !important;
+    justify-content: center;
+
     gap: 1rem;
     align-items: flex-start;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     width: 100%;
+    display:flex;
 }
 
 .trip-actions-btn{
@@ -1557,28 +1592,37 @@ details[open] summary {
 
 .trip-stops {
   text-align: left;
-  font-size: .9rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   border-radius: 0.375rem;
   background-color: var(--fourth);
-  width: 350px;
+  flex-grow:3;
+  max-width: 450px;
   height: 635px;
   padding: 0.5rem;
   overflow-y: auto;
   flex-shrink: 0;
   border: 1px solid grey;
+  border-radius:10px
+}
+
+.trip-stops h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 
 .participants-column {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     flex-shrink: 0;
 }
 
 .participants-display-main {
     text-align: left;
-    font-size: .9rem;
+    font-size: 1.1rem;
     line-height: 1.6;
     border-radius: 0.375rem;
     background-color: var(--fourth);
@@ -1590,14 +1634,33 @@ details[open] summary {
     border: 1px solid grey;
 }
 .trip-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 10px;
-  width: auto;
-  height: auto;
-  margin-top: 20px;
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.6;
+  border-radius: 0.375rem;
+  background-color: var(--fourth);
+  flex-grow: 1;
+  height: 320px;
+  padding: 0.5rem;
+  overflow-y: auto;
   flex-shrink: 0;
+  border: 1px solid grey;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  order: 2;
+  border-radius: 10px;
+}
+
+.trip-actions h3 {
+  border-bottom: 2px solid rgb(237, 235, 235);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.trip-actions h3 {
+  margin-top: 0;
+  margin-bottom: 0rem;
 }
 
 .trip-actions .btn {
@@ -1608,19 +1671,23 @@ details[open] summary {
 
 .trip-container {
     background-color: #f0f4f6fa;
-    width: 100%;
+    width: 97%;
     padding: 20px;
     border-radius: 24px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: sans-serif;
+    font-family: "Times New Roman", Times, serif;
     text-align: center;
 }
 .trip-content-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2rem;
-    margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1px;
+  padding: 15px;
+  justify-content: center;
+  align-items: center;
 }
 
 .top_left_trip {
@@ -1629,19 +1696,24 @@ details[open] summary {
 }
 
 .trip-picture {
-    width: 400px;
-    height: 200px;
-    flex-shrink: 0;
-    padding: 50px;
+    width: 600px;       
+    height: 200px;       
+    
 
+    flex-shrink: 0;
+
+    border-radius: 12px;
+    overflow: hidden;
 }
 
+
 .trip-picture img {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    display: block;
-    object-fit: cover;
+    width: 100%;         
+    height: 100%;       
+    
+    object-fit: cover;   
+    
+    display: block;     
 }
 
 
@@ -1653,4 +1725,9 @@ details[open] summary {
   border: 2px solid var(--main);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
+}
+
+
+.meetup-column {
+  flex-grow: 3;
 }
