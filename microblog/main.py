@@ -14,19 +14,75 @@ from . import model
 bp = Blueprint("main", __name__)
 
 
+# In main.py
+
 @bp.route("/")
 @flask_login.login_required
 def index():
-    user = flask_login.current_user
-    
-    trip_query = (
-        db.select(model.Trip)
-        .order_by(model.Trip.status_time.desc())
-        .limit(10)
-    )
-    trips = db.session.execute(trip_query).scalars().all()
+    # 1. Base Query
+    query = db.select(model.Trip)
 
-    return render_template("main/index.html", trips=trips)
+    # 2. Retrieve Filter Parameters from URL
+    dest_id = request.args.get('destination')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    budget = request.args.get('budget')
+    filter_type = request.args.get('filter')
+
+
+    # 3. Apply Filters if they exist
+    
+    # Destination Filter
+    if dest_id:
+        # Assumes your Trip model has a 'destination_city_id' or 'city_id' column
+        # Check your model.py to see the exact Foreign Key name
+        query = query.where(model.Trip.destination_city_id == int(dest_id))
+
+    # Date Range Filters
+    if start_date:
+        # Find trips that start on or after the selected date
+        query = query.where(model.Trip.start_date >= start_date)
+    
+    if end_date:
+        # Find trips that end on or before the selected date
+        query = query.where(model.Trip.end_date <= end_date)
+
+    if budget:
+        # Convert dropdown string to logic
+        if budget == '1':   # Cheap ($)
+            # Example: Trips costing less than 20
+            query = query.where(model.Trip.budget < 20)
+            
+        elif budget == '2': # Moderate ($$)
+            # Example: Trips between 20 and 45
+            query = query.where(model.Trip.budget >= 20, model.Trip.budget <= 45)
+            
+        elif budget == '3': # Expensive ($$$)
+            # Example: Trips costing more than 45
+            query = query.where(model.Trip.budget > 45)
+
+    query = query.order_by(model.Trip.status_time.desc())
+    if filter_type == 'joined':
+        current_user = flask_login.current_user
+        query = query.join(model.Trip_participants).where(model.Trip_participants.user_id == current_user.id).order_by(model.Trip.status_time.desc())
+    elif filter_type == 'explore':
+        current_user = flask_login.current_user
+        
+        subquery = db.select(model.Trip_participants.trip_id).where(
+            model.Trip_participants.user_id == current_user.id
+        )
+        
+        # 2. Filter for Open trips AND IDs that are NOT in the subquery
+        query = query.where(
+            model.Trip.is_open == True,
+            model.Trip.id.not_in(subquery) # This excludes trips you are in
+        ).order_by(model.Trip.status_time.desc())
+        
+    trips = db.session.execute(query).scalars().all()
+    
+    cities = db.session.execute(db.select(model.City)).scalars().all()
+
+    return render_template("main/index.html", trips=trips, cities=cities)
 
 
 @bp.get("/explore")
@@ -696,6 +752,7 @@ def reopen_trip(trip_id):
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
     trip.is_open = True
+    trip.is_cancelled = False
     db.session.commit()
     flash("Trip reopened successfully!", "success")
     return redirect(url_for("main.trip", trip_id=trip.id))

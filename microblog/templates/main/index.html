@@ -1,21 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class = "container_title">
-        <h1>Welcome to SobremesApp</h1>
-        <p>This is your place to explore the Spanish food, join trips and meet people!</p>
-    <section class = "create-trips">
-        <a href="{{ url_for('main.create_trip') }}" class="btn-success">Create New Trip</a>
-    </section>
+<div class="container_title">
+    <h1>Explore and Manage Trips</h1>
+    <p>This is your place to explore the Spanish food, join trips and meet people!</p>
+    
+    <div class="trip-filters-container">
+        <form class="trip-filters" method="get" action="{{ url_for('main.index') }}">
+            <button type="submit" name="filter" value="all" class="filter-btn active">All Trips</button>
+            <button type="submit" name="filter" value="explore" class="filter-btn">Explore Trips</button>
+            <button type="submit" name="filter" value="joined" class="filter-btn">Joined Trips</button>
+        </form>
+    </div>
+
+    <div class="trip-filters-card">
+        <form class="trip-filters-form" action="{{ url_for('main.index') }}" method="GET">
+            
+            <div class="filter-group">
+                <label for="destination">Destination</label>
+                <select id="destination" name="destination">
+                    <option value="">Any</option>
+                    {% for city in cities %}
+                        <option value="{{ city.id }}" 
+                            {% if request.args.get('destination')|int == city.id %}selected{% endif %}>
+                            {{ city.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="start_date">Start Date</label>
+                <input type="date" class="form-control-compact" id="start_date" name="start_date" 
+                       value="{{ request.args.get('start_date', '') }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="end_date">End Date</label>
+                <input type="date" class="form-control-compact" id="end_date" name="end_date" 
+                       value="{{ request.args.get('end_date', '') }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="budget">Budget</label>
+                <select id="budget" name="budget">
+                    <option value="">Any</option>
+                    <option value="1" {% if request.args.get('budget') == '1' %}selected{% endif %}>$ (Cheap)</option>
+                    <option value="2" {% if request.args.get('budget') == '2' %}selected{% endif %}>$$ (Moderate)</option>
+                    <option value="3" {% if request.args.get('budget') == '3' %}selected{% endif %}>$$$ (Expensive)</option>
+                </select>
+            </div>
+
+            <button type="submit" style="display: none;">Search</button>
+        </form>
+    </div>
+
     <section>
         <div>
             {% if trips %}
-                {% include 'trips_template.html' %}
+                <div class="trips-container">
+                    {% for trip in trips %}
+                        {% include 'trip_template.html' %}
+                    {% endfor %}
+                </div>
             {% else %}
-                <p>No trips available.</p>
+                <div style="text-align:center; padding: 40px; color:#666;">
+                    <h3>No trips found matching your criteria.</h3>
+                    <p><a href="{{ url_for('main.index') }}" style="color:var(--main);">Clear Filters</a></p>
+                </div>
             {% endif %}
         </div>
     </section>
-
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector('.trip-filters-form');
+        const selects = form.querySelectorAll('select');
+        
+        selects.forEach(select => {
+            select.addEventListener('change', () => form.submit());
+        });
+    });
+</script>
 {% endblock %}

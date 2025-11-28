@@ -122,20 +122,39 @@ body {
 
 /* --------Navigation Bar Design------- */
 
+/* 1. The Parent Container (Header/Topbar) */
 .topbar {
+  position: relative;             /* Establishes the anchor for the center element */
   display: flex;
   align-items: center;
-  width: 100%;
-    background-color: var(--main);
-    height: 80px;
+  justify-content: space-between; /* Pushes Logo to Left and .nav-links to Right */
+  padding: 0 20px;                /* Ensures items don't touch the screen edges */
+  height: 80px;                   /* Keep your existing height */
+  background-color: var(--main);  /* Your brand color */
 }
 
-
-
+/* 2. The Right-Side Buttons (Sign Up, Login, etc.) */
 .nav-links {
-  margin-left: auto;
   display: flex;
   gap: 0.75rem;
+  align-items: center;
+  z-index: 10; /* Ensures these buttons sit on top and are clickable */
+}
+
+/* 3. The Center Navigation (Search/Filters) */
+.nav-links-center {
+  position: absolute;             /* Takes it out of the normal flow */
+  left: 50%;                      /* Moves start point to the middle of screen */
+  transform: translateX(-50%);    /* Shifts it back by half its width to center perfectly */
+  
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  
+  width: auto;                    /* CRITICAL: Do NOT use 100%, or it blocks clicks on other buttons */
+  margin: 0;
+  z-index: 5;
 }
 
 
@@ -157,7 +176,7 @@ body {
   margin-left: 10px;
 }
 
-
+.nav-links-center,
 .nav-links a {
   color: white;
   background-color: rgba(0, 0, 0, 0.2);
@@ -167,7 +186,7 @@ body {
   font-weight: 600;
   transition: background 0.2s ease;
 }
-
+.nav-links-center,
 .nav-links a:hover {
   background-color: rgba(0, 0, 0, 0.35);
 }
@@ -385,16 +404,16 @@ body {
 
 .participants-display-small {
     display: flex;
-    justify-content: center;   /* center items inside */
     align-items: center;
     gap: 10px;
-
     background-color: var(--fourth);
     border: 1px solid #ddd;
     border-radius: 12px;
-    padding: 10px 16px;
-    width: fit-content;        /* shrink to fit content */
-    margin: 0 auto 10px auto;  /* center the whole box in parent */
+    padding: 5px 12px; /* Adjusted padding for footer size */
+    width: fit-content;
+    
+    /* key change: remove auto margins so it stays left */
+    margin: 0; 
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
@@ -475,19 +494,26 @@ body {
 }
 
 .trips-container {
-  display: flex;
-  flex-wrap: wrap;
-    justify-content: center;
-  gap: 20px;
-  width: min(1200px, 100%);
-  margin: 20px auto;
-
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100vw;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px 0;
+  overflow-x: auto;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .trips-container > .trip {
-  flex: 1 1 320px; 
-  max-width: 360px; border-radius: 100px;
-    /* optional: prevents super-wide cards */
+  max-width: 480px;
+  min-width: 320px;
+  border-radius: 24px;
+  max-height: 340px;
+  margin: 0 auto;
+  /* Optional: add overflow for card content */
+  overflow: auto;
 }
 
 .user_info {
@@ -499,22 +525,24 @@ body {
     width: 100%;
     text-align: center;
 }
-
 .trip {
-    flex: 1 1 calc(33.333% - 20px); /* 3 columns on desktop */
-    min-width: 200px;
-    max-width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 100px;
-    padding: 0 0 20px;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-direction: column;
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    overflow: hidden;
+  flex: 1 1 0;
+  border: 1px solid #ddd;
+  padding: 0 0 20px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  min-width: 320px;
+  max-width: 480px;
+  box-sizing: border-box;
 }
+
 .trip_header {
     margin-bottom: 15px;
     border-radius: 100px 100px 0 0;
@@ -524,7 +552,7 @@ body {
     text-align: center;
     padding: 20px;
     margin: 0;
-    background-color:var(--main); radialGradient();
+    background-color:var(--main);
     color: var(--fourth);
 
 }
@@ -557,13 +585,14 @@ body {
 
 .trip_footer {
     display: flex;
+    flex-direction: row;            /* Change from column to row */
+    justify-content: space-between; /* Pushes content to the far left and far right */
+    align-items: center;            /* Vertically centers the button with the avatars */
     width: 100%;
-    flex-direction: column;
-    gap: 5px;
     margin-top: auto;
     padding-top: 15px;
     border-top: 1px solid #eee;
-    text-align: center;
+    box-sizing: border-box;         /* Ensures padding doesn't break width */
 }
 
 .trip_destination {
@@ -679,13 +708,13 @@ body {
 }
 
 .container_title{
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
 }
 
 
 .trip-details-container header h1 {
-    text-align: center;
+    text-align: left;
     font-size: 2.2rem;
     margin-bottom: 25px;
     font-family: fantasy;
@@ -1075,21 +1104,6 @@ body {
     text-decoration: underline;
 }
 
-/* --- Submit & Cancel Actions --- */
-button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    margin-right: 15px;
-}
-
-button[type="submit"]:hover {
-    background-color: #218838;
-}
 
 a[href*="main.index"] {
     color: #6c757d;
@@ -1584,9 +1598,9 @@ details[open] summary {
     width: 100%;
     display:flex;
 }
-
-.trip-actions-btn{
-    align-items: center;
+.trip-actions-btn {
+    /* Reset any previous alignments */
+    margin: 0;
 }
 
 
@@ -1668,16 +1682,17 @@ details[open] summary {
   white-space: nowrap;
 }
 
-
 .trip-container {
-    background-color: #f0f4f6fa;
-    width: 97%;
-    padding: 20px;
-    border-radius: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: "Times New Roman", Times, serif;
-    text-align: center;
+  background-color: #f0f4f6fa;
+  width: 97%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: "Times New Roman", Times, serif;
+  text-align: center;
 }
+
+
 .trip-content-wrapper {
   display: flex;
   flex-direction: row;
@@ -1730,4 +1745,228 @@ details[open] summary {
 
 .meetup-column {
   flex-grow: 3;
+}
+
+.trip-filters-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    justify-content: right;
+}
+.trip-filters {
+    display: flex;
+    gap: 15px;
+    justify-content: right;
+    margin-bottom: 20px;
+}
+
+
+.trip-picture-card {
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.trip-picture-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* 1. Parent Reference: Allows the child to position itself relative to this header */
+.trip header {
+    position: relative; 
+    /* Ensures the overlay doesn't get hidden if you have overflow issues */
+    overflow: visible; 
+}
+
+/* 2. The Overlay Container: positions it Top-Left over the image */
+.trip-top-left-corner {
+    position: absolute;
+    top: 12px;   /* Distance from top edge */
+    left: 12px;  /* Distance from left edge */
+    z-index: 10; /* Forces it to sit on TOP of the image */
+    
+    /* Layout: Forces Status and Budget to be side-by-side */
+    display: flex;
+    flex-direction: row;
+    gap: 8px;    /* Space between the two pills */
+    align-items: center;
+}
+
+/* 3. Status Badge Styling (The Green Pill) */
+.trip-status span {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 50px; /* High radius = Pill shape */
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Drop shadow for readability */
+}
+
+/* Status Colors - Matching Google/Material styles */
+.status-pending { background-color: #0f9d58; } /* Green (Open) */
+.status-active  { background-color: #4285f4; } /* Blue (Finalized) */
+.status-inactive{ background-color: #db4437; } /* Red (Cancelled) */
+.status-closed  { background-color: #5f6368; } /* Grey (Closed) */
+
+/* 4. Budget Badge Styling (The White Pill) */
+.trip-info-card span {
+    display: inline-block;
+    background-color: white;
+    color: #333; /* Dark grey text */
+    padding: 5px 12px;
+    border-radius: 50px; /* High radius = Pill shape */
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+/* Adjustments to your existing classes */
+.trip-info-card-under {
+    margin-top: 8px;
+    padding: 10px 15px;
+}
+
+.trip-info-card-under h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #222;
+    text-align: left;
+    /* Ensure title doesn't overlap dates if it's very long */
+    flex-grow: 1; 
+    padding-right: 10px; 
+}
+
+.trip-dates-card {
+    font-size: 0.8rem !important;
+    color: #929191; /* Lighter grey usually looks better for dates */
+    white-space: nowrap; /* Prevents dates from breaking into two lines */
+    flex-shrink: 0; /* Prevents dates from getting squished */
+}
+
+.trip-info-card-under p {
+    margin: 4px 0;
+    font-size: 1rem;
+    text-align: left;
+    color: #555;
+    text-align: left;
+}
+
+.trip-info-card-wrapper {
+  display: flex;
+  justify-content: space-between; /* Pushes Title to left, Dates to right */
+  align-items: baseline;          /* Aligns text so the bottom of letters match */
+  margin-bottom: 4px;           /* Space between this row and the description below */
+}
+
+.trip-participants-row {
+    display: flex;
+    justify-content: space-between; /* Pushes Participants left, Button right */
+    align-items: center;            /* Vertically centers them */
+    padding: 10px 15px;             /* Matches your card padding */
+    margin-top: 5px;
+}
+
+
+/* Container to center the tabs */
+.trip-filters-container {
+    max-width: 1200px;
+    margin: 20px auto 10px auto; /* Spacing from top */
+    padding: 0 15px;
+    display: flex;
+    justify-content: flex-start; /* Aligns tabs to the left */
+}
+
+/* The group of buttons */
+.trip-filters {
+    display: inline-flex;
+    background-color: #f1f3f4;   /* Light grey background for the group */
+    border-radius: 50px;         /* Fully rounded ends */
+    padding: 4px;                /* Space inside the grey bubble */
+    gap: 4px;
+}
+
+/* Individual Button Style */
+.filter-btn {
+    text-decoration: none;
+    color: #5f6368;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 8px 20px;
+    border-radius: 50px;        /* Pill shape */
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover Effect */
+.filter-btn:hover {
+    color: #202124;
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Active/Selected State (White with Shadow) */
+.filter-btn.active {
+    background-color: white;
+    color: #561F37; /* Your main brand color */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* --- 1. The Filter Card Container --- */
+.trip-filters-card {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;       /* Smooth rounded corners */
+    padding: 20px 24px;
+    margin-bottom: 30px;       /* Spacing between filters and trip list */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Soft shadow */
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- 2. The Form Layout (Horizontal Row) --- */
+.trip-filters-form {
+    display: flex;
+    gap: 20px;               /* Space between each input column */
+    align-items: flex-end;   /* Aligns inputs to the bottom so labels line up */
+    width: 100%;
+}
+
+/* --- 3. Individual Filter Columns --- */
+.filter-group {
+    flex: 1;                 /* Each input takes equal width */
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 4. Label Styling --- */
+.filter-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #5f6368;          /* Dark Grey */
+    margin-bottom: 8px;      /* Space between label and input */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- 5. Input & Select Field Styling --- */
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: #3c4043;
+    background-color: white;
+    border: 1px solid #dadce0;
+    border-radius: 8px;      /* Slightly rounded inputs */
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;  /* Ensures padding doesn't break layout */
 }
