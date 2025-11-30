@@ -21,14 +21,20 @@
         <h1>Explore Spanish Food & Meet New People.</h1>
         <p>The simplest way to join curated trips, plan local food stops,
            and make lasting memories with travelers like you.</p>
-        {# no signup/login buttons here #}
+        <div class="landing-cta">
+          <a href="{{ url_for('auth.signup') }}" class="btn btn--primary">
+            Sign Up Now
+          </a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn--danger">
+            Log In
+          </a>
+        </div>
       {% endif %}
     </div>
 
     <div class="landing-hero-right">
       <div class="landing-hero-image">
-        <img src="{{ url_for('static', filename='images/Barcelona Food Place.jpeg') }}"
-             alt="Friends enjoying food in Spain">
+        <img src="{{ url_for('static', filename='images/Barcelona Food Place.jpeg') }}" alt="Friends enjoying food in Spain">
       </div>
     </div>
 

@@ -1,12 +1,13 @@
+
 from flask import redirect, url_for, request, flash, current_app
 from collections import UserList
-import datetime
 import dateutil.tz
 ####### here is all
 from flask import Blueprint, render_template, abort
 import flask_login
 from sqlalchemy.orm import selectinload, aliased
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 
 from . import db
 from . import model
@@ -16,7 +17,15 @@ bp = Blueprint("main", __name__)
 
 # In main.py
 
+
 @bp.route("/")
+def landing():
+    # Optional: if already logged in, go straight to index
+    if flask_login.current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+    return render_template("main/landing.html")
+
+@bp.route("/index")
 @flask_login.login_required
 def index():
     # 1. Base Query
@@ -40,12 +49,18 @@ def index():
 
     # Date Range Filters
     if start_date:
-        # Find trips that start on or after the selected date
-        query = query.where(model.Trip.start_date >= start_date)
-    
+        try:
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+            query = query.where(model.Trip.start_date >= start_date_obj)
+        except ValueError:
+            pass  # ignore invalid format instead of crashing
+
     if end_date:
-        # Find trips that end on or before the selected date
-        query = query.where(model.Trip.end_date <= end_date)
+        try:
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+            query = query.where(model.Trip.end_date <= end_date_obj)
+        except ValueError:
+            pass
 
     if budget:
         # Convert dropdown string to logic
@@ -85,16 +100,9 @@ def index():
     return render_template("main/index.html", trips=trips, cities=cities)
 
 
-@bp.get("/explore")
-@flask_login.login_required
+@bp.route("/explore")
 def explore():
-    trips = db.session.execute(db.select(model.Trip)).scalars().all()
-    # If your Trip model has no image_url field yet, you can inject one on the fly:
-    for t in trips:
-        if not getattr(t, "image_url", None):
-            t.image_url = url_for('static', filename='img/image.jpg')
-    return render_template("main/home.html", trips=trips)
-
+    return render_template("main/home.html")
 
 
 @bp.route("/home")
@@ -329,7 +337,7 @@ def create_trip():
         start_date = None
         end_date = None
         definite_date = None
-        
+
         if date_type == "Fixed":
             definite_date_str = request.form.get("definite_date")
             if definite_date_str:
@@ -601,20 +609,35 @@ def create_meetup(trip_id):
     if request.method == "POST":
         content = request.form.get("content")
         location = request.form.get("location")
-        city_id = request.form.get("city_id")
-        date = request.form.get("date")
-        time = request.form.get("time")
+        city_id_raw = request.form.get("city_id")
+        date_str = request.form.get("date")
+        time_str = request.form.get("time")
+
+
+        try:
+            city_id = int(city_id_raw)
+        except (TypeError, ValueError):
+            flash("Please select a valid city.", "error")
+            return redirect(request.url)
+
+        try:
+            meetup_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            meetup_time = datetime.strptime(time_str, "%H:%M").time()
+        except (TypeError, ValueError):
+            flash("Invalid or missing date/time for the meetup.", "error")
+            return redirect(request.url)
 
         new_meetup = model.Meetups(
             trip_id=trip_id,
             user_id=user.id,
             content=content,
             location=location,
-            city_id=int(city_id),
-            date=datetime.datetime.strptime(date, "%Y-%m-%d").date(),
-            time=datetime.datetime.strptime(time, "%H:%M").time(),
+            city_id=city_id,
+            date=meetup_date,
+            time=meetup_time,
             status="PLANNING"
         )
+
 
         db.session.add(new_meetup)
         db.session.commit()
@@ -624,7 +647,6 @@ def create_meetup(trip_id):
 
     # For dropdown list
     cities = db.session.execute(db.select(model.City)).scalars().all()
-
     return render_template("main/meetup.html", trip=trip, cities=cities)
 
 

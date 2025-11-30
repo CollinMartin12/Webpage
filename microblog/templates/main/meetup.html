@@ -1,32 +1,85 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="trip-details-container">
-    <h2>Create Meetup for Trip to {{ trip.destination_city.name }}</h2>
+<div class="container">
+    <h2>
+      Create Meetup for Trip to
+      {{ trip.destination_city.name if trip.destination_city else "TBD" }}
+    </h2>
 
-    <form method="POST" class="meetup-form">
+    <form class="Trip-form"
+          action="{{ url_for('main.create_meetup', trip_id=trip.id) }}"
+          method="POST">
 
-        <label>Description</label>
-        <textarea name="content" required></textarea>
+        <!-- Two-column layout similar to create_trip -->
+        <div class="trip-grid">
+            <div class="trip-grid-left">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text"
+                           class="form-control-compact"
+                           id="location"
+                           name="location"
+                           required
+                           placeholder="Meetup place, e.g. Plaza Mayor">
+                </div>
 
-        <label>Location</label>
-        <input type="text" name="location" required>
+                <div class="form-group">
+                    <label for="city_id">City</label>
+                    <select class="form-control-compact"
+                            id="city_id"
+                            name="city_id"
+                            required>
+                        {% for city in cities %}
+                            <option value="{{ city.id }}">{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-        <label>City</label>
-        <select name="city_id" required>
-            {% for city in cities %}
-                <option value="{{ city.id }}">{{ city.name }}</option>
-            {% endfor %}
-        </select>
+            <div class="trip-grid-right">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date"
+                           class="form-control-compact"
+                           id="date"
+                           name="date"
+                           required>
+                </div>
 
-        <label>Date</label>
-        <input type="date" name="date" required>
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <input type="time"
+                           class="form-control-compact"
+                           id="time"
+                           name="time"
+                           required>
+                </div>
+            </div>
+        </div>
 
-        <label>Time</label>
-        <input type="time" name="time" required>
+        <!-- Details section (like Stops/Sections in create_trip) -->
+        <div class="form-section">
+            <h3>Meetup Details</h3>
+            <div class="form-group">
+                <label for="content">Description</label>
+                <textarea class="form-control-compact"
+                          id="content"
+                          name="content"
+                          rows="4"
+                          maxlength="500"
+                          required
+                          placeholder="What is this meetup about?"></textarea>
+            </div>
+        </div>
 
-        <button class="btn btn--primary" type="submit">Create Meetup</button>
-        <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn--danger">Cancel</a>
+        <!-- Buttons row, same style as create_trip -->
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Create Meetup</button>
+            <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn-cancel">
+                Cancel
+            </a>
+        </div>
 
     </form>
 </div>

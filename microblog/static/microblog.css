@@ -15,10 +15,12 @@
 
 
 /* ===================== GLOBAL BUTTON BASE STYLE ===================== */
+
+
 .btn {
   display: inline-block;
   padding: 0.5rem 1.2rem;
-  border-radius: 999px; /* pill shape */
+  border-radius: 90px;
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -63,13 +65,9 @@
   border-radius: 8px;
   color: white;
 }
-/* 
-.btn--primary {
-  background: linear-gradient(135deg, var(--main), var(--fourth));
-  border-color: var(--main);
-} */
 
-/* make this a rectangle button with little spacing */
+
+
 .btn--primary {
   background: rgb(243, 241, 241);
   border-color: gray;
@@ -82,19 +80,19 @@
 /* ----------------Full-page background & subtle dots--------------- */
 .auth{
   position: relative;
-  background:
-    radial-gradient(900px 500px at 90% -10%, rgba(51,115,161,.22), transparent 60%),
-    radial-gradient(700px 600px at -10% 110%, rgba(249,115,22,.18), transparent 60%),
-    #f6f8fb;
+    z-index: 0;
+
 }
-.auth::after{
-  content:"";
-  position:absolute; inset:0;
+.auth::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
   background-size: 18px 18px;
-  opacity:.35; pointer-events:none;
+  opacity: .35;
+  pointer-events: none;
+  z-index: -1;
 }
-
 /* -----Main Pages Header Style----- */
 
 body > header {
@@ -176,17 +174,18 @@ body {
   margin-left: 10px;
 }
 
-.nav-links-center,
+.nav-links-center a,
 .nav-links a {
   color: white;
   background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
+  border-radius: 5px;
   padding: 0.5rem 1rem;
   text-decoration: none;
   font-weight: 600;
   transition: background 0.2s ease;
 }
-.nav-links-center,
+
+.nav-links-center a:hover,
 .nav-links a:hover {
   background-color: rgba(0, 0, 0, 0.35);
 }
@@ -1674,7 +1673,7 @@ details[open] summary {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-family: "Times New Roman", Times, serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
 }
 
@@ -1734,16 +1733,22 @@ details[open] summary {
 }
 
 .trip-filters-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 10px 20px;
-    justify-content: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 20px auto;
+    padding: 10px 0;
 }
+
 .trip-filters {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 15px;
-    justify-content: right;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
+    padding: 5px 20px;
+    border-radius: 50px;
 }
 
 
@@ -1955,4 +1960,115 @@ details[open] summary {
     outline: none;
     transition: all 0.2s ease;
     box-sizing: border-box;  /* Ensures padding doesn't break layout */
+}
+
+
+/* ===================== LANDING PAGE ===================== */
+
+.landing-hero {
+  background-color: var(--main);
+  color: white;
+  padding: 60px 0 40px;
+}
+
+.landing-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.landing-hero-left {
+  flex: 1 1 350px;
+}
+
+.landing-hero-right {
+  flex: 1 1 350px;
+  display: flex;
+  justify-content: center;
+}
+
+.landing-tagline {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.landing-hero-left h1 {
+  font-size: 2.3rem;
+  margin: 0 0 10px;
+}
+
+.landing-hero-left p {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.landing-cta {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.landing-hero-image {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.landing-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* How it works section */
+.landing-how {
+  max-width: 1100px;
+  margin: 40px auto 60px;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.landing-how h2 {
+  font-size: 1.9rem;
+  margin-bottom: 20px;
+  font-family: fantasy;
+}
+
+.landing-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.landing-step-card {
+  flex: 1 1 220px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.landing-step-card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: var(--main);
+}
+
+.landing-step-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
 }

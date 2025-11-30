@@ -4,25 +4,45 @@
 <div class="container_title">
     <h1>Explore and Manage Trips</h1>
     <p>This is your place to explore the Spanish food, join trips and meet people!</p>
-    
+
+    {# determine which filter is currently active #}
+    {% set current_filter = request.args.get('filter', 'all') %}
+
     <div class="trip-filters-container">
         <form class="trip-filters" method="get" action="{{ url_for('main.index') }}">
-            <button type="submit" name="filter" value="all" class="filter-btn active">All Trips</button>
-            <button type="submit" name="filter" value="explore" class="filter-btn">Explore Trips</button>
-            <button type="submit" name="filter" value="joined" class="filter-btn">Joined Trips</button>
+            <button type="submit"
+                    name="filter"
+                    value="all"
+                    class="filter-btn {% if current_filter == 'all' %}active{% endif %}">
+                All Trips
+            </button>
+
+            <button type="submit"
+                    name="filter"
+                    value="explore"
+                    class="filter-btn {% if current_filter == 'explore' %}active{% endif %}">
+                Explore Trips
+            </button>
+
+            <button type="submit"
+                    name="filter"
+                    value="joined"
+                    class="filter-btn {% if current_filter == 'joined' %}active{% endif %}">
+                Joined Trips
+            </button>
         </form>
     </div>
 
     <div class="trip-filters-card">
         <form class="trip-filters-form" action="{{ url_for('main.index') }}" method="GET">
-            
+
             <div class="filter-group">
                 <label for="destination">Destination</label>
                 <select id="destination" name="destination">
                     <option value="">Any</option>
                     {% for city in cities %}
-                        <option value="{{ city.id }}" 
-                            {% if request.args.get('destination')|int == city.id %}selected{% endif %}>
+                        <option value="{{ city.id }}"
+                                {% if request.args.get('destination')|int == city.id %}selected{% endif %}>
                             {{ city.name }}
                         </option>
                     {% endfor %}
@@ -31,13 +51,13 @@
 
             <div class="filter-group">
                 <label for="start_date">Start Date</label>
-                <input type="date" class="form-control-compact" id="start_date" name="start_date" 
+                <input type="date" class="form-control-compact" id="start_date" name="start_date"
                        value="{{ request.args.get('start_date', '') }}">
             </div>
 
             <div class="filter-group">
                 <label for="end_date">End Date</label>
-                <input type="date" class="form-control-compact" id="end_date" name="end_date" 
+                <input type="date" class="form-control-compact" id="end_date" name="end_date"
                        value="{{ request.args.get('end_date', '') }}">
             </div>
 
@@ -77,9 +97,14 @@
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.querySelector('.trip-filters-form');
         const selects = form.querySelectorAll('select');
-        
+        const dateInputs = form.querySelectorAll('input[type="date"]');
+
         selects.forEach(select => {
             select.addEventListener('change', () => form.submit());
+        });
+
+        dateInputs.forEach(input => {
+            input.addEventListener('change', () => form.submit());
         });
     });
 </script>
