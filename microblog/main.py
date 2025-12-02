@@ -25,6 +25,7 @@ def landing():
         return redirect(url_for("main.index"))
     return render_template("main/landing.html")
 
+
 @bp.route("/index")
 @flask_login.login_required
 def index():
@@ -138,11 +139,12 @@ def home():
     )
 
 
-@bp.route("/user/<int:user_id>", endpoint="user_profile")  # keep endpoint name for existing links
+@bp.route("/user/<int:user_id>", endpoint="user_profile")
 def user_profile(user_id):
-
     user = db.session.execute(
-        db.select(model.User).where(model.User.id == user_id)
+        db.select(model.User)
+        .options(selectinload(model.User.trips_created))
+        .where(model.User.id == user_id)
     ).scalar_one_or_none()
     if not user:
         abort(404)
@@ -322,6 +324,7 @@ def trips():
     trips = db.session.execute(db.select(model.Trip)).scalars().all()
     return render_template("trips_template.html", trips= trips)
 
+
 @bp.route("/create_trip", methods=["GET", "POST"])
 @flask_login.login_required
 def create_trip():
@@ -341,14 +344,14 @@ def create_trip():
         if date_type == "Fixed":
             definite_date_str = request.form.get("definite_date")
             if definite_date_str:
-                definite_date = datetime.datetime.strptime(definite_date_str, "%Y-%m-%d").date()
+                definite_date = datetime.strptime(definite_date_str, "%Y-%m-%d").date()
         elif date_type == "Range":
             start_date_str = request.form.get("start_date")
             end_date_str = request.form.get("end_date")
             if start_date_str:
-                start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             if end_date_str:
-                end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
         
         
         # Other fields
@@ -382,7 +385,8 @@ def create_trip():
         stop_indices = set()
         # stops[0][stop_name], stops[0][stop_place], stops[0][stop_status], stops[0][trip_preferences], stops[0][budget], stops[0][stop_type]
         stops_to_create = []
-        
+
+
         for i in range(3):  # Only allow 3 stops
             stop_name = request.form.get(f"stops[{i}][stop_name]")
         
@@ -393,7 +397,7 @@ def create_trip():
             stop_time_str = request.form.get(f"stops[{i}][stop_time]")
             stop_time = None
             if stop_time_str:
-                stop_time = datetime.datetime.strptime(stop_time_str, "%H:%M").time()
+                stop_time = datetime.strptime(stop_time_str, "%H:%M").time()
             stop_destination_type = request.form.get(f"stops[{i}][destination_type]")
             # Determine place for first stop
             stop_type = request.form.get(f"stops[{i}][stop_type]")
@@ -467,14 +471,14 @@ def edit_trip(trip_id):
             if date_type == "Fixed":
                 definite_date_str = request.form.get("definite_date")
                 if definite_date_str:
-                    trip.definite_date = datetime.datetime.strptime(definite_date_str, "%Y-%m-%d").date()
+                    trip.definite_date = datetime.strptime(definite_date_str, "%Y-%m-%d").date()
             elif date_type == "Range":
                 start_date_str = request.form.get("start_date")
                 end_date_str = request.form.get("end_date")
                 if start_date_str:
-                    trip.start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                    trip.start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
                 if end_date_str:
-                    trip.end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+                    trip.end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
             
             # Other fields
             destination_city_id = request.form.get("destination_city_id")
@@ -511,9 +515,9 @@ def edit_trip(trip_id):
                 if stop_time_str:
                     # Handle both HH:MM and HH:MM:SS formats
                     try:
-                        stop_time = datetime.datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                        stop_time = datetime.strptime(stop_time_str, "%H:%M:%S").time()
                     except ValueError:
-                        stop_time = datetime.datetime.strptime(stop_time_str, "%H:%M").time()
+                        stop_time = datetime.strptime(stop_time_str, "%H:%M").time()
                 
                 stop_status = request.form.get(f"stops[{i}][stop_status]")
                 stop_type = request.form.get(f"stops[{i}][stop_type]")

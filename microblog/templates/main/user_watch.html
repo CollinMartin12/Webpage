@@ -49,16 +49,23 @@
     </div>
   {% endif %}
 
-  <h2 class="post-header">Posts published by {{ user.name }}</h2>
-  <ul class="post-list">
-    {% for p in user.posts %}
-      <li>
-        <a href="{{ url_for('main.user_profile', user_id=p.user.id) }}">{{ p.user.name }}</a>:
-        {{ p.text }} <small>· {{ p.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-      </li>
-    {% else %}
-      <li>No posts yet.</li>
-    {% endfor %}
-  </ul>
+<h2 class="post-header">Trips created by {{ user.name }}</h2>
+<ul class="post-list">
+  {% for trip in user.trips_created %}
+    <li>
+      <a href="{{ url_for('main.trip', trip_id=trip.id) }}">
+        {{ trip.title }}
+      </a>
+      {% if trip.created_at %}
+        <small>· {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
+      {% endif %}
+      {% if trip.destination_city %}
+        <small>· {{ trip.destination_city.name }}</small>
+      {% endif %}
+    </li>
+  {% else %}
+    <li>No trips created yet.</li>
+  {% endfor %}
+</ul>
 </section>
 {% endblock %}

@@ -413,6 +413,11 @@ body {
 }
 
 
+
+/* This is for trip_template rendering */
+
+
+
 .participant-avatars {
     display: flex;
     align-items: center;
@@ -546,7 +551,6 @@ body {
     justify-content: space-between;
     text-align: center;
     padding: 20px;
-    margin: 0;
     background-color:var(--main);
     color: var(--fourth);
 
@@ -1795,7 +1799,8 @@ details[open] summary {
     border-radius: 50px; /* High radius = Pill shape */
     font-size: 0.75rem;
     font-weight: bold;
-    color: white;
+    color: black;
+    background-color: var(--third);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Drop shadow for readability */
 }
 
@@ -1804,6 +1809,7 @@ details[open] summary {
 .status-active  { background-color: #4285f4; } /* Blue (Finalized) */
 .status-inactive{ background-color: #db4437; } /* Red (Cancelled) */
 .status-closed  { background-color: #5f6368; } /* Grey (Closed) */
+
 
 /* 4. Budget Badge Styling (The White Pill) */
 .trip-info-card span {
@@ -2071,4 +2077,10 @@ details[open] summary {
   margin: 0;
   font-size: 0.95rem;
   color: #555;
+}
+
+
+footer {
+  text-align: center;
+  padding: 1rem;
 }
