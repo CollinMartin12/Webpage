@@ -10,7 +10,7 @@
       <p class="landing-tagline">Ready to join us?</p>
 
       {% if current_user.is_authenticated %}
-        <h1>Welcome back to TripPlanner</h1>
+        <h1>Welcome back to SobremesApp</h1>
         <p>The easiest way to see your upcoming trips, food stops, and meetups.</p>
         <div class="landing-cta">
           <a href="{{ url_for('main.index') }}" class="btn btn--primary">
@@ -32,17 +32,13 @@
       {% endif %}
     </div>
 
-    <div class="landing-hero-right">
-      <div class="landing-hero-image">
-        <img src="{{ url_for('static', filename='images/Barcelona Food Place.jpeg') }}" alt="Friends enjoying food in Spain">
-      </div>
-    </div>
+
 
   </div>
 </div>
 
 <div class="landing-how">
-  <h2>How TripPlanner Works</h2>
+  <h2>How Sobremesapp Works</h2>
   <div class="landing-steps">
     <div class="landing-step-card">
       <h3>Discover</h3>

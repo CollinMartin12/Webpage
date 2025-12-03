@@ -1,13 +1,11 @@
 from ast import Str
-import datetime
+import datetime as dt
 from typing import List, Optional
 from datetime import date as date_type, time as time_type
 from sqlalchemy import String, DateTime, ForeignKey, Date, Integer, Float, Boolean, Time, Enum, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 import flask_login
-
-
 from . import db
 
 # TripStatus = Enum("Planning", "Happening", "Done", "Canceled", name="trip_status")
@@ -57,7 +55,7 @@ class Trip_invitations(db.Model):
     trip: Mapped["Trip"] = relationship(back_populates="invitations")
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="trip_invitations")
-    invited_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=datetime.datetime.utcnow)
+    invited_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=dt.datetime.utcnow)
 
 
 class User(flask_login.UserMixin, db.Model):
@@ -125,7 +123,7 @@ class TripStop(db.Model):
     stop_status: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0, index=True)
     destination_type: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)  
-    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=datetime.datetime.utcnow)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=dt.datetime.utcnow)
 
 class Trip(db.Model):
     # CONFIGURATIONS
@@ -153,7 +151,7 @@ class Trip(db.Model):
     definite_date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
     # status: Mapped[str] = mapped_column(TripStatus, default="Planning", index=True)
 
-    status_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+    status_time: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     # planning_status: Mapped[str] = mapped_column(TripPlanningStatus, default="To Decide", index=True)
     attendance_type: Mapped[str] = mapped_column(AttendanceType, default="Open for all", index=True)
@@ -180,7 +178,7 @@ class Trip(db.Model):
     meetups: Mapped[List["Meetups"]] = relationship(back_populates="trip", cascade="all, delete-orphan")
     comments: Mapped[List["TripComment"]] = relationship(back_populates="trip", order_by="TripComment.created_at.desc()", cascade="all, delete-orphan")
     
-    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), default=datetime.datetime.utcnow, index=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=dt.datetime.utcnow, index=True)
 
     stops: Mapped[List["TripStop"]] = relationship(
         back_populates="trip", 
@@ -198,14 +196,14 @@ class Meetups(db.Model):
     user: Mapped[User] = relationship(back_populates="meetups")
 
     content: Mapped[str] = mapped_column(String(512))
-    timestamp: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    timestamp: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     location: Mapped[str] = mapped_column(String(128))
 
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"), index=True)
     city: Mapped[City] = relationship()
 
     date: Mapped[date_type] = mapped_column(Date)
-    time: Mapped[datetime.time] = mapped_column(Time)
+    time: Mapped[dt.time] = mapped_column(Time)
     status: Mapped[str] = mapped_column(MeetupStatus, index=True)
 
 # class Message(db.Model):
@@ -226,7 +224,13 @@ class TripComment(db.Model):
     trip_id: Mapped[int] = mapped_column(ForeignKey("trip.id"), index=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
     content: Mapped[str] = mapped_column(String(1000))
-    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     trip: Mapped["Trip"] = relationship(back_populates="comments")
     author: Mapped[User] = relationship(back_populates="trip_comments")
+
+# Adding a class to render the trip images
+
+class TripImage(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(String(512), nullable=False, unique=True)

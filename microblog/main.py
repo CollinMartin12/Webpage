@@ -7,17 +7,17 @@ from flask import Blueprint, render_template, abort
 import flask_login
 from sqlalchemy.orm import selectinload, aliased
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
-
+#from datetime import datetime
+import datetime as dt
 from . import db
 from . import model
+from sqlalchemy import or_
 
 bp = Blueprint("main", __name__)
 
 
-# In main.py
 
-
+# Controller for the main landing page
 @bp.route("/")
 def landing():
     # Optional: if already logged in, go straight to index
@@ -26,6 +26,7 @@ def landing():
     return render_template("main/landing.html")
 
 
+# Controller for the index - Trip Dashboard
 @bp.route("/index")
 @flask_login.login_required
 def index():
@@ -51,14 +52,14 @@ def index():
     # Date Range Filters
     if start_date:
         try:
-            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+            start_date_obj = dt.datetime.strptime(start_date, "%Y-%m-%d").date()
             query = query.where(model.Trip.start_date >= start_date_obj)
         except ValueError:
             pass  # ignore invalid format instead of crashing
 
     if end_date:
         try:
-            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+            end_date_obj = dt.datetime.strptime(end_date, "%Y-%m-%d").date()
             query = query.where(model.Trip.end_date <= end_date_obj)
         except ValueError:
             pass
@@ -77,30 +78,65 @@ def index():
             # Example: Trips costing more than 45
             query = query.where(model.Trip.budget > 45)
 
-    query = query.order_by(model.Trip.status_time.desc())
-    if filter_type == 'joined':
-        current_user = flask_login.current_user
-        query = query.join(model.Trip_participants).where(model.Trip_participants.user_id == current_user.id).order_by(model.Trip.status_time.desc())
-    elif filter_type == 'explore':
-        current_user = flask_login.current_user
-        
-        subquery = db.select(model.Trip_participants.trip_id).where(
-            model.Trip_participants.user_id == current_user.id
-        )
-        
-        # 2. Filter for Open trips AND IDs that are NOT in the subquery
+    current_user = flask_login.current_user
+
+    # Subquery: all trip_ids where current user participates
+    participation_subq = (
+        db.select(model.Trip_participants.trip_id)
+        .where(model.Trip_participants.user_id == current_user.id)
+    )
+
+    if filter_type == "joined":
+        # Joined trips — user is participant (open OR closed)
+        query = query.where(model.Trip.id.in_(participation_subq))
+
+    elif filter_type == "explore":
+        # Explore — open trips NOT joined by the user
         query = query.where(
-            model.Trip.is_open == True,
-            model.Trip.id.not_in(subquery) # This excludes trips you are in
-        ).order_by(model.Trip.status_time.desc())
-        
+            model.Trip.is_open.is_(True),
+            model.Trip.is_cancelled.is_(False),
+            model.Trip.id.not_in(participation_subq)
+        )
+
+    else:
+        # All Trips (dashboard)
+        # - Show open trips to everyone
+        # - Plus closed trips where the user is a participant
+        query = query.where(
+            or_(
+                model.Trip.is_open.is_(True),
+                model.Trip.id.in_(participation_subq)
+            ),
+            model.Trip.is_cancelled.is_(False)
+        )
+
+
+    query = query.order_by(model.Trip.status_time.desc())
     trips = db.session.execute(query).scalars().all()
-    
     cities = db.session.execute(db.select(model.City)).scalars().all()
+    city_images = {
+        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    }
 
-    return render_template("main/index.html", trips=trips, cities=cities)
+    return render_template("main/index.html", trips=trips, cities=cities, city_images=city_images)
 
 
+
+# Controller for the explore page (different landing)
 @bp.route("/explore")
 def explore():
     return render_template("main/home.html")
@@ -139,6 +175,8 @@ def home():
     )
 
 
+
+# Controller for the user profile
 @bp.route("/user/<int:user_id>", endpoint="user_profile")
 def user_profile(user_id):
     user = db.session.execute(
@@ -154,9 +192,27 @@ def user_profile(user_id):
         and int(flask_login.current_user.get_id()) == user.id
     )
 
-    return render_template("main/user_watch.html", user=user, is_owner=is_owner)
+    city_images = {
+        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    }
 
+    return render_template("main/user_watch.html", user=user, is_owner=is_owner, city_images=city_images)
 
+# Controller for editing the profile after authentication
 @bp.get("/user/<int:user_id>/edit")
 @flask_login.login_required
 def edit_profile(user_id):
@@ -170,9 +226,6 @@ def edit_profile(user_id):
         return redirect(url_for("main.user_profile", user_id=user.id))
 
     return render_template("main/profile.html", user=user)
-
-
-
 
 
 
@@ -253,9 +306,7 @@ def edit_user(user_id):
     return redirect(url_for("main.user_profile", user_id=user_id))
 
 
-
-
-
+# Controller to render a trip
 @bp.route("/trip/<int:trip_id>")
 @flask_login.login_required
 def trip(trip_id):
@@ -280,6 +331,24 @@ def trip(trip_id):
     if trip.max_participants and trip_participants_count >= trip.max_participants:
         trip.is_open = False
         db.session.commit()
+
+    city_images = {
+        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    }
     
     
     user = flask_login.current_user
@@ -287,6 +356,7 @@ def trip(trip_id):
     is_participant = any(
         participant.user_id == user.id for participant in trip.participants
     )
+
     is_creator = trip.creator_id == user.id
 
     has_editing_permissions = is_creator or any(
@@ -300,12 +370,26 @@ def trip(trip_id):
     # Determine if the current user is the only editor
     is_only_editor = has_editing_permissions and editor_count == 1
 
+
     trip_participants = db.session.execute(
         db.select(model.User)
         .join(model.Trip_participants)
         .where(model.Trip_participants.trip_id == trip_id)
     ).scalars().all()
     participants = trip_participants if trip_participants else []
+
+    if trip.is_cancelled:
+        trip_status = "cancelled"
+    elif not trip.is_open:
+        trip_status = "closed"
+    elif trip.is_finalized:
+        trip_status = "finalized"
+    else:
+        trip_status = "open"
+
+        # Determine participant edit/join permissions
+    can_join = trip.is_open and not is_participant
+    can_edit = has_editing_permissions and trip.is_open and not trip.is_cancelled
 
     return render_template(
         "main/trip.html",
@@ -314,10 +398,14 @@ def trip(trip_id):
         is_creator=is_creator,
         has_editing_permissions=has_editing_permissions,
         is_only_editor=is_only_editor,
-        participants=participants
+        participants=participants,
+        city_images = city_images,
+        trip_status=trip_status,
+        can_join=can_join,
+        can_edit=can_edit
     )
 
-
+# controller for the index (rendering all trips)
 @bp.route("/trips")
 @flask_login.login_required
 def trips():
@@ -325,6 +413,7 @@ def trips():
     return render_template("trips_template.html", trips= trips)
 
 
+# Controller to create a trip
 @bp.route("/create_trip", methods=["GET", "POST"])
 @flask_login.login_required
 def create_trip():
@@ -344,20 +433,20 @@ def create_trip():
         if date_type == "Fixed":
             definite_date_str = request.form.get("definite_date")
             if definite_date_str:
-                definite_date = datetime.strptime(definite_date_str, "%Y-%m-%d").date()
+                definite_date = dt.datetime.strptime(definite_date_str, "%Y-%m-%d").date()
         elif date_type == "Range":
             start_date_str = request.form.get("start_date")
             end_date_str = request.form.get("end_date")
             if start_date_str:
-                start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                start_date = dt.datetime.strptime(start_date_str, "%Y-%m-%d").date()
             if end_date_str:
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+                end_date = dt.datetime.strptime(end_date_str, "%Y-%m-%d").date()
         
         
         # Other fields
         destination_city_id = request.form.get("destination_city_id")
         # trip_type = request.form.get("trip_type") or None
-        # budget = request.form.get("budget")
+        budget_raw = request.form.get("budget")
         # restaurant_name = request.form.get("restaurant_name")
         
         # Attendance and visibility
@@ -377,7 +466,8 @@ def create_trip():
             end_date=end_date,
             definite_date=definite_date,
             destination_city_id=int(destination_city_id) if destination_city_id else None,
-            max_participants=int(max_participants) if max_participants else None
+            max_participants=int(max_participants) if max_participants else None,
+            budget=float(budget_raw) if budget_raw else None
         )
         db.session.add(new_trip)
         db.session.flush()  # Get the trip ID before adding stops
@@ -397,7 +487,7 @@ def create_trip():
             stop_time_str = request.form.get(f"stops[{i}][stop_time]")
             stop_time = None
             if stop_time_str:
-                stop_time = datetime.strptime(stop_time_str, "%H:%M").time()
+                stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
             stop_destination_type = request.form.get(f"stops[{i}][destination_type]")
             # Determine place for first stop
             stop_type = request.form.get(f"stops[{i}][stop_type]")
@@ -420,9 +510,11 @@ def create_trip():
                 'order': int(request.form.get(f"stops[{i}][stop_order]", i)),
                 'stop_status': request.form.get(f"stops[{i}][stop_status]"),
             })
-        
+
         if stops_to_create:
             db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
+            total_budget = sum(stop.get('budget_per_person') or 0 for stop in stops_to_create)
+            new_trip.budget = total_budget
             
         create_trip_participant = model.Trip_participants(
             trip_id=new_trip.id,
@@ -439,123 +531,149 @@ def create_trip():
     stop_types = [stop_type for stop_type in model.StopType.enums]
     cities = db.session.execute(db.select(model.City)).scalars().all()
     users = db.session.execute(db.select(model.User)).scalars().all()
+
+    city_images = {
+        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    }
     
     return render_template(
         "create_trip.html",
         stop_types=stop_types,
         cities=cities,
-        users=users
+        users=users,
+        city_images = city_images
     )
+
+
+# Controller to edit a trip
 @bp.route("/edit_trip/<int:trip_id>", methods=["GET", "POST"])
 @flask_login.login_required
 def edit_trip(trip_id):
-
     trip = db.session.get(model.Trip, trip_id)
-    
     if not trip:
         flash("Trip not found.", "error")
         return redirect(url_for("main.index"))
-    
+
     if request.method == "POST":
         try:
             # Basic trip information
             trip.title = request.form.get("title")
             trip.description = request.form.get("description")
-            
+
             # Date handling
             date_type = request.form.get("date_type")
             trip.start_date = None
             trip.end_date = None
             trip.definite_date = None
-            
+
             if date_type == "Fixed":
                 definite_date_str = request.form.get("definite_date")
                 if definite_date_str:
-                    trip.definite_date = datetime.strptime(definite_date_str, "%Y-%m-%d").date()
+                    trip.definite_date = dt.datetime.strptime(definite_date_str, "%Y-%m-%d").date()
             elif date_type == "Range":
                 start_date_str = request.form.get("start_date")
                 end_date_str = request.form.get("end_date")
                 if start_date_str:
-                    trip.start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                    trip.start_date = dt.datetime.strptime(start_date_str, "%Y-%m-%d").date()
                 if end_date_str:
-                    trip.end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-            
+                    trip.end_date = dt.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
             # Other fields
             destination_city_id = request.form.get("destination_city_id")
             trip.destination_city_id = int(destination_city_id) if destination_city_id else None
-            
+
             max_participants = request.form.get("max_participants")
             trip.max_participants = int(max_participants) if max_participants else None
+
+            # Editing permissions
             editing_participants_ids = request.form.getlist("edit_permissions")
-            # Update participants' editing permissions
             for participant in trip.participants:
-                if str(participant.user_id) in editing_participants_ids:
-                    participant.editing_permissions = True
-                else:
-                    participant.editing_permissions = False
-            # Delete existing stops
-            db.session.execute(
-                db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
-            )
-            
-            # Add new stops - same logic as create_trip
+                participant.editing_permissions = str(participant.user_id) in editing_participants_ids
+
+            # --- STOP HANDLING STARTS HERE ---
             stops_to_create = []
             destination_type = request.form.get("destination_type")
             stop_place = request.form.get("stop_place")
-            
-            for i in range(3):  # Only allow 3 stops
+
+            # Dynamically detect number of stops submitted
+            stop_keys = [key for key in request.form.keys() if key.startswith("stops[")]
+            num_stops = max(
+                [int(k.split("[")[1].split("]")[0]) for k in stop_keys],
+                default=-1
+            ) + 1
+
+            for i in range(num_stops):
                 stop_name = request.form.get(f"stops[{i}][stop_name]")
-                
-                # Skip if stop doesn't exist
                 if not stop_name:
                     continue
-                
+
                 stop_time_str = request.form.get(f"stops[{i}][stop_time]")
                 stop_time = None
                 if stop_time_str:
-                    # Handle both HH:MM and HH:MM:SS formats
                     try:
-                        stop_time = datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                        stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
                     except ValueError:
-                        stop_time = datetime.strptime(stop_time_str, "%H:%M").time()
-                
+                        stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
+
                 stop_status = request.form.get(f"stops[{i}][stop_status]")
                 stop_type = request.form.get(f"stops[{i}][stop_type]")
+
                 if i == 0 and destination_type == "Fixed":
                     place = stop_place
                 else:
                     place = request.form.get(f"stops[{i}][place]")
-                
+
                 budget = request.form.get(f"stops[{i}][budget]")
-                
+                notes = request.form.get(f"stops[{i}][notes]")
+
                 stops_to_create.append({
-                    'trip_id': trip.id,
-                    'name': stop_name,
-                    'place': place,
-                    'time': stop_time,
-                    'notes': request.form.get(f"stops[{i}][notes]"),
-                    'budget_per_person': float(budget) if budget else None,
-                    'stop_type': stop_type,
-                    'order': int(request.form.get(f"stops[{i}][stop_order]", i)),
-                    'stop_status': stop_status
+                    "trip_id": trip.id,
+                    "name": stop_name,
+                    "place": place,
+                    "time": stop_time,
+                    "notes": notes,
+                    "budget_per_person": float(budget) if budget else None,
+                    "stop_type": stop_type,
+                    "order": int(request.form.get(f"stops[{i}][stop_order]", i)),
+                    "stop_status": stop_status
                 })
-                
-            
+
+            # 🟢 1. Delete and recreate stops ONLY if we actually have some to save
             if stops_to_create:
+                db.session.execute(
+                    db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
+                )
                 db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
-            
+            # --- STOP HANDLING ENDS HERE ---
+
             db.session.commit()
             flash("Trip updated successfully!", "success")
             return redirect(url_for("main.trip", trip_id=trip.id))
-            
+
         except ValueError as e:
             db.session.rollback()
             flash(f"Invalid data format: {str(e)}", "error")
-            return redirect(url_for("main.edit_trip", trip_id=trip_id))
         except Exception as e:
             db.session.rollback()
             flash(f"Error updating trip: {str(e)}", "error")
-            return redirect(url_for("main.edit_trip", trip_id=trip_id))
+
+        return redirect(url_for("main.edit_trip", trip_id=trip_id))
+
+    # GET request
     users = db.session.execute(db.select(model.User)).scalars().all()
     stop_types = [stop_type for stop_type in model.StopType.enums]
     cities = db.session.execute(db.select(model.City)).scalars().all()
@@ -565,18 +683,15 @@ def edit_trip(trip_id):
     stops = db.session.execute(
         db.select(model.TripStop).where(model.TripStop.trip_id == trip_id).order_by(model.TripStop.order)
     ).scalars().all()
-    
-    date_type = "Range"
-    if trip.definite_date:
-        date_type = "Fixed"
-        
+
+    date_type = "Fixed" if trip.definite_date else "Range"
+
     is_creator = trip.creator_id == flask_login.current_user.id
     has_editing_permissions = is_creator or any(
         p.user_id == flask_login.current_user.id and p.editing_permissions
         for p in trip.participants
     )
-    
-    
+
     return render_template(
         "edit_trip.html",
         trip=trip,
@@ -587,9 +702,12 @@ def edit_trip(trip_id):
         date_type=date_type,
         participants=trip_participants,
         has_editing_permissions=has_editing_permissions,
-        is_creator=is_creator
+        is_creator=is_creator,
     )
 
+
+
+# Controller to create a meetup
 @bp.route("/trip/<int:trip_id>/meetup/create", methods=["GET", "POST"])
 @flask_login.login_required
 def create_meetup(trip_id):
@@ -625,8 +743,8 @@ def create_meetup(trip_id):
             return redirect(request.url)
 
         try:
-            meetup_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-            meetup_time = datetime.strptime(time_str, "%H:%M").time()
+            meetup_date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
+            meetup_time = dt.datetime.strptime(time_str, "%H:%M").time()
         except (TypeError, ValueError):
             flash("Invalid or missing date/time for the meetup.", "error")
             return redirect(request.url)
@@ -654,6 +772,7 @@ def create_meetup(trip_id):
     return render_template("main/meetup.html", trip=trip, cities=cities)
 
 
+# Controller to join a trip
 @bp.route("/join/<int:trip_id>")
 @flask_login.login_required
 def join_trip(trip_id):
@@ -697,6 +816,7 @@ def join_trip(trip_id):
     return redirect(url_for("main.trip", trip_id=trip_id))
 
 
+# Controller to leave a trip
 @bp.route("/leave/<int:trip_id>")
 @flask_login.login_required
 def leave_trip(trip_id):
@@ -732,6 +852,7 @@ def leave_trip(trip_id):
     return redirect(url_for("main.trip", trip_id=trip_id))
 
 
+# Controller to finalize trip
 @bp.route("/finalize_trip/<int:trip_id>")
 @flask_login.login_required
 def finalize_trip(trip_id):
@@ -749,6 +870,8 @@ def finalize_trip(trip_id):
     flash("Trip finalized successfully!", "success")
     return redirect(url_for("main.trip", trip_id=trip.id))
 
+
+# Controller to cancel a trip
 @bp.route("/cancel_trip/<int:trip_id>")
 @flask_login.login_required
 def cancel_trip(trip_id):
@@ -760,6 +883,8 @@ def cancel_trip(trip_id):
     flash("Trip canceled successfully!", "success")
     return redirect(url_for("main.trip", trip_id=trip.id))
 
+
+# Controller to close a trip
 @bp.route("/close_trip/<int:trip_id>")
 @flask_login.login_required
 def close_trip(trip_id):
@@ -771,6 +896,8 @@ def close_trip(trip_id):
     flash("Trip closed successfully!", "success")
     return redirect(url_for("main.trip", trip_id=trip.id))
 
+
+# Controller to re-open trip
 @bp.route("/reopen_trip/<int:trip_id>")
 @flask_login.login_required
 def reopen_trip(trip_id):
@@ -784,6 +911,7 @@ def reopen_trip(trip_id):
     return redirect(url_for("main.trip", trip_id=trip.id))
 
 
+# Controller to create a new message
 @bp.route("/message/<int:trip_id>", methods=["POST"])
 @flask_login.login_required
 def new_message(trip_id):

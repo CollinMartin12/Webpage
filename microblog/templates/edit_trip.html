@@ -33,15 +33,13 @@
 
             <div class="trip-grid-right">
                 <div class="form-group">
-                    <label for="departure_city_id">Main Location</label>
-                    <select class="form-control-compact" id="departure_city_id_display" disabled>
+                    <label for="destination_city_id">Main Location</label>
+                    <select class="form-control-compact" id="destination_city_id" name="destination_city_id" required>
                         <option value="">Select city</option>
                         {% for city in cities %}
-                            <option value="{{ city.id }}" {% if city.id == trip.departure_city_id %}selected{% endif %}>{{ city.name }}</option>
+                            <option value="{{ city.id }}" {% if city.id == trip.destination_city_id %}selected{% endif %}>{{ city.name }}</option>
                         {% endfor %}
                     </select>
-                    <!-- Hidden input to send the value -->
-                    <input type="hidden" name="departure_city_id" value="{{ trip.departure_city_id }}">
                 </div>
 
                 <div class="form-group">
@@ -81,20 +79,29 @@
         <!-- Stops Section -->
         <div class="form-section">
             <h3>Stops</h3>
-            <div id="stopsContainer">
-                {% for i in range(3) %}
+
+        <div id="stopsContainer">
+        {# Maximum number of stops allowed #}
+            {% set total_stops = stops|length if stops|length > 0 else 1 %}
+            {% set max_render = total_stops + 5 %}  {# render existing + 5 new placeholders #}
+            {% for i in range(max_render) %}
                 {% set stop = stops[i] if i < stops|length else None %}
-                <div class="stop-card" data-stop-index="{{ i }}" {% if i > 0 and not stop %}style="display: none;"{% endif %}>
+                <div class="stop-card"
+                     data-stop-index="{{ i }}"
+                     {% if i > 0 and not stop %}style="display: none;"{% endif %}>
                     <div class="stop-header">
                         <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
-                        <button type="button" class="remove-stop" style="display: {% if i == 0 %}none{% else %}flex{% endif %};">
+                        <button type="button" class="remove-stop"
+                                style="display: {% if i == 0 %}none{% else %}flex{% endif %};">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                             </svg>
                             Remove
                         </button>
-                    </div>
+                </div>
+
+
 
                     <div class="form-group">
                         <div class="radio-group-compact">
@@ -187,11 +194,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Show add button if we have less than 3 visible stops
-    function updateAddButton() {
-        const visibleStops = document.querySelectorAll('[data-stop-index]:not([style*="display: none"])');
+   function updateAddButton() {
+        const stops = Array.from(document.querySelectorAll('[data-stop-index]'));
+        const visibleStops = stops.filter(stop => stop.style.display !== 'none');
         const addBtn = document.getElementById('addStopBtn');
-        addBtn.style.display = visibleStops.length < 3 ? 'block' : 'none';
-    }
+
+        // Show add button if there are hidden stops left to reveal
+        const hiddenStops = stops.filter(stop => stop.style.display === 'none');
+        addBtn.style.display = hiddenStops.length > 0 ? 'flex' : 'none';
+}
     
     document.getElementById('addStopBtn').addEventListener('click', function() {
         const stops = document.querySelectorAll('[data-stop-index]');

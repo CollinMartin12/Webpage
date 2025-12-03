@@ -28,6 +28,7 @@ from microblog.model import (
     Trip_invitations,
     Meetups,
     TripComment,
+    TripImage,
 )
 
 
@@ -459,6 +460,7 @@ def create_test_data():
                 print(f"   ✓ {city_name}")
             db.session.commit()
             print(f"   ✅ Created {len(cities)} cities")
+
 
             # 2. Create Neighborhoods
             print("\n🏘️  Creating neighborhoods...")

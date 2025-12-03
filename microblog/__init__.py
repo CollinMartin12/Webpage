@@ -11,6 +11,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
+
 def create_app(test_config=None):
     app = Flask(__name__)
 

@@ -50,22 +50,15 @@
   {% endif %}
 
 <h2 class="post-header">Trips created by {{ user.name }}</h2>
-<ul class="post-list">
-  {% for trip in user.trips_created %}
-    <li>
-      <a href="{{ url_for('main.trip', trip_id=trip.id) }}">
-        {{ trip.title }}
-      </a>
-      {% if trip.created_at %}
-        <small>· {{ trip.created_at.strftime('%Y-%m-%d') }}</small>
-      {% endif %}
-      {% if trip.destination_city %}
-        <small>· {{ trip.destination_city.name }}</small>
-      {% endif %}
-    </li>
-  {% else %}
-    <li>No trips created yet.</li>
-  {% endfor %}
-</ul>
+
+{% if user.trips_created %}
+  <div class="trip-grid-profile">
+    {% for trip in user.trips_created %}
+      {% include 'trip_template.html' %}
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No trips created yet.</p>
+{% endif %}
 </section>
 {% endblock %}

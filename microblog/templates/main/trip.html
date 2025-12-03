@@ -3,7 +3,6 @@
 {% block content %}
 <main class="trip-container">
 
-    <!-- Top header row: title + image -->
     <div class="trip-content-wrapper">
         <div class="top_left_trip">
             <header class="trip-details-header">
@@ -15,14 +14,14 @@
                     {{ trip.title if trip.title else "Unknown Title" }}
                 </h3>
                 <div class="trip-status">
-                    {% if trip.is_cancelled %}
-                        <span class="badge badge-danger">Cancelled</span>
-                    {% elif trip.is_finalized %}
-                        <span class="badge badge-success">Finalized</span>
-                    {% elif not trip.is_open %}
-                        <span class="badge badge-secondary">Closed to New Participants</span>
-                    {% else %}
-                        <span class="badge badge-primary">Open to New Participants</span>
+                    {% if trip_status == "cancelled" %}
+                      <span class="badge bg-danger">Cancelled</span>
+                    {% elif trip_status == "closed" %}
+                      <span class="badge bg-secondary">Closed</span>
+                    {% elif trip_status == "finalized" %}
+                      <span class="badge bg-info">Finalized</span>
+                    {% elif trip_status == "open" %}
+                      <span class="badge bg-success">Open to New Participants</span>
                     {% endif %}
                 </div>
             </div>
@@ -34,9 +33,14 @@
             </div>
         </div>
 
-        <div class="trip-picture">
-            <img src="{{ trip.image_file if trip.image_file else '/static/images/Seville Landscape Picture.jpeg' }}"
-                 alt="{{ trip.title }}">
+            <div class="trip-picture">
+            {% set city_name = trip.destination_city.name if trip.destination_city else None %}
+
+            {% if city_name and city_name in city_images %}
+                <img src="{{ city_images[city_name] }}" alt="{{ city_name }} trip photo">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/Seville Landscape Picture.jpeg') }}" alt="Default trip photo">
+            {% endif %}
         </div>
     </div>
 

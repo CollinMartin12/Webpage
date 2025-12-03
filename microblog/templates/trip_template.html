@@ -1,7 +1,16 @@
 <div class="trip">
   <header>
-    <div class="trip-picture-card">
-      <img src="/static/images/Seville Landscape Picture.jpeg" alt="Trip Picture">
+      <div class="trip-picture-card">
+          {% set city_name = trip.destination_city.name %}
+          {% if city_images and city_name in city_images %}
+            <img src="{{ city_images[city_name] }}" alt="{{ city_name }} Trip Picture">
+          {% elif image_urls %}
+            {% set idx = trip.id % (image_urls | length) %}
+            <img src="{{ image_urls[idx] }}" alt="Trip Picture">
+          {% else %}
+            <img src="{{ url_for('static', filename='images/Barcelona Food Place.jpeg') }}" alt="Trip Picture">
+          {% endif %}
+
       <div class="trip-top-left-corner">
         <div class="trip-status">
           {% if trip.is_finalized %}
@@ -25,7 +34,17 @@
       <div class="trip-info-card-wrapper">
         <h2 class="trip-title">{{ trip.title }}</h2>
         <p class="trip-dates-card">
-            {{ trip.start_date.strftime('%b %d') }} - {{ trip.end_date.strftime('%b %d') }}
+            {% if trip.definite_date %}
+              {{ trip.definite_date.strftime('%b %d') }}
+            {% elif trip.start_date and trip.end_date %}
+              {{ trip.start_date.strftime('%b %d') }} - {{ trip.end_date.strftime('%b %d') }}
+            {% elif trip.start_date %}
+              {{ trip.start_date.strftime('%b %d') }}
+            {% elif trip.end_date %}
+              {{ trip.end_date.strftime('%b %d') }}
+            {% else %}
+              <span class="text-muted">Date TBD</span>
+            {% endif %}
         </p>
       </div>
       <p class="trip-destination-card">Destination: {{ trip.destination_city.name }}</p>
