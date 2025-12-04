@@ -13,16 +13,17 @@
                 <h3 class="trip-details-title">
                     {{ trip.title if trip.title else "Unknown Title" }}
                 </h3>
+
                 <div class="trip-status">
-                    {% if trip_status == "cancelled" %}
-                      <span class="badge bg-danger">Cancelled</span>
-                    {% elif trip_status == "closed" %}
-                      <span class="badge bg-secondary">Closed</span>
-                    {% elif trip_status == "finalized" %}
-                      <span class="badge bg-info">Finalized</span>
-                    {% elif trip_status == "open" %}
-                      <span class="badge bg-success">Open to New Participants</span>
-                    {% endif %}
+                  {% if trip_status == "cancelled" %}
+                    <span class="status-inactive">Cancelled</span>
+                  {% elif trip_status == "closed" %}
+                    <span class="status-closed">Closed</span>
+                  {% elif trip_status == "finalized" %}
+                    <span class="status-active">Finalized</span>
+                  {% elif trip_status == "open" %}
+                    <span class="status-pending">Open To New Participants</span>
+                  {% endif %}
                 </div>
             </div>
 

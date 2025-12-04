@@ -656,7 +656,8 @@ def create_test_data():
             
             stop_count = 0
             for trip in trips:
-                num_stops = random.randint(2, 5)
+                num_stops = num_stops = random.randint(0, 3)
+
                 
                 for order in range(num_stops):
                     template = random.choice(stop_templates)

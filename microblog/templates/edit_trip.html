@@ -3,10 +3,8 @@
 {% block content %}
 <div class="container">
     <h2>Edit Trip</h2>
-    
 
     <form class="Trip-form" action="{{ url_for('main.edit_trip', trip_id=trip.id) }}" method="post" novalidate>
-
         <div class="trip-grid">
             <div class="trip-grid-left">
                 <div class="form-group">
@@ -53,7 +51,9 @@
                 </div>
             </div>
         </div>
-        <!-- here add who gets editing permissions | a list of all participants with a checkbox by their name-->
+
+        <!-- Editing permissions list-->
+
         <div class="form-group">
             <label for="edit_permissions">Edit Permissions</label>
             <div id="edit_permissions">
@@ -83,21 +83,20 @@
         <div id="stopsContainer">
         {# Maximum number of stops allowed #}
             {% set total_stops = stops|length if stops|length > 0 else 1 %}
-            {% set max_render = total_stops + 5 %}  {# render existing + 5 new placeholders #}
-            {% for i in range(max_render) %}
+            {% for i in range(3) %}
                 {% set stop = stops[i] if i < stops|length else None %}
                 <div class="stop-card"
-                     data-stop-index="{{ i }}"
-                     {% if i > 0 and not stop %}style="display: none;"{% endif %}>
-                    <div class="stop-header">
-                        <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
-                        <button type="button" class="remove-stop"
-                                style="display: {% if i == 0 %}none{% else %}flex{% endif %};">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                            </svg>
-                            Remove
+                    data-stop-index="{{ i }}"
+                    {% if i >= stops|length %}hidden style="display:none;"{% endif %}>
+                        <div class="stop-header">
+                            <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
+                             <button type="button" class="remove-stop"
+                                    style="display: {% if i == 0 %}none{% else %}flex{% endif %};">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                                 Remove
                         </button>
                 </div>
 
@@ -176,7 +175,9 @@
                 </div>
                 {% endfor %}
             </div>
-            <button type="button" id="addStopBtn" class="add-stop-btn" style="display: none;">
+
+            <button type="button" id="addStopBtn" class="add-stop-btn" style="display: flex;">
+
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
@@ -191,106 +192,118 @@
     </form>
 </div>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Show add button if we have less than 3 visible stops
-   function updateAddButton() {
-        const stops = Array.from(document.querySelectorAll('[data-stop-index]'));
-        const visibleStops = stops.filter(stop => stop.style.display !== 'none');
-        const addBtn = document.getElementById('addStopBtn');
+    const MAX_STOPS = 3;
+    const stopsContainer = document.getElementById('stopsContainer');
+    const addStopBtn = document.getElementById('addStopBtn');
 
-        // Show add button if there are hidden stops left to reveal
-        const hiddenStops = stops.filter(stop => stop.style.display === 'none');
-        addBtn.style.display = hiddenStops.length > 0 ? 'flex' : 'none';
-}
-    
-    document.getElementById('addStopBtn').addEventListener('click', function() {
-        const stops = document.querySelectorAll('[data-stop-index]');
-        for (let stop of stops) {
-            if (stop.style.display === 'none') {
-                stop.style.display = 'block';
-                updateNumbers();
-                updateAddButton();
-                break;
-            }
-        }
-    });
-    
-    document.getElementById('stopsContainer').addEventListener('click', function(e) {
-        if (e.target.closest('.remove-stop')) {
-            const stopCard = e.target.closest('[data-stop-index]');
-            stopCard.style.display = 'none';
-            // Clear values when hiding
-            stopCard.querySelectorAll('input, textarea, select').forEach(input => {
-                if (input.type !== 'radio' && input.type !== 'hidden') {
-                    input.value = '';
-                }
-            });
-            updateNumbers();
-            updateAddButton();
-        }
-    });
-    
+    /** Return only visible stop cards (computed visibility, not style attr only) */
+    function getVisibleStops() {
+        return Array.from(stopsContainer.querySelectorAll('.stop-card'))
+            .filter(stop => !(stop.hidden || getComputedStyle(stop).display === 'none'));
+    }
+
+    /** Return hidden stop cards */
+    function getHiddenStops() {
+        return Array.from(stopsContainer.querySelectorAll('.stop-card'))
+            .filter(stop => (stop.hidden || getComputedStyle(stop).display === 'none'));
+    }
+
     function updateNumbers() {
-        const stops = document.querySelectorAll('[data-stop-index]:not([style*="display: none"])');
-        stops.forEach((stop, i) => {
+        const visibleStops = getVisibleStops();
+        visibleStops.forEach((stop, i) => {
             stop.querySelector('.stop-number').textContent = `${i + 1}. Food stop`;
-            stop.querySelector('.remove-stop').style.display = i === 0 ? 'none' : 'flex';
+            const removeBtn = stop.querySelector('.remove-stop');
+            if (removeBtn) removeBtn.style.display = i === 0 ? 'none' : 'flex';
         });
     }
-    
+
+    function updateAddButton() {
+        const visibleStops = getVisibleStops();
+        const hiddenStops = getHiddenStops();
+        if (visibleStops.length >= MAX_STOPS || hiddenStops.length === 0) {
+            addStopBtn.style.display = 'none';
+        } else {
+            addStopBtn.style.display = 'flex';
+        }
+    }
+
+    /** When Add button clicked */
+    addStopBtn.addEventListener('click', function() {
+        const visibleStops = getVisibleStops();
+        const hiddenStops = getHiddenStops();
+
+        if (visibleStops.length >= MAX_STOPS) {
+            alert(`You can only have up to ${MAX_STOPS} stops per trip.`);
+            return;
+        }
+        if (hiddenStops.length === 0) {
+            alert('No more stop slots available.');
+            return;
+        }
+
+        const next = hiddenStops[0];
+        next.hidden = false;
+        next.style.display = 'block';
+        updateNumbers();
+        updateAddButton();
+    });
+
+    /** Remove-stop button */
+    stopsContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.remove-stop');
+        if (!btn) return;
+        const card = btn.closest('.stop-card');
+        card.hidden = true;
+        card.style.display = 'none';
+        card.querySelectorAll('input, textarea, select').forEach(input => {
+            if (input.type !== 'radio' && input.type !== 'hidden') input.value = '';
+        });
+        updateNumbers();
+        updateAddButton();
+    });
+
+    /** Initialize on load */
     updateNumbers();
     updateAddButton();
-    
-    // Handle stop status changes for each stop independently
+
+    /** Toggle fixed/open sections */
     document.querySelectorAll('.stop-status-radio').forEach(radio => {
         radio.addEventListener('change', function() {
-            const stopIndex = this.getAttribute('data-stop-index');
+            const i = this.getAttribute('data-stop-index');
+            const card = this.closest('.stop-card');
             const value = this.value;
-            const stopCard = this.closest('.stop-card');
-            
-            const nameInput = stopCard.querySelector('.stop-name-input');
-            const timeInput = stopCard.querySelector('.stop-time-input');
-            const notesInput = stopCard.querySelector('.stop-notes-input');
-            const budgetInput = stopCard.querySelector('.stop-budget-input');
-            const typeSelect = stopCard.querySelector('.stop-type-select');
-            
+
+            const name = card.querySelector('.stop-name-input');
+            const time = card.querySelector('.stop-time-input');
+            const notes = card.querySelector('.stop-notes-input');
+            const budget = card.querySelector('.stop-budget-input');
+            const type = card.querySelector('.stop-type-select');
+
+            const openSection = document.getElementById(`final-destination-open-${i}`);
+            const fixedSection = document.getElementById(`final-destination-section-${i}`);
+
+            const toggleReadonly = (elements, state) => elements.forEach(el => { if (el) el.readOnly = state; });
+            const toggleDisabled = (el, state) => { if (el) el.disabled = state; };
+
             if (value === 'Fixed') {
-                if (nameInput) nameInput.readOnly = true;
-                if (timeInput) timeInput.readOnly = true;
-                if (notesInput) notesInput.readOnly = true;
-                if (budgetInput) budgetInput.readOnly = true;
-                if (typeSelect) typeSelect.disabled = true;
-                
-                // For stop 0, show/hide special sections
-                if (stopIndex === '0') {
-                    const openSection = document.getElementById(`final-destination-open-${stopIndex}`);
-                    const fixedSection = document.getElementById(`final-destination-section-${stopIndex}`);
-                    if (openSection) openSection.style.display = 'none';
-                    if (fixedSection) fixedSection.style.display = 'block';
-                }
-            } else if (value === 'Open') {
-                if (nameInput) nameInput.readOnly = false;
-                if (timeInput) timeInput.readOnly = false;
-                if (notesInput) notesInput.readOnly = false;
-                if (budgetInput) budgetInput.readOnly = false;
-                if (typeSelect) typeSelect.disabled = false;
-                
-                // For stop 0, show/hide special sections
-                if (stopIndex === '0') {
-                    const openSection = document.getElementById(`final-destination-open-${stopIndex}`);
-                    const fixedSection = document.getElementById(`final-destination-section-${stopIndex}`);
-                    if (openSection) openSection.style.display = 'block';
-                    if (fixedSection) fixedSection.style.display = 'none';
-                }
+                toggleReadonly([name, time, notes, budget], true);
+                toggleDisabled(type, true);
+                if (openSection) openSection.style.display = 'none';
+                if (fixedSection) fixedSection.style.display = 'block';
+            } else {
+                toggleReadonly([name, time, notes, budget], false);
+                toggleDisabled(type, false);
+                if (openSection) openSection.style.display = 'block';
+                if (fixedSection) fixedSection.style.display = 'none';
             }
         });
-        
-        // Initialize on page load
-        if (radio.checked) {
-            radio.dispatchEvent(new Event('change'));
-        }
+
+        if (radio.checked) radio.dispatchEvent(new Event('change'));
     });
 });
 </script>
+
 {% endblock %}

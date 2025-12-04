@@ -12,6 +12,23 @@ import datetime as dt
 from . import db
 from . import model
 from sqlalchemy import or_
+CITY_IMAGES =  {
+        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    }
 
 bp = Blueprint("main", __name__)
 
@@ -114,25 +131,7 @@ def index():
     query = query.order_by(model.Trip.status_time.desc())
     trips = db.session.execute(query).scalars().all()
     cities = db.session.execute(db.select(model.City)).scalars().all()
-    city_images = {
-        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    }
-
-    return render_template("main/index.html", trips=trips, cities=cities, city_images=city_images)
+    return render_template("main/index.html", trips=trips, cities=cities, city_images=CITY_IMAGES)
 
 
 
@@ -192,25 +191,9 @@ def user_profile(user_id):
         and int(flask_login.current_user.get_id()) == user.id
     )
 
-    city_images = {
-        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    }
 
-    return render_template("main/user_watch.html", user=user, is_owner=is_owner, city_images=city_images)
+
+    return render_template("main/user_watch.html", user=user, is_owner=is_owner, city_images=CITY_IMAGES)
 
 # Controller for editing the profile after authentication
 @bp.get("/user/<int:user_id>/edit")
@@ -332,24 +315,6 @@ def trip(trip_id):
         trip.is_open = False
         db.session.commit()
 
-    city_images = {
-        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    }
-    
     
     user = flask_login.current_user
     has_editing_permissions = False
@@ -399,7 +364,7 @@ def trip(trip_id):
         has_editing_permissions=has_editing_permissions,
         is_only_editor=is_only_editor,
         participants=participants,
-        city_images = city_images,
+        city_images = CITY_IMAGES,
         trip_status=trip_status,
         can_join=can_join,
         can_edit=can_edit
@@ -474,48 +439,60 @@ def create_trip():
         
         stop_indices = set()
         # stops[0][stop_name], stops[0][stop_place], stops[0][stop_status], stops[0][trip_preferences], stops[0][budget], stops[0][stop_type]
+
+
+        # --- STOP HANDLING (max 3) ---
+        MAX_STOPS = 3
         stops_to_create = []
 
+        # Get destination type (Fixed / Open) and stop_place for first stop logic
+        destination_type = request.form.get("destination_type")
+        stop_place = request.form.get("stop_place")
 
-        for i in range(3):  # Only allow 3 stops
+        for i in range(MAX_STOPS):
             stop_name = request.form.get(f"stops[{i}][stop_name]")
-        
-            # Skip if stop doesn't exist
             if not stop_name:
-                continue
-            
+                continue  # skip empty stops
+
             stop_time_str = request.form.get(f"stops[{i}][stop_time]")
             stop_time = None
             if stop_time_str:
-                stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
-            stop_destination_type = request.form.get(f"stops[{i}][destination_type]")
-            # Determine place for first stop
+                try:
+                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                except ValueError:
+                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
+
+            stop_status = request.form.get(f"stops[{i}][stop_status]")
             stop_type = request.form.get(f"stops[{i}][stop_type]")
-            if i == 0 and stop_type == "Fixed":
+
+            # Determine place for first stop
+            if i == 0 and destination_type == "Fixed":
                 place = stop_place
             else:
                 place = request.form.get(f"stops[{i}][place]")
-            
+
             budget = request.form.get(f"stops[{i}][budget]")
+            notes = request.form.get(f"stops[{i}][notes]")
 
             stops_to_create.append({
                 'trip_id': new_trip.id,
                 'name': stop_name,
                 'place': place,
                 'time': stop_time,
-                'destination_type': stop_destination_type,
-                'notes': request.form.get(f"stops[{i}][notes]"),
+                'notes': notes,
                 'budget_per_person': float(budget) if budget else None,
-                'stop_type': request.form.get(f"stops[{i}][stop_type]"),
+                'stop_type': stop_type,
                 'order': int(request.form.get(f"stops[{i}][stop_order]", i)),
-                'stop_status': request.form.get(f"stops[{i}][stop_status]"),
+                'stop_status': stop_status
             })
 
         if stops_to_create:
             db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
+
+            # Recalculate trip budget from stops
             total_budget = sum(stop.get('budget_per_person') or 0 for stop in stops_to_create)
             new_trip.budget = total_budget
-            
+
         create_trip_participant = model.Trip_participants(
             trip_id=new_trip.id,
             user_id=creator_id,
@@ -532,30 +509,13 @@ def create_trip():
     cities = db.session.execute(db.select(model.City)).scalars().all()
     users = db.session.execute(db.select(model.User)).scalars().all()
 
-    city_images = {
-        "Alicante": "https://images.unsplash.com/photo-1680537732160-01750bae5217?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Barcelona": "https://images.unsplash.com/photo-1630219694734-fe47ab76b15e?q=80&w=1504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Bilbao": "https://images.unsplash.com/photo-1566993850427-6324a91bbd32?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Córdoba": "https://images.unsplash.com/photo-1707583056849-4c8a7fb5570d?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Granada": "https://images.unsplash.com/photo-1620677368158-32b1293fac36?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Madrid": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Málaga": "https://images.unsplash.com/photo-1641667710644-fb8a6abf2a06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Murcia": "https://plus.unsplash.com/premium_photo-1697729491014-0da08900c12c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Salamanca": "https://plus.unsplash.com/premium_photo-1697730517637-a5c2f354439b?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "San Sebastián": "https://plus.unsplash.com/premium_photo-1697729411955-2b33ce7c819f?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Santander": "https://plus.unsplash.com/premium_photo-1697729454180-c9d49ba1fe82?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Seville": "https://images.unsplash.com/photo-1688404808661-92f72f2ea258?q=80&w=1752&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Toledo": "https://images.unsplash.com/photo-1468412526475-8cc70299f66f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    }
-    
+
     return render_template(
         "create_trip.html",
         stop_types=stop_types,
         cities=cities,
         users=users,
-        city_images = city_images
+        city_images = CITY_IMAGES
     )
 
 
@@ -567,6 +527,8 @@ def edit_trip(trip_id):
     if not trip:
         flash("Trip not found.", "error")
         return redirect(url_for("main.index"))
+
+    MAX_STOPS = 3
 
     if request.method == "POST":
         try:
@@ -604,65 +566,69 @@ def edit_trip(trip_id):
             for participant in trip.participants:
                 participant.editing_permissions = str(participant.user_id) in editing_participants_ids
 
-            # --- STOP HANDLING STARTS HERE ---
-            stops_to_create = []
-            destination_type = request.form.get("destination_type")
-            stop_place = request.form.get("stop_place")
+                # --- STOP HANDLING (max 3 stops) ---
+                stops_to_create = []
+                destination_type = request.form.get("destination_type")
+                stop_place = request.form.get("stop_place")
 
-            # Dynamically detect number of stops submitted
-            stop_keys = [key for key in request.form.keys() if key.startswith("stops[")]
-            num_stops = max(
-                [int(k.split("[")[1].split("]")[0]) for k in stop_keys],
-                default=-1
-            ) + 1
-
-            for i in range(num_stops):
-                stop_name = request.form.get(f"stops[{i}][stop_name]")
-                if not stop_name:
-                    continue
-
-                stop_time_str = request.form.get(f"stops[{i}][stop_time]")
-                stop_time = None
-                if stop_time_str:
-                    try:
-                        stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
-                    except ValueError:
-                        stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
-
-                stop_status = request.form.get(f"stops[{i}][stop_status]")
-                stop_type = request.form.get(f"stops[{i}][stop_type]")
-
-                if i == 0 and destination_type == "Fixed":
-                    place = stop_place
+                # Dynamically detect number of stops submitted
+                stop_keys = [key for key in request.form.keys() if key.startswith("stops[")]
+                if stop_keys:
+                    max_index = max(int(k.split("[")[1].split("]")[0]) for k in stop_keys)
+                    num_stops = min(max_index + 1, MAX_STOPS)  # 🔒 enforce limit
                 else:
-                    place = request.form.get(f"stops[{i}][place]")
+                    num_stops = 0
 
-                budget = request.form.get(f"stops[{i}][budget]")
-                notes = request.form.get(f"stops[{i}][notes]")
+                for i in range(num_stops):
+                    stop_name = request.form.get(f"stops[{i}][stop_name]")
+                    if not stop_name:
+                        continue
 
-                stops_to_create.append({
-                    "trip_id": trip.id,
-                    "name": stop_name,
-                    "place": place,
-                    "time": stop_time,
-                    "notes": notes,
-                    "budget_per_person": float(budget) if budget else None,
-                    "stop_type": stop_type,
-                    "order": int(request.form.get(f"stops[{i}][stop_order]", i)),
-                    "stop_status": stop_status
-                })
+                    stop_time_str = request.form.get(f"stops[{i}][stop_time]")
+                    stop_time = None
+                    if stop_time_str:
+                        try:
+                            stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                        except ValueError:
+                            stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
 
-            # 🟢 1. Delete and recreate stops ONLY if we actually have some to save
-            if stops_to_create:
-                db.session.execute(
-                    db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
-                )
-                db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
-            # --- STOP HANDLING ENDS HERE ---
+                    stop_status = request.form.get(f"stops[{i}][stop_status]")
+                    stop_type = request.form.get(f"stops[{i}][stop_type]")
 
-            db.session.commit()
-            flash("Trip updated successfully!", "success")
-            return redirect(url_for("main.trip", trip_id=trip.id))
+                    if i == 0 and destination_type == "Fixed":
+                        place = stop_place
+                    else:
+                        place = request.form.get(f"stops[{i}][place]")
+
+                    budget = request.form.get(f"stops[{i}][budget]")
+                    notes = request.form.get(f"stops[{i}][notes]")
+
+                    stops_to_create.append({
+                        "trip_id": trip.id,
+                        "name": stop_name,
+                        "place": place,
+                        "time": stop_time,
+                        "notes": notes,
+                        "budget_per_person": float(budget) if budget else None,
+                        "stop_type": stop_type,
+                        "order": int(request.form.get(f"stops[{i}][stop_order]", i)),
+                        "stop_status": stop_status
+                    })
+
+                # 🟢 Delete and recreate stops only if we have some
+                if stops_to_create:
+                    db.session.execute(
+                        db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
+                    )
+                    db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
+
+                    # Recalculate trip budget
+                    total_budget = sum(stop.get("budget_per_person") or 0 for stop in stops_to_create)
+                    trip.budget = total_budget
+
+                db.session.commit()
+                flash("Trip updated successfully!", "success")
+                return redirect(url_for("main.trip", trip_id=trip.id))
 
         except ValueError as e:
             db.session.rollback()

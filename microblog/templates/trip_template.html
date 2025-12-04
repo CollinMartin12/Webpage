@@ -22,7 +22,8 @@
           {% elif not trip.is_open %}
             <span class="status-closed">Closed</span>
           {% endif %}
-        </div>
+    </div>
+
         <div class="trip-info-card">
           <span>Budget: {{ trip.budget }}</span>
         </div>
@@ -49,25 +50,25 @@
       </div>
       <p class="trip-destination-card">Destination: {{ trip.destination_city.name }}</p>
       <p class="trip-description-card">Stops: {{ trip.stops | length }}</p>
-      <div class="trip-participants-actions-row" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-        <div class="trip-participants-row">
+       <div class="trip-participants-actions-row" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+         <div class="trip-participants-row">
           {% if trip.participants | length > 0 and trip.participants != trip.max_participants %}
             <div class="participant-avatars">
-              <div class="avatar-small">
-                <img src="{{ trip.participants[0].profile_picture or '/static/default-avatar.png' }}"
+               <div class="avatar-small">
+                 <img src="{{ trip.participants[0].profile_picture or '/static/default-avatar.png' }}"
                       alt="{{ trip.participants[0].name }}">
               </div>
               {% if trip.participants | length > 1 %}
-                <span class="participant-count">+{{ trip.participants | length - 1 }}</span>
+                 <span class="participant-count">+{{ trip.participants | length - 1 }}</span>
               {% endif %}
             </div>
           {% elif trip.participants == trip.max_participants %}
             <span>{{trip.max_participants}} / {{trip.max_participants}}</span>
           {% else %}
-            <span>No participants yet</span>
+             <span>No participants yet</span>
           {% endif %}
-        </div>
-        <div class="trip-actions-btn">
+         </div>
+         <div class="trip-actions-btn">
           <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn btn--primary">View Details</a>
         </div>
       </div>

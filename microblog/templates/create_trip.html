@@ -169,48 +169,76 @@
     </form>
 </div>
 
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const MAX_STOPS = 3;
     let stopCount = 1;
-    
-    document.getElementById('addStopBtn').addEventListener('click', function() {
+
+    const addStopBtn = document.getElementById('addStopBtn');
+    const stopsContainer = document.getElementById('stopsContainer');
+
+    addStopBtn.addEventListener('click', function() {
+        const currentStops = stopsContainer.querySelectorAll('[data-stop-index]').length;
+
+        if (currentStops >= MAX_STOPS) {
+            alert(`You can only add up to ${MAX_STOPS} stops per trip.`);
+            return;
+        }
+
         const template = document.querySelector('[data-stop-index="0"]');
         const newStop = template.cloneNode(true);
-        
+
         newStop.setAttribute('data-stop-index', stopCount);
         newStop.innerHTML = newStop.innerHTML.replace(/stops\[0\]/g, `stops[${stopCount}]`);
-        
+
+        //reseting the input of the stop
         newStop.querySelectorAll('input, textarea, select').forEach(input => {
-            if (input.type !== 'radio') {
-                input.value = '';
+            if (input.type === 'radio' || input.type === 'checkbox') {
+                input.checked = false;
             } else {
-                input.checked = input.value === 'Just Ideas';
+                input.value = '';
             }
         });
-        
-        document.getElementById('stopsContainer').appendChild(newStop);
+
+        stopsContainer.appendChild(newStop);
         stopCount++;
         updateNumbers();
+
+        //reaching maximum stops
+        if (stopsContainer.querySelectorAll('[data-stop-index]').length >= MAX_STOPS) {
+            addStopBtn.disabled = true;
+            addStopBtn.classList.add('disabled');
+        }
     });
-    
-    document.getElementById('stopsContainer').addEventListener('click', function(e) {
+
+    stopsContainer.addEventListener('click', function(e) {
         if (e.target.closest('.remove-stop')) {
             e.target.closest('[data-stop-index]').remove();
             updateNumbers();
+
+            // if a stop was removed we can add one again
+            if (stopsContainer.querySelectorAll('[data-stop-index]').length < MAX_STOPS) {
+                addStopBtn.disabled = false;
+                addStopBtn.classList.remove('disabled');
+            }
         }
     });
-    
+
     function updateNumbers() {
-        const stops = document.querySelectorAll('[data-stop-index]');
+        const stops = stopsContainer.querySelectorAll('[data-stop-index]');
         stops.forEach((stop, i) => {
             stop.querySelector('.stop-number').textContent = `${i + 1}. Food stop`;
             stop.querySelector('.stop-order').value = i;
             stop.querySelector('.remove-stop').style.display = stops.length > 1 ? 'flex' : 'none';
         });
     }
-    
+
     updateNumbers();
 });
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const definiteDate = document.getElementById('definite_date');

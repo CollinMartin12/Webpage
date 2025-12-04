@@ -13,7 +13,6 @@
 }
 
 
-
 /* ===================== GLOBAL BUTTON BASE STYLE ===================== */
 
 
@@ -43,6 +42,7 @@
   background: rgb(243, 241, 241);
   border-color: gray;
   border-radius: 8px;
+border-width: 1px;
   color: black;
 }
 
@@ -52,26 +52,28 @@
 }
 
 .btn-leave {
-  background: rgb(243, 241, 241);
-  border-color: red;
+  background: var(--fourth);
+  border-color: darkred;
   border-radius: 8px;
   border-width: 1px;
   color: black;
 }
 
 .btn-success {
-  background: #0b3a60;
+  background: var(--fourth);
   border-color: black;
   border-radius: 8px;
-  color: white;
+    border-width: 1px;
+  color: black;
 }
 
 
 
 .btn--primary {
-  background: rgb(243, 241, 241);
-  border-color: gray;
+  background: var(--fourth);
+  border-color: black;
   border-radius: 8px;
+  border-width: 1px;
   color: black;
 }
 
@@ -100,7 +102,6 @@ body > header {
   display: flex;                         
   justify-content: space-between;      
   align-items: center;
-    font-family: fantasy;
   padding: 1rem 2rem;                    
   background: var(--main);
   color: #fff;
@@ -122,14 +123,17 @@ body {
 /* --------Navigation Bar Design------- */
 
 .topbar {
-  position: relative;             /* Establishes the anchor for the center element */
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Pushes Logo to Left and .nav-links to Right */
-  padding: 0 20px;                /* Ensures items don't touch the screen edges */
-  height: 80px;                   /* Keep your existing height */
-  background-color: var(--main);  /* Your brand color */
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 80px;
+  background-color: var(--main);
+    border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
+
 
 /* 2. Actions Buttons */
 .nav-links {
@@ -165,8 +169,15 @@ body {
 .logo-link {
   display: flex;
   align-items: center;
+  text-decoration: none;
 }
 
+.logo {
+  height: 250px;
+  margin-left: 0;
+}
+
+/* Nav Bar Buttons */
 
 .nav-links-center a,
 .nav-links a {
@@ -249,7 +260,6 @@ body {
   box-shadow: 0 0 0 4px var(--ring); 
 }
 
-
 .auth .btn-primary{
   display: inline-block;
   width: 100%;
@@ -294,7 +304,7 @@ body {
     border-radius: 12px;
     box-shadow: 10px 6px 18px rgba(0,0,0,.06);
     max-width: 450px;
-    margin: 20px auto;   /* center the whole card */
+    margin: 20px auto;
 }
 
 .profile-vertical {
@@ -335,7 +345,7 @@ body {
   color: var(--main);
 }
 
-/* ====== Editable Profile Styilng ======= */
+/* ====== Editable Profile Styling ======= */
 
 .profile-form { background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
 .profile-card dt { color:#6b7280; }
@@ -369,22 +379,25 @@ body {
 
 /* ===================== AVATAR STYLES and Trip avatars For TRIP POSTS===================== */
 
+/*
 .participants-display-small {
     display: flex;
     align-items: center;
     gap: 10px;
     background-color: var(--fourth);
-    border: 1px solid #ddd;
+    border: 50px solid #ddd;
     border-radius: 12px;
-    padding: 5px 12px; /* Adjusted padding for footer size */
+    padding: 5px 12px;
     width: fit-content;
-    
-    /* key change: remove auto margins so it stays left */
-    margin: 0; 
+
+
+    margin: 0;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
+ */
 
-/* This is for trip_template rendering */
+
+/* === In trip.html and trip_template.html === */
 
 .participant-avatars {
     display: flex;
@@ -406,6 +419,8 @@ body {
     object-fit: cover;
 }
 
+/* In trip.html */
+
 .participants-display {
     text-align: left;
     font-size: .9rem;
@@ -418,12 +433,13 @@ body {
     overflow-y: auto;
     flex-shrink: 0;
     border: 1px solid grey;
-    border-radius: 10px;
 }
+
 .participants-display h3 {
   border-bottom: 2px solid rgb(237, 235, 235);
   margin-top: 0;
   margin-bottom: 0.5rem;
+
 }
 
 .trip_destination {
@@ -433,32 +449,6 @@ body {
     gap: 10px;
     flex-direction: column;
     text-align: center;
-}
-
-.user_info {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between avatar and name */
-}
-
-.avatar_image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.trip_image {
-    width:40px;
-    height:40px;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.avatar_image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
 }
 
 .trips-container {
@@ -483,15 +473,6 @@ body {
   overflow: auto;
 }
 
-.user_info {
-    width: 100%;
-    text-align: center;
-}
-
-.creator_trip{
-    width: 100%;
-    text-align: center;
-}
 .trip {
   flex: 1 1 0;
   border: 1px solid #ddd;
@@ -510,109 +491,12 @@ body {
   box-sizing: border-box;
 }
 
-.trip_header {
-    margin-bottom: 15px;
-    border-radius: 100px 100px 0 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: center;
-    padding: 20px;
-    background-color:var(--main);
-    color: var(--fourth);
-
-}
-
-.trips-wrapper {
-    display: flex;
-    justify-content: center;   /* centers the trip cards horizontally */
-    align-items: flex-start;   /* optional: aligns tops of cards */
-    gap: 40px;                 /* spacing between cards */
-    flex-wrap: wrap;           /* allows cards to move to new rows on smaller screens */
-    padding: 20px 0;
-}
-
-
-.trip_header > div {
-    border-radius: 24px;
-    text-align: center;
-    padding: 20px;
-}
-
-.trip_info {
-    flex-grow: 1;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: center;
-    border-radius: 50px;
-}
-
-.trip_footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: auto;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-    box-sizing: border-box;
-}
-
-.trip_destination {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin: 0;
-  border-radius: 50px;
-  font-family: fantasy;
-}
-
-.trip-info-box {
-  background-color: var(--fourth);
-  margin: 1px auto;
-  width: fit-content;
-  border-radius: 50px;
-  max-width: 100%;
-  box-shadow: 0 10px 10px rgba(0,0,0,0.05);
-  text-align: center;
-}
-
-
-.trip_info {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* spacing between boxes */
-    padding: 20px;
-}
-
-.info-field {
-    background: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 1rem;
-    line-height: 1.4;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-
-.trip_info img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-  font-family: fantasy;
-}
-
 
 .avatar-small img {
   width: 28px;
   height: 28px;
   border-radius: 50%;
 }
-
 
 
 .btn-primary:hover {
@@ -626,52 +510,8 @@ body {
 
 .trips-container > * { outline: 1px  var(--main); border-radius: 80px;}
 
-.trip-details-container {
-    max-width: 800px;
-    align-items: center;
-    margin: 40px auto;
-    padding: 30px;
-    border-radius: 30px;
-    background: #ffffff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    font-family: sans-serif;
-}
 
-.trip-action-row {
-    display: flex;
-    align-items: center;
-    gap: 15px;       /* spacing between items */
-    padding: 10px 0;
-    flex-wrap: wrap; /* prevents overflow on small screens */
-}
-
-.creator-label {
-    font-size: 0.9rem;
-    color: #444;
-    font-weight: 500;
-}
-
-
-
-.trip-meta {
-    background-color: var(--fourth) !important;
-    border: 2px solid var(--main);
-    border-radius: 18px;
-    padding: 5px 5px;
-    margin: 5px 0;
-    line-height: 1.6;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-
-    text-align: Left;
-
-
-}
-
-.trip-meta p {
-    margin: 6px 0 !important;
-    font-size: 1.05rem;
-
-}
+/* In index.html */
 
 .container_title{
     justify-content: flex-start;
@@ -683,7 +523,6 @@ body {
     text-align: left;
     font-size: 2.2rem;
     margin-bottom: 25px;
-    font-family: fantasy;
     border-radius: 15px;
 }
 
@@ -693,6 +532,7 @@ body {
     font-size: 3.0rem;
     margin-bottom: 2px;
 }
+
 .status {
     text-align: center;
     padding: 5px 15px;
@@ -709,12 +549,8 @@ body {
 .trip-picture {
     width: 600px;
     height: 200px;
-
-
     flex-shrink: 0; 
     flex-grow: 0;
-
-
     padding: 10px;
     border-radius: 12px;
     overflow: hidden;
@@ -724,20 +560,12 @@ body {
 
     width: 100%;
     height: 100%;
-
-    object-fit: cover; 
-    
+    object-fit: cover;
     display: block;
     border-radius: 12px;
 }
 
-/* --- Section titles --- */
-.trip-section-title {
-    font-size: 1.4rem;
-    margin-top: 30px;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
+
 
 
 /* Comment container */
@@ -793,78 +621,6 @@ body {
 }
 
 
-/* ===================== HOME PAGE TABS ===================== */
-
-/* === Two-column layout for home page === */
-
-
-/* Trip card container */
-.trip-card {
-    position: relative;
-    background: var(--fourth);
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    transition: transform 0.15s ease;
-}
-
-/*
-.trip-card-header {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.trip-header-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.trip-details-title {
-    margin: 0;
-    font-size: 2.2rem;
-  }
-
-.trip-status {
-    margin-left: 0;
-}
-
-.trip-small-details {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-    color: rgb(46, 40, 40);
-    font-style: italic;
-    font-size: 0.95rem;
-}
-
-.trip-small-details p {
-    margin: 0;
-}
-
-
-
-.trip-card:hover {
-    transform: translateY(-3px);
-}
-
-.trip-card a {
-    color: var(--main);
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 1.1rem;
-}
-
-.trip-card a:hover {
-    text-decoration: underline;
-}
-*/
-
-
 /* ======== Create trip ======== */
 
 /* --- Main Layout --- */
@@ -902,7 +658,7 @@ body {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Ensures padding doesn't break width */
+    box-sizing: border-box;
     font-size: 1rem;
 }
 
@@ -1259,6 +1015,7 @@ a[href*="main.index"]:hover {
   border-left: 4px solid;
 }
 
+/* =========== MAY BE REDUNDANT ==========
 .alert-success {
   background-color: #d4edda;
   border-color: #28a745;
@@ -1283,6 +1040,7 @@ a[href*="main.index"]:hover {
   color: #0c5460;
 }
 
+*/
 
 details {
     margin: 1rem 0;
@@ -1383,7 +1141,7 @@ details[open] summary {
 .stop-item div {
   font-size: 0.85rem;
   margin: 0.15rem 0;
-  clear: both; /* Prevent other divs from wrapping around float */
+  clear: both;
 }
 
 .trip-meetups {
@@ -1391,7 +1149,6 @@ details[open] summary {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 15px;
-  border-radius: 0.375rem;
   background-color: var(--fourth);
   flex-grow: 1;
   max-width: 450px;
@@ -1402,6 +1159,7 @@ details[open] summary {
   border: 1px solid grey; 
   border-radius:10px
 }
+
 .trip-meetups h3 {
   border-bottom: 2px solid rgb(237, 235, 235);
   margin-top: 0;
@@ -1442,7 +1200,6 @@ details[open] summary {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 15px;
-  border-radius: 0.375rem;
   background-color: var(--fourth);
   flex-grow: 1;
   max-width: 450px;
@@ -1458,7 +1215,8 @@ details[open] summary {
   margin-top: 0;
   margin-bottom: 0.5rem;
 }
-/* here is the comment form box. make it wide for the div and the post button to the side */
+
+
 .trip-comments__form {
   margin-bottom: 1rem;
   display: flex;
@@ -1467,13 +1225,13 @@ details[open] summary {
 .trip-comments__form textarea {
   flex: 1;
   min-width: 0;
-  max-width: 180px;
+  max-width: 300px;
   padding: 0.3rem 0.4rem;
   font-size: 0.92rem;
   border: 1px solid #bbb;
   border-radius: 4px;
   resize: vertical;
-  height: 32px;
+  height: 40px;
 }
 
 .trip-comments__form button {
@@ -1493,7 +1251,6 @@ details[open] summary {
   text-align: left;
   font-size: 1.1rem;
   line-height: 1.6;
-  border-radius: 0.375rem;
   background-color: var(--fourth);
   flex-grow:3;
   max-width: 450px;
@@ -1504,6 +1261,7 @@ details[open] summary {
   border: 1px solid grey;
   border-radius: 10px;
 }
+
 .trip-description-individual h3 {
   border-bottom: 2px solid rgb(237, 235, 235);
   margin-top: 0;
@@ -1512,24 +1270,20 @@ details[open] summary {
 .trip-info-row {
     display: flex !important;
     justify-content: center;
-
     gap: 1rem;
     align-items: flex-start;
     flex-wrap: wrap;
     width: 100%;
-    display:flex;
-}
-.trip-actions-btn {
-    /* Reset any previous alignments */
-    margin: 0;
 }
 
+.trip-actions-btn {
+    margin: 0;
+}
 
 .trip-stops {
   text-align: left;
   font-size: 1.1rem;
   line-height: 1.6;
-  border-radius: 0.375rem;
   background-color: var(--fourth);
   flex-grow:3;
   max-width: 450px;
@@ -1547,7 +1301,6 @@ details[open] summary {
   margin-bottom: 0.5rem;
 }
 
-
 .participants-column {
     display: flex;
     flex-grow: 1;
@@ -1559,7 +1312,6 @@ details[open] summary {
     text-align: left;
     font-size: 1.1rem;
     line-height: 1.6;
-    border-radius: 0.375rem;
     background-color: var(--fourth);
     width: 300px;
     padding: 0.5rem;
@@ -1567,15 +1319,16 @@ details[open] summary {
     overflow-y: auto;
     flex-shrink: 0;
     border: 1px solid grey;
+    border-radius: 10px;
 }
+
 .trip-actions {
   text-align: left;
   font-size: .9rem;
   line-height: 1.6;
-  border-radius: 0.375rem;
   background-color: var(--fourth);
   flex-grow: 1;
-  height: 320px;
+  height: 360px;
   padding: 0.5rem;
   overflow-y: auto;
   flex-shrink: 0;
@@ -1595,7 +1348,7 @@ details[open] summary {
 
 .trip-actions h3 {
   margin-top: 0;
-  margin-bottom: 0rem;
+  margin-bottom: 0;
 }
 
 .trip-actions .btn {
@@ -1617,8 +1370,6 @@ details[open] summary {
 .trip-content-wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 2rem;
   margin-bottom: 1px;
   padding: 15px;
@@ -1632,12 +1383,9 @@ details[open] summary {
 }
 
 .trip-picture {
-    width: 600px;       
-    height: 200px;       
-    
-
+    width: 600px;
+    height: 280px;
     flex-shrink: 0;
-
     border-radius: 12px;
     overflow: hidden;
 }
@@ -1645,10 +1393,8 @@ details[open] summary {
 
 .trip-picture img {
     width: 100%;         
-    height: 100%;       
-    
-    object-fit: cover;   
-    
+    height: 100%;
+    object-fit: cover;
     display: block;     
 }
 
@@ -1703,47 +1449,44 @@ details[open] summary {
 }
 
 
-/* 1. Parent Reference: Allows the child to position itself relative to this header */
 .trip header {
-    position: relative; 
-    /* Ensures the overlay doesn't get hidden if you have overflow issues */
+    position: relative;
     overflow: visible; 
 }
 
-/* 2. The Overlay Container: positions it Top-Left over the image */
+
 .trip-top-left-corner {
     position: absolute;
     top: 12px;   /* Distance from top edge */
     left: 12px;  /* Distance from left edge */
     z-index: 10; /* Forces it to sit on TOP of the image */
     
-    /* Layout: Forces Status and Budget to be side-by-side */
+
     display: flex;
     flex-direction: row;
-    gap: 8px;    /* Space between the two pills */
+    gap: 8px;
     align-items: center;
 }
 
-/* 3. Status Badge Styling (The Green Pill) */
+/* Status Badge in index and trip */
 .trip-status span {
     display: inline-block;
     padding: 5px 12px;
-    border-radius: 50px; /* High radius = Pill shape */
+    border-radius: 50px;
     font-size: 0.75rem;
     font-weight: bold;
-    color: black;
-    background-color: var(--third);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Drop shadow for readability */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 /* Status Colors - Matching Google/Material styles */
-.status-pending { background-color: #0f9d58; } /* Green (Open) */
-.status-active  { background-color: #4285f4; } /* Blue (Finalized) */
-.status-inactive{ background-color: #db4437; } /* Red (Cancelled) */
-.status-closed  { background-color: #5f6368; } /* Grey (Closed) */
+.status-pending { background-color: #0f9d58; }
+.status-active  { background-color: #4285f4; }
+.status-inactive{ background-color: #db4437; }
+.status-closed  { background-color: #5f6368; }
 
 
-/* 4. Budget Badge Styling (The White Pill) */
+/* Budget pill in index.html */
 .trip-info-card span {
     display: inline-block;
     background-color: white;
@@ -1754,6 +1497,7 @@ details[open] summary {
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
 /* Adjustments to your existing classes */
 .trip-info-card-under {
     margin-top: 8px;
@@ -1766,16 +1510,15 @@ details[open] summary {
     font-weight: bold;
     color: #222;
     text-align: left;
-    /* Ensure title doesn't overlap dates if it's very long */
     flex-grow: 1; 
     padding-right: 10px; 
 }
 
 .trip-dates-card {
     font-size: 0.8rem !important;
-    color: #929191; /* Lighter grey usually looks better for dates */
-    white-space: nowrap; /* Prevents dates from breaking into two lines */
-    flex-shrink: 0; /* Prevents dates from getting squished */
+    color: #929191;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .trip-info-card-under p {
@@ -1783,40 +1526,42 @@ details[open] summary {
     font-size: 1rem;
     text-align: left;
     color: #555;
-    text-align: left;
 }
+
+/* Trip card dates */
 
 .trip-info-card-wrapper {
   display: flex;
-  justify-content: space-between; /* Pushes Title to left, Dates to right */
-  align-items: baseline;          /* Aligns text so the bottom of letters match */
-  margin-bottom: 4px;           /* Space between this row and the description below */
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
 }
+
+/* Section of participants */
 
 .trip-participants-row {
     display: flex;
-    justify-content: space-between; /* Pushes Participants left, Button right */
-    align-items: center;            /* Vertically centers them */
-    padding: 10px 15px;             /* Matches your card padding */
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
     margin-top: 5px;
 }
-
 
 /* Container to center the tabs */
 .trip-filters-container {
     max-width: 1200px;
-    margin: 20px auto 10px auto; /* Spacing from top */
+    margin: 20px auto 10px auto;
     padding: 0 15px;
     display: flex;
-    justify-content: flex-start; /* Aligns tabs to the left */
+    justify-content: flex-start;
 }
 
 /* The group of buttons */
 .trip-filters {
     display: inline-flex;
-    background-color: #f1f3f4;   /* Light grey background for the group */
-    border-radius: 50px;         /* Fully rounded ends */
-    padding: 4px;                /* Space inside the grey bubble */
+    background-color: #f1f3f4;
+    border-radius: 50px;
+    padding: 4px;
     gap: 4px;
 }
 
@@ -1827,7 +1572,7 @@ details[open] summary {
     font-weight: 600;
     font-size: 0.95rem;
     padding: 8px 20px;
-    border-radius: 50px;        /* Pill shape */
+    border-radius: 50px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -1843,49 +1588,49 @@ details[open] summary {
 /* Active/Selected State (White with Shadow) */
 .filter-btn.active {
     background-color: white;
-    color: #561F37; /* Your main brand color */
+    color: var(--main);
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
-/* --- 1. The Filter Card Container --- */
+/* --- Filter Card Container --- */
 .trip-filters-card {
     background-color: white;
     border: 1px solid #e0e0e0;
-    border-radius: 16px;       /* Smooth rounded corners */
+    border-radius: 16px;
     padding: 20px 24px;
-    margin-bottom: 30px;       /* Spacing between filters and trip list */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Soft shadow */
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* --- 2. The Form Layout (Horizontal Row) --- */
+/* --- Form Layout (Horizontal Row) --- */
 .trip-filters-form {
     display: flex;
-    gap: 20px;               /* Space between each input column */
-    align-items: flex-end;   /* Aligns inputs to the bottom so labels line up */
+    gap: 30px;
+    align-items: flex-end;
     width: 100%;
 }
 
-/* --- 3. Individual Filter Columns --- */
+/* --- Individual Filter Columns --- */
 .filter-group {
-    flex: 1;                 /* Each input takes equal width */
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* --- 4. Label Styling --- */
+/* --- Label Styling --- */
 .filter-group label {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #5f6368;          /* Dark Grey */
-    margin-bottom: 8px;      /* Space between label and input */
+    color: #5f6368;
+    margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
-/* --- 5. Input & Select Field Styling --- */
+/* --- Input & Select Field Styling --- */
 .filter-group input,
 .filter-group select {
     width: 100%;
@@ -1894,10 +1639,10 @@ details[open] summary {
     color: #3c4043;
     background-color: white;
     border: 1px solid #dadce0;
-    border-radius: 8px;      /* Slightly rounded inputs */
+    border-radius: 8px;
     outline: none;
     transition: all 0.2s ease;
-    box-sizing: border-box;  /* Ensures padding doesn't break layout */
+    box-sizing: border-box;
 }
 
 
@@ -1909,13 +1654,15 @@ details[open] summary {
   background-position: center;
   background-repeat: no-repeat;
 
-  height: 300px; /* Adjust as you like */
+  height: 300px;
   display: flex;
   align-items: center;
   position: relative;
   color: white;
-  padding: 0; /* Remove extra padding to avoid stretching */
+  padding: 0;
 }
+
+/* Adding a small overlay on image to decrease brightness */
 
 .landing-hero::before {
   content: "";
@@ -1998,7 +1745,6 @@ details[open] summary {
 .landing-how h2 {
   font-size: 1.9rem;
   margin-bottom: 20px;
-  font-family: fantasy;
 }
 
 .landing-steps {
@@ -2038,8 +1784,8 @@ footer {
 .trip-grid-profile{
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;   /* centers horizontally */
-    gap: 2rem;                 /* space between cards */
+    justify-content: center;
+    gap: 2rem;
     padding: 1rem 0;
     height: 400px;
 }
