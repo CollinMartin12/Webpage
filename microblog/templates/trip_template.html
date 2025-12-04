@@ -55,8 +55,9 @@
           {% if trip.participants | length > 0 and trip.participants != trip.max_participants %}
             <div class="participant-avatars">
                <div class="avatar-small">
-                 <img src="{{ trip.participants[0].profile_picture or '/static/default-avatar.png' }}"
-                      alt="{{ trip.participants[0].name }}">
+                 <img src="{{ trip.participants[0].user.profile_picture or '/static/default-avatar.png' }}"
+                        alt="{{ trip.participants[0].user.name }}">
+
               </div>
               {% if trip.participants | length > 1 %}
                  <span class="participant-count">+{{ trip.participants | length - 1 }}</span>

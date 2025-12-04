@@ -1,5 +1,5 @@
 
-from flask import redirect, url_for, request, flash, current_app
+from flask import redirect, url_for, request, flash, current_app, app
 from collections import UserList
 import dateutil.tz
 ####### here is all
@@ -29,6 +29,7 @@ CITY_IMAGES =  {
         "Valencia": "https://images.unsplash.com/photo-1565768502719-571073a68b4c?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         "Zaragoza": "https://images.unsplash.com/photo-1612072451833-bb858853aaf5?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     }
+
 
 bp = Blueprint("main", __name__)
 

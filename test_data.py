@@ -32,6 +32,12 @@ from microblog.model import (
 )
 
 
+PROFILE_PHOTOS =[
+    "https://plus.unsplash.com/premium_vector-1682269284255-8209b981c625?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://plus.unsplash.com/premium_vector-1682269287900-d96e9a6c188b?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://plus.unsplash.com/premium_vector-1682269282372-6d888f3451f1?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/vector-1740737650825-1ce4f5377085?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+]
 # Rich test data definitions
 CITIES_DATA = [
     "Madrid", "Barcelona", "Valencia", "Seville", "Bilbao",
@@ -492,7 +498,7 @@ def create_test_data():
                     description=user_data["description"],
                     city_id=city.id if city else None,
                     neighborhood_id=neighborhood.id if neighborhood else None,
-                    profile_picture=f"/static/images/users/{user_data['name'].replace(' ', '_').lower()}.jpg"
+                    profile_picture=random.choice(PROFILE_PHOTOS)
                 )
                 db.session.add(user)
                 db.session.flush()
