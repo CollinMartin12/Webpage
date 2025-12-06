@@ -7,58 +7,83 @@
     <form class="Trip-form" action="{{ url_for('main.edit_trip', trip_id=trip.id) }}" method="post" novalidate>
         <div class="trip-grid">
             <div class="trip-grid-left">
-                <div class="form-group">
+            <div class="form-group">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                     <label for="title">Trip Name</label>
-                    <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required readonly placeholder="Enter trip name" value="{{ trip.title }}">
+                    <input type="checkbox" name="final_name" id="trip_fixed" value="fixed" {% if trip.final_name %}checked disabled{% endif %}>
+                    <span style="font-size: 14px;">Fixed</span>
                 </div>
-
-                {% if date_type == "Fixed" %}
-                    <div class="form-group">
+                <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required {% if trip.final_name %}readonly style="background-color: #f8f9fa;"{% endif %} placeholder="Enter trip name" value="{{ trip.title }}">
+            </div>
+            {% if date_type == "Fixed" %}
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                         <label for="definite_date">Date</label>
-                        <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" readonly>
+                        <input type="checkbox" name="final_date" id="date_fixed" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
+                        <span style="font-size: 14px;">Fixed</span>
                     </div>
-                {% else %}
-                    <div class="form-group">
-                        <label for="start_date">Start Date</label>
-                        <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" readonly>
+                    <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="start_date">Date Range</label>
+                        <input type="checkbox" name="final_date" id="date_fixed" value="fixed" {% if trip.final_date %}checked{% endif %}>
+                        <span style="font-size: 14px;">Fixed</span>
                     </div>
-                    <div class="form-group">
-                        <label for="end_date">End Date</label>
-                        <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" readonly>
-                    </div>
-                {% endif %}
+                    <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                </div>
+            {% endif %}
             </div>
 
             <div class="trip-grid-right">
                 <div class="form-group">
-                    <label for="destination_city_id">Main Location</label>
-                    <select class="form-control-compact" id="destination_city_id" name="destination_city_id" required>
-                        <option value="">Select city</option>
-                        {% for city in cities %}
-                            <option value="{{ city.id }}" {% if city.id == trip.destination_city_id %}selected{% endif %}>{{ city.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="destination_city_id">Main Location</label>
+                        <input type="checkbox" name="final_location" id="destination_fixed" value="fixed" {% if trip.final_location %}checked disabled{% endif %}>
+                        <span style="font-size: 14px;">Fixed</span>
+                    </div>
+                    {% if trip.final_location %}
+                        <input type="text" class="form-control-compact" value="{{ trip.destination_city.name if trip.destination_city else 'No city selected' }}" readonly style="background-color: #f8f9fa;">
+                        <input type="hidden" name="destination_city_id" value="{{ trip.destination_city_id }}">
+                    {% else %}
+                        <select class="form-control-compact" id="destination_city_id" name="destination_city_id" required>
+                            <option value="">Select city</option>
+                            {% for city in cities %}
+                                <option value="{{ city.id }}" {% if city.id == trip.destination_city_id %}selected{% endif %}>{{ city.name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea class="form-control-compact" id="description" name="description" rows="3" readonly>{{ trip.description }}</textarea>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="description">Description</label>
+                        <input type="checkbox" name="final_description" id="description_fixed" value="fixed" {% if trip.final_description %}checked disabled{% endif %}>
+                        <span style="font-size: 14px;">Fixed</span>
+                    </div>
+                    <textarea class="form-control-compact" id="description" name="description" rows="3" {% if trip.final_description %}readonly style="background-color: #f8f9fa;"{% endif %}>{{ trip.description }}</textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="max_participants">Max Participants</label>
-                    <input type="number" class="form-control-compact" id="max_participants" name="max_participants" value="{{ trip.max_participants }}" readonly>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <label for="max_participants">Max Participants</label>
+                        <input type="checkbox" name="final_max_participants" id="max_participants_fixed" value="fixed" {% if trip.final_max_participants %}checked disabled{% endif %}>
+                        <span style="font-size: 14px;">Fixed</span>
+                    </div>
+                    <input type="number" class="form-control-compact" id="max_participants" name="max_participants" value="{{ trip.max_participants }}" {% if trip.final_max_participants %}readonly style="background-color: #f8f9fa;"{% endif %}>
                 </div>
             </div>
         </div>
-
-        <!-- Editing permissions list-->
 
         <div class="form-group">
             <label for="edit_permissions">Edit Permissions</label>
             <div id="edit_permissions">
             {% for participant in participants %}
-                {# Check if this specific participant is NOT the creator (creator always has permissions, so no checkbox needed) #}
                 {% if participant.user.id != trip.creator_id %}
                     <div class="form-check">
                         <input class="form-check-input" 
@@ -76,12 +101,10 @@
             </div>
         </div>
 
-        <!-- Stops Section -->
         <div class="form-section">
             <h3>Stops</h3>
 
         <div id="stopsContainer">
-        {# Maximum number of stops allowed #}
             {% set total_stops = stops|length if stops|length > 0 else 1 %}
             {% for i in range(3) %}
                 {% set stop = stops[i] if i < stops|length else None %}
@@ -90,26 +113,18 @@
                     {% if i >= stops|length %}hidden style="display:none;"{% endif %}>
                         <div class="stop-header">
                             <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
-                             <button type="button" class="remove-stop"
-                                    style="display: {% if i == 0 %}none{% else %}flex{% endif %};">
-                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                                 Remove
-                        </button>
-                </div>
-
-
+                            <button type="button" class="remove-stop" style="display: none;">❌</button>
+                            <input type="hidden" name="stops[{{ i }}][stop_id]" value="{{ stop.id if stop else '' }}">
+                        </div>
 
                     <div class="form-group">
                         <div class="radio-group-compact">
                             <div class="form-check-inline">
-                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_fixed_{{ i }}" value="Fixed" data-stop-index="{{ i }}" required {% if stop and stop.stop_status == 'Fixed' %}checked disabled{% endif %}>
+                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_fixed_{{ i }}" value="Fixed" data-stop-index="{{ i }}" required {% if stop and stop.stop_status == 'Fixed' %}checked{% endif %}>
                                 <label class="form-check-label" for="destination_fixed_{{ i }}">Final</label>
                             </div>
                             <div class="form-check-inline">
-                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_open_{{ i }}" value="Open" data-stop-index="{{ i }}" required {% if stop and stop.stop_status == 'Open' %}checked{% endif %}{% if stop and stop.stop_status == 'Fixed' %} disabled{% endif %}>
+                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_open_{{ i }}" value="Open" data-stop-index="{{ i }}" required {% if not stop or stop.stop_status == 'Open' %}checked{% endif %}>
                                 <label class="form-check-label" for="destination_open_{{ i }}">Open</label>
                             </div>
                         </div>
@@ -122,52 +137,47 @@
                         <div class="stop-grid-left">
                             <div class="form-group">
                                 <label>Stop Name</label>
-                                <input type="text" class="form-control-compact stop-name-input" name="stops[{{ i }}][stop_name]" maxlength="256" placeholder="Restaurant or location name" value="{{ stop.name if stop else '' }}" data-stop-index="{{ i }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
+                                <input type="text" class="form-control-compact stop-name-input" name="stops[{{ i }}][stop_name]" maxlength="256" placeholder="Restaurant or location name" value="{{ stop.name if stop else '' }}" data-stop-index="{{ i }}">
                             </div>
                             
                             {% if i == 0 %}
                             <div id="final-destination-open-{{ i }}" class="final-destination-open" style="display: none;">
                                 <div class="form-group">
                                     <label for="trip_preferences_{{ i }}">Stop Preferences</label>
-                                    <input type="text" class="form-control-compact" id="trip_preferences_{{ i }}" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'" value="{{ trip.trip_preferences or '' }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
+                                    <input type="text" class="form-control-compact" id="trip_preferences_{{ i }}" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'" value="{{ trip.trip_preferences or '' }}">
                                 </div>
                             </div>
                             <div id="final-destination-section-{{ i }}" class="final-destination-section" style="display: none;">
                                 <div class="form-group">
                                     <label for="stop_place_{{ i }}">Final Place</label>
-                                    <input type="text" class="form-control-compact" id="stop_place_{{ i }}" name="stop_place" maxlength="256" placeholder="E.g., 'San Gines'" value="{{ stop.place if stop else '' }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
+                                    <input type="text" class="form-control-compact" id="stop_place_{{ i }}" name="stops[{{ i }}][stop_place]" maxlength="256" placeholder="E.g., 'San Gines'" value="{{ stop.place if stop else '' }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
                                 </div>
                             </div>
                             {% endif %}
 
                             <div class="form-group">
                                 <label>Time</label>
-                                <input type="time" class="form-control-compact stop-time-input" name="stops[{{ i }}][stop_time]" value="{{ stop.time if stop else '' }}" data-stop-index="{{ i }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
+                                <input type="time" class="form-control-compact stop-time-input" name="stops[{{ i }}][stop_time]" value="{{ stop.time if stop else '' }}" data-stop-index="{{ i }}">
                             </div>
                         </div>
 
-                        <!-- Right Column -->
                         <div class="stop-grid-right">
                             <div class="form-group">
                                 <label>Notes</label>
-                                <textarea class="form-control-compact stop-notes-input" name="stops[{{ i }}][notes]" rows="4" maxlength="500" placeholder="Additional details..." data-stop-index="{{ i }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>{{ stop.notes if stop else '' }}</textarea>
+                                <textarea class="form-control-compact stop-notes-input" name="stops[{{ i }}][notes]" rows="4" maxlength="500" placeholder="Additional details..." data-stop-index="{{ i }}">{{ stop.notes if stop else '' }}</textarea>
                             </div>
 
                             <div class="form-group">
                                 <label>Budget</label>
-                                <input type="number" class="form-control-compact stop-budget-input" name="stops[{{ i }}][budget]" step="0.01" min="0" placeholder="0.00" value="{{ stop.budget_per_person if stop else '' }}" data-stop-index="{{ i }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
+                                <input type="number" class="form-control-compact stop-budget-input" name="stops[{{ i }}][budget]" step="0.01" min="0" placeholder="0.00" value="{{ stop.budget_per_person if stop else '' }}" data-stop-index="{{ i }}">
                             </div>
 
                             <div class="form-group">
                                 <label>Stop Type</label>
-                                <select class="form-control-compact stop-type-select" name="stops[{{ i }}][stop_type]" data-stop-index="{{ i }}" {% if stop and stop.stop_status == 'Fixed' %}disabled{% endif %}>
-                                    {% if not stop or stop.stop_status != 'Fixed' %}
-                                        {% for stop_type in stop_types %}
-                                            <option value="{{ stop_type }}" {% if stop and stop.stop_type == stop_type %}selected{% endif %}>{{ stop_type }}</option>
-                                        {% endfor %}
-                                    {% else %}
-                                        <option value="{{ stop.stop_type }}" selected disabled>{{ stop.stop_type }}</option>
-                                    {% endif %}
+                                <select class="form-control-compact stop-type-select" name="stops[{{ i }}][stop_type]" data-stop-index="{{ i }}">
+                                    {% for stop_type in stop_types %}
+                                        <option value="{{ stop_type }}" {% if stop and stop.stop_type == stop_type %}selected{% endif %}>{{ stop_type }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -176,12 +186,8 @@
                 {% endfor %}
             </div>
 
-            <button type="button" id="addStopBtn" class="add-stop-btn" style="display: flex;">
-
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                </svg>
-                Add another stop
+            <button type="button" id="addStopBtn" class="add-stop-btn" style="display: flex; justify-content: center; align-items: center;">
+                +
             </button>
         </div>
 
@@ -199,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const stopsContainer = document.getElementById('stopsContainer');
     const addStopBtn = document.getElementById('addStopBtn');
 
-    /** Return only visible stop cards (computed visibility, not style attr only) */
     function getVisibleStops() {
         return Array.from(stopsContainer.querySelectorAll('.stop-card'))
             .filter(stop => !(stop.hidden || getComputedStyle(stop).display === 'none'));
@@ -230,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    /** When Add button clicked */
     addStopBtn.addEventListener('click', function() {
         const visibleStops = getVisibleStops();
         const hiddenStops = getHiddenStops();

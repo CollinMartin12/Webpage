@@ -185,6 +185,12 @@ class Trip(db.Model):
         cascade="all, delete-orphan",
         order_by="TripStop.order"
     )
+    
+    final_name: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    final_location: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    final_description: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    final_max_participants: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    final_date: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
 
 MeetupStatus = Enum("PLANNING", "HAPPENING", "DONE", name="meetup_status")
 

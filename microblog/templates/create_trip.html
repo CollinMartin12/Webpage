@@ -78,13 +78,8 @@
                 <div class="stop-card" data-stop-index="0">
                     <div class="stop-header">
                         <h4 class="stop-number">1. Food stop</h4>
-                        <button type="button" class="remove-stop" style="display: none;">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                            </svg>
-                            Remove
-                        </button>
+                        <!-- used the x emoji for deleting stops-->
+                        <button type="button" class="remove-stop" style="display: none;">❌</button>
                     </div>
                     <div class="form-group">
                         <div class="radio-group-compact">
@@ -272,30 +267,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const destinationCitySelect = document.getElementById('destination_city_id');
-    
-    function handleDestinationTypeChange(value) {
-        document.getElementById('final-destination-section').style.display = 'none';
-        document.getElementById('final-destination-open').style.display = 'none';
-        
-        if (destinationCitySelect) destinationCitySelect.removeAttribute('required');
-        
-        if (value === 'Fixed') {
-            document.getElementById('final-destination-section').style.display = 'block';
-            if (destinationCitySelect) destinationCitySelect.setAttribute('required', 'required');
-        } else if (value === 'Open') {
-            document.getElementById('final-destination-open').style.display = 'block';
-        }
-    }
-    
-    handleDestinationTypeChange('Fixed');
-    
-    document.querySelectorAll('input[name="destination_type"]').forEach(radio => {
-        radio.addEventListener('click', function() {
-            handleDestinationTypeChange(this.value);
-        });
-    });
-});
+
 </script>
 {% endblock %}

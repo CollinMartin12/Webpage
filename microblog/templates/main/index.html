@@ -4,8 +4,7 @@
 <div class="container_title">
     <h1>Explore and Manage Trips</h1>
     <p>This is your place to explore the Spanish food, join trips and meet people!</p>
-
-    {# determine which filter is currently active #}
+    <!-- Trip Filters given from the controller or the javascript below-->
     {% set current_filter = request.args.get('filter', 'all') %}
 
     <div class="trip-filters-container">
@@ -92,7 +91,8 @@
         </div>
     </section>
 </div>
-
+<!-- auto submit filter, when changed it automatically submits the form. In the controller is is received as request.args.get
+ a link to how we did this is in the paper. A website called MDN -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.querySelector('.trip-filters-form');
