@@ -4,7 +4,8 @@
 <div class="container_title">
     <h1>Explore and Manage Trips</h1>
     <p>This is your place to explore the Spanish food, join trips and meet people!</p>
-    <!-- Trip Filters given from the controller or the javascript below-->
+
+<!-- Trip Filters given from the controller or the javascript below-->
     {% set current_filter = request.args.get('filter', 'all') %}
 
     <div class="trip-filters-container">
@@ -31,6 +32,8 @@
             </button>
         </form>
     </div>
+
+<!-- This block is the trip cards, that show basic overview of the trips including the JS filters -->
 
     <div class="trip-filters-card">
         <form class="trip-filters-form" action="{{ url_for('main.index') }}" method="GET">
@@ -91,7 +94,8 @@
         </div>
     </section>
 </div>
-<!-- auto submit filter, when changed it automatically submits the form. In the controller is is received as request.args.get
+
+<!-- auto submit filter, when changed it automatically submits the form. In the controller is received as request.args.get
  a link to how we did this is in the paper. A website called MDN -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {

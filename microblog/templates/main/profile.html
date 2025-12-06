@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<!-- To this page, the user is redirected when he is authenticated and wants to edit his profile -->
+
     <section class ="profile">
     <h1 class="header-profile">{{ user.name }} 's Profile</h1>
 
@@ -34,6 +37,7 @@
         </div>
     </div>
 
+<!-- after the readonly information, this is the form to update the user's information -->
 
    <h2 class="edit-profile-header">Edit your details</h2>
  <form class="profile-form"

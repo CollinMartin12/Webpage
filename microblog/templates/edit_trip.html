@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-
 {% block content %}
+<!-- This is the main logic of the edit trip page -->
+
 <div class="container">
     <h2>Edit Trip</h2>
 
@@ -198,7 +199,7 @@
     </form>
 </div>
 
-
+<!-- This is the JavaScript logic of the stops handling - to make sure we don't have more than 3 stops -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const MAX_STOPS = 3;

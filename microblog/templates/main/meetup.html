@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- This is the create meetup page, simple form styled like the create trip page -->
+
 <div class="container">
     <h2>
       Create Meetup for Trip to
@@ -11,7 +13,6 @@
           action="{{ url_for('main.create_meetup', trip_id=trip.id) }}"
           method="POST">
 
-        <!-- Two-column layout similar to create_trip -->
         <div class="trip-grid">
             <div class="trip-grid-left">
                 <div class="form-group">
@@ -58,7 +59,6 @@
             </div>
         </div>
 
-        <!-- Details section (like Stops/Sections in create_trip) -->
         <div class="form-section">
             <h3>Meetup Details</h3>
             <div class="form-group">
@@ -73,7 +73,6 @@
             </div>
         </div>
 
-        <!-- Buttons row, same style as create_trip -->
         <div class="form-actions">
             <button type="submit" class="btn-submit">Create Meetup</button>
             <a href="{{ url_for('main.trip', trip_id=trip.id) }}" class="btn-cancel">

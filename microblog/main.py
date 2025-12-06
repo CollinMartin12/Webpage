@@ -113,12 +113,13 @@ def index():
 
 
 
-# Controller for the explore page
+# THIS SHOULD BE REMOVED
 @bp.route("/explore")
 def explore():
     return render_template("main/home.html")
 
-# I don't think this is used anymore
+
+# THIS IS FOR THE HOME PAGE
 @bp.route("/home")
 @flask_login.login_required
 def home():

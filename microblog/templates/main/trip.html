@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<main class="trip-container">
+<!-- This is the main trip page, with all the trip actions and information -->
 
+<main class="trip-container">
     <div class="trip-content-wrapper">
         <div class="top_left_trip">
             <header class="trip-details-header">
@@ -79,7 +80,7 @@
             {% endif %}
         </div>
 
-        <!-- Meetups + comments -->
+        <!-- Meetups and comments -->
         <div class="meetup-column">
             <div class="trip-meetups">
                 <h3>Meetups ({{ trip.meetups|length }})</h3>
@@ -137,7 +138,7 @@
             </div>
         </div>
 
-        <!-- Participants + actions -->
+        <!-- Participants display and actions -->
         <div class="participants-column">
 
             <!-- Participants -->

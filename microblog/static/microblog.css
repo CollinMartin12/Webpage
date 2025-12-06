@@ -1,4 +1,5 @@
-/* ===================== Global Variables ===================== */
+/* ===================== Global Variables (for easier access) ===================== */
+
 :root{
   --main:#561F37;
     --mainlight:#FFF2F2;
@@ -11,7 +12,6 @@
   --ring: rgba(51,115,161,.25);
     --main-transparent: rgba(86, 31, 55, 0.5);
 }
-
 
 /* ===================== GLOBAL BUTTON BASE STYLE ===================== */
 
@@ -46,11 +46,6 @@ border-width: 1px;
   color: black;
 }
 
-.btn--warning {
-  background: #f59e0b;
-  border-color: #d97706;
-}
-
 .btn-leave {
   background: var(--fourth);
   border-color: darkred;
@@ -68,7 +63,6 @@ border-width: 1px;
 }
 
 
-
 .btn--primary {
   background: var(--fourth);
   border-color: black;
@@ -76,7 +70,6 @@ border-width: 1px;
   border-width: 1px;
   color: black;
 }
-
 
 
 /* ----------------Login and Signup Pages--------------- */
@@ -159,6 +152,7 @@ body {
   z-index: 5;
 }
 
+/* Topbar header and links */
 
 .topbar h1 {
   margin: 0;
@@ -335,6 +329,7 @@ body {
     color: #333;
 }
 
+/* Edit profile fields container */
 
 .edit-profile-header {
     align-items: center;
@@ -462,13 +457,13 @@ body {
   display: none;
 }
 
-/* Optional: add small arrow via pseudo-element */
+/* AI usage: to add a collapsable list of participants */
 .participants-display summary::before {
   content: "▾";
   font-size: 0.8rem;
 }
 
-/* List styling */
+/* Participant List styling */
 .participants-display details ul {
   list-style: none;
   margin: 0;
@@ -535,6 +530,7 @@ body {
   box-sizing: border-box;
 }
 
+/* Avatar image definition */
 
 .avatar-small img {
   width: 28px;
@@ -612,7 +608,6 @@ body {
 
 
 
-
 /* Comment container */
 .trip-comment {
     margin-bottom: 1.2rem;
@@ -629,7 +624,7 @@ body {
     margin-bottom: 0.3rem;
 }
 
-/* USERNAME */
+/* Username */
 .trip-comment__author {
     font-weight: 700;
     color: #0b3a60;
@@ -788,7 +783,8 @@ body {
     font-weight: bold;
 }
 
-/* --- Buttons --- */
+/* --- Buttons design for JS stop buttons --- */
+
 #addStopBtn {
     width: 100%;
     padding: 15px;
@@ -849,7 +845,7 @@ a[href*="main.index"]:hover {
     margin-bottom: 10px;
 }
 
-/* Two-column grid for basic info */
+/* Two-column grid for basic info in meetup */
 .trip-grid {
     display: flex;
     grid-template-columns: 1fr 1fr;
@@ -910,6 +906,7 @@ a[href*="main.index"]:hover {
     gap: 15px;
 }
 
+ /* radio buttons to select stop status */
 .radio-group-compact .form-check-inline {
     margin-right: 0;
     margin-bottom: 0;
@@ -1061,11 +1058,7 @@ a[href*="main.index"]:hover {
 }
 
 /* =========== MAY BE REDUNDANT ==========
-.alert-success {
-  background-color: #d4edda;
-  border-color: #28a745;
-  color: #155724;
-}
+
 
 .alert-error {
   background-color: #f8d7da;
@@ -1237,7 +1230,7 @@ details[open] summary {
 .meetup-item div {
   font-size: 0.85rem;
   margin: 0.15rem 0;
-  clear: both; /* Prevent other divs from wrapping around float */
+  clear: both;
 }
 
 .trip-comments {
@@ -1524,7 +1517,7 @@ details[open] summary {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Status Colors - Matching Google/Material styles */
+/* Status Colors - Change the "pill" color in index.html based on the trip status */
 .status-pending { background-color: #0f9d58; }
 .status-active  { background-color: #4285f4; }
 .status-inactive{ background-color: #db4437; }
@@ -1543,7 +1536,6 @@ details[open] summary {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Adjustments to your existing classes */
 .trip-info-card-under {
     margin-top: 8px;
     padding: 10px 15px;
@@ -1592,7 +1584,7 @@ details[open] summary {
     margin-top: 5px;
 }
 
-/* Container to center the tabs */
+/* Container to center the tabs in the center of he screen*/
 .trip-filters-container {
     max-width: 1200px;
     margin: 20px auto 10px auto;
@@ -1601,7 +1593,7 @@ details[open] summary {
     justify-content: flex-start;
 }
 
-/* The group of buttons */
+/* group of buttons (filters) */
 .trip-filters {
     display: inline-flex;
     background-color: #f1f3f4;
@@ -1707,7 +1699,7 @@ details[open] summary {
   padding: 0;
 }
 
-/* Adding a small overlay on image to decrease brightness */
+/* small overlay on image to decrease brightness */
 
 .landing-hero::before {
   content: "";
