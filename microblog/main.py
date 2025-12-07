@@ -460,6 +460,7 @@ def edit_trip(trip_id):
     final_description = trip.final_description
     final_max_participants = trip.final_max_participants
     final_date = trip.final_date
+
     
     
     MAX_STOPS = 3
@@ -510,63 +511,56 @@ def edit_trip(trip_id):
         destination_type = request.form.get("destination_type")
         stop_place = request.form.get("stop_place")
 
-        stop_keys = [key for key in request.form.keys() if key.startswith("stops[")]
-        if stop_keys:
-            max_index = max(int(k.split("[")[1].split("]")[0]) for k in stop_keys)
-            num_stops = min(max_index + 1, MAX_STOPS)
-        else:
-            num_stops = 0
-
-        for i in range(num_stops):
+        for i in range(3):
+            stop_id = request.form.get(f"stops[{i}][stop_id]")
             stop_name = request.form.get(f"stops[{i}][stop_name]")
-            if not stop_name:
-                continue
-
-            stop_time_str = request.form.get(f"stops[{i}][stop_time]")
-            stop_time = None
-            if stop_time_str:
-                try:
-                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
-                except ValueError:
-                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
-
-            stop_status = request.form.get(f"stops[{i}][stop_status]")
-            stop_type = request.form.get(f"stops[{i}][stop_type]")
-
-            if i == 0 and destination_type == "Fixed":
-                place = stop_place
-            else:
-                place = request.form.get(f"stops[{i}][place]")
-
-            budget = request.form.get(f"stops[{i}][budget]")
-            notes = request.form.get(f"stops[{i}][notes]")
-
-            stops_to_create.append({
-                "trip_id": trip.id,
-                "name": stop_name,
-                "place": place,
-                "time": stop_time,
-                "notes": notes,
-                "budget_per_person": float(budget) if budget else None,
-                "stop_type": stop_type,
-                "order": int(request.form.get(f"stops[{i}][stop_order]", i)),
-                "stop_status": stop_status
-            })
-
-        if stops_to_create:
-            db.session.execute(
-                db.delete(model.TripStop).where(model.TripStop.trip_id == trip.id)
-            )
-            db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
-
-            # Recalculate trip budget
-            total_budget = sum(stop.get("budget_per_person") or 0 for stop in stops_to_create)
-            trip.budget = total_budget
-
-            db.session.commit()
-            flash("Trip updated successfully!", "success")
-            return redirect(url_for("main.trip", trip_id=trip.id))
-        return redirect(url_for("main.edit_trip", trip_id=trip_id))
+            
+            if stop_name:  # Only process if stop has a name
+                if stop_id:
+                    # Existing stop
+                    stop = db.session.get(model.TripStop, stop_id)
+                    if not stop:
+                        # Create new stop if existing one not found
+                        stop = model.TripStop(trip_id=trip.id, order=i)
+                        db.session.add(stop)
+                else:
+                    # New stop
+                    stop = model.TripStop(trip_id=trip.id, order=i)
+                    db.session.add(stop)
+                
+                # Only update final_stop if it's not already final (one-way)
+                if not hasattr(stop, 'final_stop') or not stop.final_stop:
+                    stop.final_stop = request.form.get(f"stops[{i}][final_stop]") == "fixed"
+                
+                # Update other fields
+                stop.name = stop_name
+                
+                # Handle time field here we used AI assistance to determine the best way to handle time format issues
+                stop_time_str = request.form.get(f"stops[{i}][stop_time]")
+                if stop_time_str:
+                    try:
+                        stop.time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                    except ValueError:
+                        try:
+                            stop.time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
+                        except ValueError:
+                            stop.time = None
+                else:
+                    stop.time = None
+                
+                stop.notes = request.form.get(f"stops[{i}][notes]")
+                
+                # Handle budget
+                budget_str = request.form.get(f"stops[{i}][budget]")
+                stop.budget_per_person = float(budget_str) if budget_str else None
+                
+                stop.stop_type = request.form.get(f"stops[{i}][stop_type]")
+                stop.place = request.form.get(f"stops[{i}][stop_place]")
+                stop.order = int(request.form.get(f"stops[{i}][stop_order]", i))
+        
+        # Commit all changes
+        db.session.commit()
+        return redirect(url_for("main.trip", trip_id=trip_id))
 
     # GET request
     users = db.session.execute(db.select(model.User)).scalars().all()
@@ -744,9 +738,20 @@ def finalize_trip(trip_id):
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    
+    # Check that all stops have the required fields that actually exist
     for stop in trip.stops:
-        if stop.name is None or stop.place is None or stop.date is None or stop.time is None or stop.stop_type is None:
-            flash("Must input the following fields for all stops: name, place, date, time, and stop type.", "error")
+        missing_fields = []
+        
+        if not stop.name:
+            missing_fields.append("name")
+        if not stop.place:
+            missing_fields.append("place")  
+        if not stop.time:
+            missing_fields.append("time")
+        
+        if missing_fields:
+            flash(f"Stop '{stop.name or 'Unnamed'}' is missing: {', '.join(missing_fields)}", "error")
             return redirect(url_for("main.trip", trip_id=trip.id))
     
     trip.is_finalized = True

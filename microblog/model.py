@@ -111,7 +111,7 @@ class TripStop(db.Model):
     # Basic info
     name: Mapped[Optional[str]] = mapped_column(String(256), nullable=True) 
     place: Mapped[Optional[str]] = mapped_column(String(256), nullable=True)  
-    
+    final_stop: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     # Timing
     date: Mapped[Optional[date_type]] = mapped_column(Date, nullable=True)
     time: Mapped[Optional[time_type]] = mapped_column(Time, nullable=True)

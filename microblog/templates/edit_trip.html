@@ -7,56 +7,56 @@
 
     <form class="Trip-form" action="{{ url_for('main.edit_trip', trip_id=trip.id) }}" method="post" novalidate>
         <div class="trip-grid">
-<div class="trip-grid-left">
-    <div class="form-group">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-            <label for="title">Trip Name</label>
-            <input type="checkbox" name="final_name" id="trip_fixed" value="fixed" {% if trip.final_name %}checked disabled{% endif %}>
-            <span style="font-size: 14px;">Fixed</span>
-        </div>
-        <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required {% if trip.final_name %}readonly style="background-color: #f8f9fa;"{% endif %} placeholder="Enter trip name" value="{{ trip.title }}">
-        </div>
-
-        <div class="form-group">
-            <label>Date Type</label>
-            <div class="radio-group-compact">
-                <div class="form-check-inline">
-                    <input class="form-check-input" type="radio" name="date_type" id="date_fixed" value="Fixed" {% if date_type == "Fixed" %}checked{% endif %} required>
-                    <label class="form-check-label" for="date_fixed">Fixed</label>
-                </div>
-                <div class="form-check-inline">
-                    <input class="form-check-input" type="radio" name="date_type" id="date_range" value="Range" {% if date_type == "Range" %}checked{% endif %} required>
-                    <label class="form-check-label" for="date_range">Range</label>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-fixed-date" style="{% if date_type != 'Fixed' %}display: none;{% endif %}">
+        <div class="trip-grid-left">
             <div class="form-group">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                    <label for="definite_date">Date</label>
-                    <input type="checkbox" name="final_date" id="date_fixed_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
+                    <label for="title">Trip Name</label>
+                    <input type="checkbox" name="final_name" id="trip_fixed" value="fixed" {% if trip.final_name %}checked disabled{% endif %}>
                     <span style="font-size: 14px;">Fixed</span>
                 </div>
-                <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
-            </div>
-        </div>
+                <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required {% if trip.final_name %}readonly style="background-color: #f8f9fa;"{% endif %} placeholder="Enter trip name" value="{{ trip.title }}">
+                </div>
 
-        <div id="view-range-date" style="{% if date_type != 'Range' %}display: none;{% endif %}">
-            <div class="form-group">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                    <label for="start_date">Date Range</label>
-                    <input type="checkbox" name="final_date" id="date_range_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
-                    <span style="font-size: 14px;">Fixed</span>
+                <div class="form-group">
+                    <label>Date Type</label>
+                    <div class="radio-group-compact">
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="date_type" id="date_fixed" value="Fixed" {% if date_type == "Fixed" %}checked{% endif %} required>
+                            <label class="form-check-label" for="date_fixed">Fixed</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input class="form-check-input" type="radio" name="date_type" id="date_range" value="Range" {% if date_type == "Range" %}checked{% endif %} required>
+                            <label class="form-check-label" for="date_range">Range</label>
+                        </div>
+                    </div>
                 </div>
-                <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+
+                <div id="view-fixed-date" style="{% if date_type != 'Fixed' %}display: none;{% endif %}">
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <label for="definite_date">Date</label>
+                            <input type="checkbox" name="final_date" id="date_fixed_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
+                            <span style="font-size: 14px;">Fixed</span>
+                        </div>
+                        <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                    </div>
+                </div>
+
+                <div id="view-range-date" style="{% if date_type != 'Range' %}display: none;{% endif %}">
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <label for="start_date">Date Range</label>
+                            <input type="checkbox" name="final_date" id="date_range_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
+                            <span style="font-size: 14px;">Fixed</span>
+                        </div>
+                        <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="end_date">End Date</label>
-                <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
-            </div>
-        </div>
-    </div>
 
             <div class="trip-grid-right">
                 <div class="form-group">
@@ -121,28 +121,22 @@
 
         <div class="form-section">
             <h3>Stops</h3>
+            <p> You can add up to 3 food stops for this trip. If a stop is marked as "Fixed", its details cannot be changed.</p>
 
         <div id="stopsContainer">
-            {% set total_stops = stops|length if stops|length > 0 else 1 %}
             {% for i in range(3) %}
                 {% set stop = stops[i] if i < stops|length else None %}
-                <div class="stop-card" data-stop-index="{{ i }}" {% if i >= stops|length %}hidden style="display:none;"{% endif %}>
+                <div class="stop-card">
                     <div class="stop-header">
                         <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
-                        <button type="button" class="remove-stop" style="display: none;">❌</button>
                         <input type="hidden" name="stops[{{ i }}][stop_id]" value="{{ stop.id if stop else '' }}">
                     </div>
 
                     <div class="form-group">
-                        <div class="radio-group-compact">
-                            <div class="form-check-inline">
-                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_fixed_{{ i }}" value="Fixed" data-stop-index="{{ i }}" required {% if stop and stop.stop_status == 'Fixed' %}checked{% endif %}>
-                                <label class="form-check-label" for="destination_fixed_{{ i }}">Final</label>
-                            </div>
-                            <div class="form-check-inline">
-                                <input class="form-check-input stop-status-radio" type="radio" name="stops[{{ i }}][stop_status]" id="destination_open_{{ i }}" value="Open" data-stop-index="{{ i }}" required {% if not stop or stop.stop_status == 'Open' %}checked{% endif %}>
-                                <label class="form-check-label" for="destination_open_{{ i }}">Open</label>
-                            </div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <label>Stop Status</label>
+                            <input type="checkbox" name="stops[{{ i }}][final_stop]" id="stop_fixed_{{ i }}" value="fixed" {% if stop and stop.final_stop %}checked disabled{% endif %}>
+                            <span style="font-size: 14px;">Fixed</span>
                         </div>
                     </div>
                     
@@ -153,44 +147,44 @@
                         <div class="stop-grid-left">
                             <div class="form-group">
                                 <label>Stop Name</label>
-                                <input type="text" class="form-control-compact stop-name-input" name="stops[{{ i }}][stop_name]" maxlength="256" placeholder="Restaurant or location name" value="{{ stop.name if stop else '' }}" data-stop-index="{{ i }}">
+                                <input type="text" class="form-control-compact" name="stops[{{ i }}][stop_name]" maxlength="256" placeholder="Restaurant or location name" value="{{ stop.name if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
                             </div>
                             
-                            {% if i == 0 %}
-                            <div id="final-destination-open-{{ i }}" class="final-destination-open" style="display: none;">
-                                <div class="form-group">
-                                    <label for="trip_preferences_{{ i }}">Stop Preferences</label>
-                                    <input type="text" class="form-control-compact" id="trip_preferences_{{ i }}" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'" value="{{ trip.trip_preferences or '' }}">
-                                </div>
+                            <div class="form-group">
+                                {% if i == 0 %}
+                                <label for="trip_preferences_{{ i }}">Stop Preferences</label>
+                                <input type="text" class="form-control-compact" id="trip_preferences_{{ i }}" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'" value="{{ trip.trip_preferences or '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                                {% else %}
+                                <label for="stop_preferences_{{ i }}">Stop {{ i + 1 }} Preferences</label>
+                                <input type="text" class="form-control-compact" id="stop_preferences_{{ i }}" name="stops[{{ i }}][preferences]" maxlength="256" placeholder="E.g., 'Traditional tapas bar'" value="{{ stop.preferences if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
+                                {% endif %}
                             </div>
-                            <div id="final-destination-section-{{ i }}" class="final-destination-section" style="display: none;">
-                                <div class="form-group">
-                                    <label for="stop_place_{{ i }}">Final Place</label>
-                                    <input type="text" class="form-control-compact" id="stop_place_{{ i }}" name="stops[{{ i }}][stop_place]" maxlength="256" placeholder="E.g., 'San Gines'" value="{{ stop.place if stop else '' }}" {% if stop and stop.stop_status == 'Fixed' %}readonly{% endif %}>
-                                </div>
+                            
+                            <div class="form-group">
+                                <label for="stop_place_{{ i }}">Final Place</label>
+                                <input type="text" class="form-control-compact" id="stop_place_{{ i }}" name="stops[{{ i }}][stop_place]" maxlength="256" placeholder="E.g., 'San Gines'" value="{{ stop.place if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
                             </div>
-                            {% endif %}
 
                             <div class="form-group">
                                 <label>Time</label>
-                                <input type="time" class="form-control-compact stop-time-input" name="stops[{{ i }}][stop_time]" value="{{ stop.time if stop else '' }}" data-stop-index="{{ i }}">
+                                <input type="time" class="form-control-compact" name="stops[{{ i }}][stop_time]" value="{{ stop.time if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
                             </div>
                         </div>
 
                         <div class="stop-grid-right">
                             <div class="form-group">
                                 <label>Notes</label>
-                                <textarea class="form-control-compact stop-notes-input" name="stops[{{ i }}][notes]" rows="4" maxlength="500" placeholder="Additional details..." data-stop-index="{{ i }}">{{ stop.notes if stop else '' }}</textarea>
+                                <textarea class="form-control-compact" name="stops[{{ i }}][notes]" rows="4" maxlength="500" placeholder="Additional details..." {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>{{ stop.notes if stop else '' }}</textarea>
                             </div>
 
                             <div class="form-group">
                                 <label>Budget</label>
-                                <input type="number" class="form-control-compact stop-budget-input" name="stops[{{ i }}][budget]" step="0.01" min="0" placeholder="0.00" value="{{ stop.budget_per_person if stop else '' }}" data-stop-index="{{ i }}">
+                                <input type="number" class="form-control-compact" name="stops[{{ i }}][budget]" step="0.01" min="0" placeholder="0.00" value="{{ stop.budget_per_person if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
                             </div>
 
                             <div class="form-group">
                                 <label>Stop Type</label>
-                                <select class="form-control-compact stop-type-select" name="stops[{{ i }}][stop_type]" data-stop-index="{{ i }}">
+                                <select class="form-control-compact" name="stops[{{ i }}][stop_type]" {% if stop and stop.final_stop %}disabled style="background-color: #f8f9fa;"{% endif %}>
                                     {% for stop_type in stop_types %}
                                         <option value="{{ stop_type }}" {% if stop and stop.stop_type == stop_type %}selected{% endif %}>{{ stop_type }}</option>
                                     {% endfor %}
@@ -202,9 +196,7 @@
                 {% endfor %}
             </div>
 
-            <button type="button" id="addStopBtn" class="add-stop-btn" style="display: flex; justify-content: center; align-items: center;">
-                +
-            </button>
+            <!-- All 3 stops are always displayed above -->
         </div>
 
         <div class="form-actions">
@@ -214,130 +206,26 @@
     </form>
 </div>
 
-<!-- This is the JavaScript logic of the stops handling - to make sure we don't have more than 3 stops -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // STOPS LOGIC
-    const MAX_STOPS = 3;
-    const stopsContainer = document.getElementById('stopsContainer');
-    const addStopBtn = document.getElementById('addStopBtn');
-
-    function getVisibleStops() {
-        return Array.from(stopsContainer.querySelectorAll('.stop-card'))
-            .filter(stop => !(stop.hidden || getComputedStyle(stop).display === 'none'));
-    }
-
-    function getHiddenStops() {
-        return Array.from(stopsContainer.querySelectorAll('.stop-card'))
-            .filter(stop => (stop.hidden || getComputedStyle(stop).display === 'none'));
-    }
-
-    function updateNumbers() {
-        const visibleStops = getVisibleStops();
-        visibleStops.forEach((stop, i) => {
-            stop.querySelector('.stop-number').textContent = `${i + 1}. Food stop`;
-            const removeBtn = stop.querySelector('.remove-stop');
-            if (removeBtn) removeBtn.style.display = i === 0 ? 'none' : 'flex';
-        });
-    }
-
-    function updateAddButton() {
-        const visibleStops = getVisibleStops();
-        const hiddenStops = getHiddenStops();
-        if (visibleStops.length >= MAX_STOPS || hiddenStops.length === 0) {
-            addStopBtn.style.display = 'none';
-        } else {
-            addStopBtn.style.display = 'flex';
-        }
-    }
-
-    addStopBtn.addEventListener('click', function() {
-        const visibleStops = getVisibleStops();
-        const hiddenStops = getHiddenStops();
-
-        if (visibleStops.length >= MAX_STOPS) {
-            alert(`You can only have up to ${MAX_STOPS} stops per trip.`);
-            return;
-        }
-        if (hiddenStops.length === 0) {
-            alert('No more stop slots available.');
-            return;
-        }
-
-        const next = hiddenStops[0];
-        next.hidden = false;
-        next.style.display = 'block';
-        updateNumbers();
-        updateAddButton();
-    });
-
-    stopsContainer.addEventListener('click', function(e) {
-        const btn = e.target.closest('.remove-stop');
-        if (!btn) return;
-        const card = btn.closest('.stop-card');
-        card.hidden = true;
-        card.style.display = 'none';
-        card.querySelectorAll('input, textarea, select').forEach(input => {
-            if (input.type !== 'radio' && input.type !== 'hidden') input.value = '';
-        });
-        updateNumbers();
-        updateAddButton();
-    });
-
-    document.querySelectorAll('.stop-status-radio').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const i = this.getAttribute('data-stop-index');
-            const card = this.closest('.stop-card');
-            const value = this.value;
-
-            const name = card.querySelector('.stop-name-input');
-            const time = card.querySelector('.stop-time-input');
-            const notes = card.querySelector('.stop-notes-input');
-            const budget = card.querySelector('.stop-budget-input');
-            const type = card.querySelector('.stop-type-select');
-
-            const openSection = document.getElementById(`final-destination-open-${i}`);
-            const fixedSection = document.getElementById(`final-destination-section-${i}`);
-
-            const toggleReadonly = (elements, state) => elements.forEach(el => { if (el) el.readOnly = state; });
-            const toggleDisabled = (el, state) => { if (el) el.disabled = state; };
-
-            if (value === 'Fixed') {
-                toggleReadonly([name, time, notes, budget], true);
-                toggleDisabled(type, true);
-                if (openSection) openSection.style.display = 'none';
-                if (fixedSection) fixedSection.style.display = 'block';
-            } else {
-                toggleReadonly([name, time, notes, budget], false);
-                toggleDisabled(type, false);
-                if (openSection) openSection.style.display = 'block';
-                if (fixedSection) fixedSection.style.display = 'none';
-            }
-        });
-
-        if (radio.checked) radio.dispatchEvent(new Event('change'));
-    });
-
-    // Initialize stops
-    updateNumbers();
-    updateAddButton();
-
-    // DATE LOGIC
-    const definiteDate = document.getElementById('definite_date');
-    const startDate = document.getElementById('start_date');
-    const endDate = document.getElementById('end_date');
-    
+    // Function to handle date type change
     function handleDateTypeChange(value) {
         const fixedSection = document.getElementById('view-fixed-date');
         const rangeSection = document.getElementById('view-range-date');
+        const definiteDate = document.getElementById('definite_date');
+        const startDate = document.getElementById('start_date');
+        const endDate = document.getElementById('end_date');
         
+        // Hide both sections first
         if (fixedSection) fixedSection.style.display = 'none';
         if (rangeSection) rangeSection.style.display = 'none';
         
+        // Remove all required attributes
         if (definiteDate) definiteDate.removeAttribute('required');
         if (startDate) startDate.removeAttribute('required');
         if (endDate) endDate.removeAttribute('required');
         
+        // Show appropriate section and set required
         if (value === 'Fixed' && fixedSection) {
             fixedSection.style.display = 'block';
             if (definiteDate) definiteDate.setAttribute('required', 'required');
@@ -361,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize date display
     handleDateTypeChange('{{ date_type }}');    
     
-    // Only add event listeners if dates are not finalized
+    // Add event listeners if dates are not finalized
     if (!isFinalDate) {
         document.querySelectorAll('input[name="date_type"]').forEach(radio => {
             radio.addEventListener('click', function() {
