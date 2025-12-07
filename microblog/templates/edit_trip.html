@@ -7,39 +7,56 @@
 
     <form class="Trip-form" action="{{ url_for('main.edit_trip', trip_id=trip.id) }}" method="post" novalidate>
         <div class="trip-grid">
-            <div class="trip-grid-left">
+<div class="trip-grid-left">
+    <div class="form-group">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <label for="title">Trip Name</label>
+            <input type="checkbox" name="final_name" id="trip_fixed" value="fixed" {% if trip.final_name %}checked disabled{% endif %}>
+            <span style="font-size: 14px;">Fixed</span>
+        </div>
+        <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required {% if trip.final_name %}readonly style="background-color: #f8f9fa;"{% endif %} placeholder="Enter trip name" value="{{ trip.title }}">
+        </div>
+
+        <div class="form-group">
+            <label>Date Type</label>
+            <div class="radio-group-compact">
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="date_type" id="date_fixed" value="Fixed" {% if date_type == "Fixed" %}checked{% endif %} required>
+                    <label class="form-check-label" for="date_fixed">Fixed</label>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="date_type" id="date_range" value="Range" {% if date_type == "Range" %}checked{% endif %} required>
+                    <label class="form-check-label" for="date_range">Range</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-fixed-date" style="{% if date_type != 'Fixed' %}display: none;{% endif %}">
             <div class="form-group">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                    <label for="title">Trip Name</label>
-                    <input type="checkbox" name="final_name" id="trip_fixed" value="fixed" {% if trip.final_name %}checked disabled{% endif %}>
+                    <label for="definite_date">Date</label>
+                    <input type="checkbox" name="final_date" id="date_fixed_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
                     <span style="font-size: 14px;">Fixed</span>
                 </div>
-                <input type="text" class="form-control-compact" id="title" name="title" maxlength="100" required {% if trip.final_name %}readonly style="background-color: #f8f9fa;"{% endif %} placeholder="Enter trip name" value="{{ trip.title }}">
+                <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
             </div>
-            {% if date_type == "Fixed" %}
-                <div class="form-group">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                        <label for="definite_date">Date</label>
-                        <input type="checkbox" name="final_date" id="date_fixed" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
-                        <span style="font-size: 14px;">Fixed</span>
-                    </div>
-                    <input type="date" class="form-control-compact" id="definite_date" name="definite_date" value="{{ trip.definite_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+        </div>
+
+        <div id="view-range-date" style="{% if date_type != 'Range' %}display: none;{% endif %}">
+            <div class="form-group">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                    <label for="start_date">Date Range</label>
+                    <input type="checkbox" name="final_date" id="date_range_checkbox" value="fixed" {% if trip.final_date %}checked disabled{% endif %}>
+                    <span style="font-size: 14px;">Fixed</span>
                 </div>
-            {% else %}
-                <div class="form-group">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                        <label for="start_date">Date Range</label>
-                        <input type="checkbox" name="final_date" id="date_fixed" value="fixed" {% if trip.final_date %}checked{% endif %}>
-                        <span style="font-size: 14px;">Fixed</span>
-                    </div>
-                    <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
-                </div>
-                <div class="form-group">
-                    <label for="end_date">End Date</label>
-                    <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
-                </div>
-            {% endif %}
+                <input type="date" class="form-control-compact" id="start_date" name="start_date" value="{{ trip.start_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
             </div>
+            <div class="form-group">
+                <label for="end_date">End Date</label>
+                <input type="date" class="form-control-compact" id="end_date" name="end_date" value="{{ trip.end_date }}" {% if trip.final_date %}readonly style="background-color: #f8f9fa;"{% endif %}>
+            </div>
+        </div>
+    </div>
 
             <div class="trip-grid-right">
                 <div class="form-group">
@@ -109,14 +126,12 @@
             {% set total_stops = stops|length if stops|length > 0 else 1 %}
             {% for i in range(3) %}
                 {% set stop = stops[i] if i < stops|length else None %}
-                <div class="stop-card"
-                    data-stop-index="{{ i }}"
-                    {% if i >= stops|length %}hidden style="display:none;"{% endif %}>
-                        <div class="stop-header">
-                            <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
-                            <button type="button" class="remove-stop" style="display: none;">❌</button>
-                            <input type="hidden" name="stops[{{ i }}][stop_id]" value="{{ stop.id if stop else '' }}">
-                        </div>
+                <div class="stop-card" data-stop-index="{{ i }}" {% if i >= stops|length %}hidden style="display:none;"{% endif %}>
+                    <div class="stop-header">
+                        <h4 class="stop-number">{{ i + 1 }}. Food stop</h4>
+                        <button type="button" class="remove-stop" style="display: none;">❌</button>
+                        <input type="hidden" name="stops[{{ i }}][stop_id]" value="{{ stop.id if stop else '' }}">
+                    </div>
 
                     <div class="form-group">
                         <div class="radio-group-compact">
@@ -202,6 +217,7 @@
 <!-- This is the JavaScript logic of the stops handling - to make sure we don't have more than 3 stops -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // STOPS LOGIC
     const MAX_STOPS = 3;
     const stopsContainer = document.getElementById('stopsContainer');
     const addStopBtn = document.getElementById('addStopBtn');
@@ -211,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .filter(stop => !(stop.hidden || getComputedStyle(stop).display === 'none'));
     }
 
-    /** Return hidden stop cards */
     function getHiddenStops() {
         return Array.from(stopsContainer.querySelectorAll('.stop-card'))
             .filter(stop => (stop.hidden || getComputedStyle(stop).display === 'none'));
@@ -256,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAddButton();
     });
 
-    /** Remove-stop button */
     stopsContainer.addEventListener('click', function(e) {
         const btn = e.target.closest('.remove-stop');
         if (!btn) return;
@@ -270,11 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAddButton();
     });
 
-    /** Initialize on load */
-    updateNumbers();
-    updateAddButton();
-
-    /** Toggle fixed/open sections */
     document.querySelectorAll('.stop-status-radio').forEach(radio => {
         radio.addEventListener('change', function() {
             const i = this.getAttribute('data-stop-index');
@@ -308,6 +317,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (radio.checked) radio.dispatchEvent(new Event('change'));
     });
+
+    // Initialize stops
+    updateNumbers();
+    updateAddButton();
+
+    // DATE LOGIC
+    const definiteDate = document.getElementById('definite_date');
+    const startDate = document.getElementById('start_date');
+    const endDate = document.getElementById('end_date');
+    
+    function handleDateTypeChange(value) {
+        const fixedSection = document.getElementById('view-fixed-date');
+        const rangeSection = document.getElementById('view-range-date');
+        
+        if (fixedSection) fixedSection.style.display = 'none';
+        if (rangeSection) rangeSection.style.display = 'none';
+        
+        if (definiteDate) definiteDate.removeAttribute('required');
+        if (startDate) startDate.removeAttribute('required');
+        if (endDate) endDate.removeAttribute('required');
+        
+        if (value === 'Fixed' && fixedSection) {
+            fixedSection.style.display = 'block';
+            if (definiteDate) definiteDate.setAttribute('required', 'required');
+        } else if (value === 'Range' && rangeSection) {
+            rangeSection.style.display = 'block';
+            if (startDate) startDate.setAttribute('required', 'required');
+            if (endDate) endDate.setAttribute('required', 'required');
+        }
+    }
+    
+    // Check if dates are finalized
+    const isFinalDate = {{ 'true' if trip.final_date else 'false' }};
+    
+    // Disable date type radio buttons if dates are finalized
+    if (isFinalDate) {
+        document.querySelectorAll('input[name="date_type"]').forEach(radio => {
+            radio.disabled = true;
+        });
+    }
+    
+    // Initialize date display
+    handleDateTypeChange('{{ date_type }}');    
+    
+    // Only add event listeners if dates are not finalized
+    if (!isFinalDate) {
+        document.querySelectorAll('input[name="date_type"]').forEach(radio => {
+            radio.addEventListener('click', function() {
+                handleDateTypeChange(this.value);
+            });
+        });
+    }
 });
 </script>
 

@@ -470,9 +470,9 @@ def edit_trip(trip_id):
         trip.description = request.form.get("description")
 
         date_type = request.form.get("date_type")
-        trip.start_date = None
-        trip.end_date = None
-        trip.definite_date = None
+        # trip.start_date = None
+        # trip.end_date = None
+        # trip.definite_date = None
         if not final_name:
             trip.final_name = request.form.get("final_name") == "fixed"
         if not final_location:
