@@ -1009,7 +1009,6 @@ a[href*="main.index"]:hover {
     border-color: #999;
 }
 
-/* Form actions */
 .form-actions {
     display: flex;
     gap: 15px;
@@ -1189,7 +1188,7 @@ details[open] summary {
   margin-bottom: 15px;
   background-color: var(--fourth);
   flex-grow: 1;
-  max-width: 450px;
+  max-width: 350px;
   height: 300px;
   margin-left: 0;
   padding: 0.5rem;
@@ -1240,7 +1239,7 @@ details[open] summary {
   margin-bottom: 15px;
   background-color: var(--fourth);
   flex-grow: 1;
-  max-width: 450px;
+  max-width: 350px;
   height: 300px;
   margin-left: 0;
   padding: 0.5rem;
@@ -1291,7 +1290,7 @@ details[open] summary {
   line-height: 1.6;
   background-color: var(--fourth);
   flex-grow:3;
-  max-width: 450px;
+  max-width: 350px;
   height: 300px;
   padding: 0.5rem;
   overflow: hidden;
@@ -1324,7 +1323,7 @@ details[open] summary {
   line-height: 1.6;
   background-color: var(--fourth);
   flex-grow:3;
-  max-width: 450px;
+  max-width: 350px;
   height: 635px;
   padding: 0.5rem;
   overflow-y: auto;

@@ -19,6 +19,9 @@ We are a group of two so we were limited on time and couldn't dive deep into fun
 # Testing the Web Application
 To test it would be easiest to sign in with this Username and Password we have provided below.
 
+Username: 123@gmail.com
+Password: 123
+
 # Declaration of AI tools
 Yes we used Artificial intelligence.
 The use of AI tools was used for questioning about specific use of jinja templates, errors we had trouble finding or understanding, and also to implement few things we deemed out of our reach. For these implementations we used Claude Sonnet 4 and 4.5 to help us with the coding and understanding process.
