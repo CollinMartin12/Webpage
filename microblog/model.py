@@ -8,6 +8,7 @@ from sqlalchemy.sql import func
 import flask_login
 from . import db
 
+
 # TripStatus = Enum("Planning", "Happening", "Done", "Canceled", name="trip_status")
 TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type")
 # TripPlanningStatus = Enum("Final", "Tentative", "To Decide", name="trip_planning_status")

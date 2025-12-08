@@ -366,58 +366,48 @@ def create_trip():
         db.session.add(new_trip)
         db.session.flush()
         
-        stop_indices = set()
-
-        MAX_STOPS = 3
-        stops_to_create = []
-
-        destination_type = request.form.get("destination_type")
-        stop_place = request.form.get("stop_place")
-
-        # since our loop was complex for detecting stops and adding them, we used AI help to determine the best approach for handling stops as a list
-        # For example stops[{i}][stop_name]
-        for i in range(MAX_STOPS):
+        # Handle stops creation - same as edit_trip
+        for i in range(3):
             stop_name = request.form.get(f"stops[{i}][stop_name]")
-            if not stop_name:
-                continue
-
-            stop_time_str = request.form.get(f"stops[{i}][stop_time]")
-            stop_time = None
-            # Problems with stop date time format handled with AI assistance
-            if stop_time_str:
-                try:
-                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
-                except ValueError:
-                    stop_time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
-
-            stop_status = request.form.get(f"stops[{i}][stop_status]")
-            stop_type = request.form.get(f"stops[{i}][stop_type]")
-
-            if i == 0 and destination_type == "Fixed":
-                place = stop_place
-            else:
-                place = request.form.get(f"stops[{i}][place]")
-
-            budget = request.form.get(f"stops[{i}][budget]")
-            notes = request.form.get(f"stops[{i}][notes]")
-
-            stops_to_create.append({
-                'trip_id': new_trip.id,
-                'name': stop_name,
-                'place': place,
-                'time': stop_time,
-                'notes': notes,
-                'budget_per_person': float(budget) if budget else None,
-                'stop_type': stop_type,
-                'order': int(request.form.get(f"stops[{i}][stop_order]", i)),
-                'stop_status': stop_status
-            })
-
-        if stops_to_create:
-            db.session.bulk_insert_mappings(model.TripStop, stops_to_create)
-
-            total_budget = sum(stop.get('budget_per_person') or 0 for stop in stops_to_create)
-            new_trip.budget = total_budget
+            
+            if stop_name:  # Only create stop if name is provided
+                stop = model.TripStop(trip_id=new_trip.id, order=i)
+                db.session.add(stop)
+                
+                # Handle final_stop checkbox
+                stop.final_stop = request.form.get(f"stops[{i}][final_stop]") == "fixed"
+                stop.name = stop_name
+                
+                # Handle preferences field (same as edit_trip)
+                if i == 0:
+                    preferences = request.form.get("trip_preferences")
+                else:
+                    preferences = request.form.get(f"stops[{i}][preferences]")
+                
+                if hasattr(stop, 'preferences'):
+                    stop.preferences = preferences
+                
+                # Handle time field (same logic as edit_trip)
+                stop_time_str = request.form.get(f"stops[{i}][stop_time]")
+                if stop_time_str:
+                    try:
+                        stop.time = dt.datetime.strptime(stop_time_str, "%H:%M:%S").time()
+                    except ValueError:
+                        try:
+                            stop.time = dt.datetime.strptime(stop_time_str, "%H:%M").time()
+                        except ValueError:
+                            stop.time = None
+                else:
+                    stop.time = None
+                
+                stop.notes = request.form.get(f"stops[{i}][notes]")
+                
+                # Handle budget (same as edit_trip)
+                budget_str = request.form.get(f"stops[{i}][budget]")
+                stop.budget_per_person = float(budget_str) if budget_str else None
+                
+                stop.stop_type = request.form.get(f"stops[{i}][stop_type]")
+                stop.place = request.form.get(f"stops[{i}][stop_place]")
 
         create_trip_participant = model.Trip_participants(
             trip_id=new_trip.id,
@@ -425,7 +415,6 @@ def create_trip():
             editing_permissions=True
         )
         db.session.add(create_trip_participant)
-        db.session.commit()
         
         db.session.commit()
         flash("Trip created successfully!", "success")
@@ -460,6 +449,14 @@ def edit_trip(trip_id):
     final_description = trip.final_description
     final_max_participants = trip.final_max_participants
     final_date = trip.final_date
+    
+    has_editing_permissions = any(
+        participant.user_id == flask_login.current_user.id and participant.editing_permissions
+        for participant in trip.participants
+    )
+    if not has_editing_permissions:
+        flash("You do not have permission to edit this trip.", "error")
+        return redirect(url_for("main.trip", trip_id=trip_id))
 
     
     
@@ -471,9 +468,7 @@ def edit_trip(trip_id):
         trip.description = request.form.get("description")
 
         date_type = request.form.get("date_type")
-        # trip.start_date = None
-        # trip.end_date = None
-        # trip.definite_date = None
+
         if not final_name:
             trip.final_name = request.form.get("final_name") == "fixed"
         if not final_location:
@@ -515,24 +510,19 @@ def edit_trip(trip_id):
             stop_id = request.form.get(f"stops[{i}][stop_id]")
             stop_name = request.form.get(f"stops[{i}][stop_name]")
             
-            if stop_name:  # Only process if stop has a name
+            if stop_name: 
                 if stop_id:
-                    # Existing stop
                     stop = db.session.get(model.TripStop, stop_id)
                     if not stop:
-                        # Create new stop if existing one not found
                         stop = model.TripStop(trip_id=trip.id, order=i)
                         db.session.add(stop)
                 else:
-                    # New stop
                     stop = model.TripStop(trip_id=trip.id, order=i)
                     db.session.add(stop)
                 
-                # Only update final_stop if it's not already final (one-way)
                 if not hasattr(stop, 'final_stop') or not stop.final_stop:
                     stop.final_stop = request.form.get(f"stops[{i}][final_stop]") == "fixed"
                 
-                # Update other fields
                 stop.name = stop_name
                 
                 # Handle time field here we used AI assistance to determine the best way to handle time format issues
@@ -738,6 +728,17 @@ def finalize_trip(trip_id):
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    is_participant = any(
+        participant.user_id == flask_login.current_user.id
+        for participant in trip.participants
+    )
+    has_editing_permissions = trip.creator_id == flask_login.current_user.id or any(
+        p.user_id == flask_login.current_user.id and p.editing_permissions
+        for p in trip.participants
+    )
+    if not is_participant and not has_editing_permissions:
+        flash("Only participants with editing permissions can finalize the trip.", "error")
+        abort (403)
     
     # Check that all stops have the required fields that actually exist
     for stop in trip.stops:
@@ -768,6 +769,17 @@ def cancel_trip(trip_id):
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    is_participant = any(
+        participant.user_id == flask_login.current_user.id
+        for participant in trip.participants
+    )
+    has_editing_permissions = trip.creator_id == flask_login.current_user.id or any(
+        p.user_id == flask_login.current_user.id and p.editing_permissions
+        for p in trip.participants
+    )
+    if not is_participant and not has_editing_permissions:
+        flash("Only participants can cancel the trip.", "error")
+        abort (403)
     trip.is_cancelled = True
     db.session.commit()
     flash("Trip canceled successfully!", "success")
@@ -781,6 +793,17 @@ def close_trip(trip_id):
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    is_participant = any(
+        participant.user_id == flask_login.current_user.id
+        for participant in trip.participants
+    )
+    has_editing_permissions = trip.creator_id == flask_login.current_user.id or any(
+        p.user_id == flask_login.current_user.id and p.editing_permissions
+        for p in trip.participants
+    )
+    if not is_participant and not has_editing_permissions:
+        flash("Only participants with editing permissions can close the trip.", "error")
+        abort (403)
     trip.is_open = False
     db.session.commit()
     flash("Trip closed successfully!", "success")
@@ -794,6 +817,11 @@ def reopen_trip(trip_id):
     trip = db.session.get(model.Trip, trip_id)
     if not trip:
         abort(404, "Trip id {} doesn't exist.".format(trip_id))
+    trip_creator = db.session.get(model.User, trip.creator_id)
+    if flask_login.current_user.id != trip.creator_id:
+        flash("Only the trip creator can reopen the trip.", "error")
+        abort (403)
+        
     trip.is_open = True
     trip.is_cancelled = False
     db.session.commit()

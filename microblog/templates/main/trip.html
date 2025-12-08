@@ -149,8 +149,8 @@
                     <div class="participant-avatars">
                         <div class="avatar-small">
                             {% for participant in participants[:4] %}
-                                <img src="{{ participant.profile_picture or '/static/default-avatar.png' }}"
-                                     alt="{{ participant.name }}">
+                                <img src="{{ participant.user.profile_picture or '/static/default-avatar.png' }}"
+                                     alt="{{ participant.user.name }}">
                             {% endfor %}
                         </div>
                         {% if participants|length > 4 %}
@@ -166,8 +166,8 @@
                     <ul>
                         {% for participant in participants %}
                             <li>
-                                <a href="{{ url_for('main.user_profile', user_id=participant.id) }}">
-                                    {{ participant.name }}
+                                <a href="{{ url_for('main.user_profile', user_id=participant.user.id) }}">
+                                    {{ participant.user.name }}
                                 </a>
                             </li>
                         {% else %}

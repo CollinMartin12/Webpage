@@ -150,15 +150,6 @@
                                 <input type="text" class="form-control-compact" name="stops[{{ i }}][stop_name]" maxlength="256" placeholder="Restaurant or location name" value="{{ stop.name if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
                             </div>
                             
-                            <div class="form-group">
-                                {% if i == 0 %}
-                                <label for="trip_preferences_{{ i }}">Stop Preferences</label>
-                                <input type="text" class="form-control-compact" id="trip_preferences_{{ i }}" name="trip_preferences" maxlength="256" placeholder="E.g., 'Anywhere with beaches'" value="{{ trip.trip_preferences or '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
-                                {% else %}
-                                <label for="stop_preferences_{{ i }}">Stop {{ i + 1 }} Preferences</label>
-                                <input type="text" class="form-control-compact" id="stop_preferences_{{ i }}" name="stops[{{ i }}][preferences]" maxlength="256" placeholder="E.g., 'Traditional tapas bar'" value="{{ stop.preferences if stop else '' }}" {% if stop and stop.final_stop %}readonly style="background-color: #f8f9fa;"{% endif %}>
-                                {% endif %}
-                            </div>
                             
                             <div class="form-group">
                                 <label for="stop_place_{{ i }}">Final Place</label>
