@@ -10,12 +10,12 @@ from . import db
 
 
 # TripStatus = Enum("Planning", "Happening", "Done", "Canceled", name="trip_status")
-TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type")
+TripType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="trip_type") # did not use but want to implement further
 # TripPlanningStatus = Enum("Final", "Tentative", "To Decide", name="trip_planning_status")
 # RestaurantType = Enum("Italian", "Chinese", "Asian", "American", "Pastry")
-AttendanceType = Enum("Going-Solo", "With Specific People", "Open for all", name="attendance_type")
-Visibility = Enum("Open", "Friends-Only", name="visibility_type")
-TripStatus = Enum("Just Ideas", "Rough Draft", "Final Plan", name="trip_status")
+AttendanceType = Enum("Going-Solo", "With Specific People", "Open for all", name="attendance_type") # did not use but want to implement further
+Visibility = Enum("Open", "Friends-Only", name="visibility_type") # did not use but want to implement further
+TripStatus = Enum("Just Ideas", "Rough Draft", "Final Plan", name="trip_status") # did not use but want to implement further
 StopType = Enum("Breakfast", "lunch", "dinner", "Brunch", name="stop_type")
 
 class Neighborhood(db.Model):
@@ -33,6 +33,9 @@ class Interest(db.Model):
     user: Mapped["User"] = relationship(back_populates="interests")
 
 class FollowingAssociation(db.Model):
+    """
+    did not use but want to implement further
+    """
     follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
 
@@ -49,6 +52,8 @@ class Trip_participants(db.Model):
 
 
 class Trip_invitations(db.Model):
+    """Model representing trip invitations. 
+    Did not use but want to implement further"""
     __tablename__ = 'trip_invitations'
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -95,12 +100,6 @@ class User(flask_login.UserMixin, db.Model):
     trip_invitations: Mapped[List["Trip_invitations"]] = relationship(back_populates="user")
 
     meetups: Mapped[List["Meetups"]] = relationship(back_populates="user")
-
-    # # DMS
-    # conversations: Mapped[List["Conversation"]] = relationship(
-    #     secondary=conversation_participant, back_populates="participants", lazy="selectin"
-    # )
-    # direct_messages_sent: Mapped[List["DirectMessage"]] = relationship(back_populates="sender")
 
 
 class TripStop(db.Model):
@@ -212,17 +211,6 @@ class Meetups(db.Model):
     date: Mapped[date_type] = mapped_column(Date)
     time: Mapped[dt.time] = mapped_column(Time)
     status: Mapped[str] = mapped_column(MeetupStatus, index=True)
-
-# class Message(db.Model):
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
-#     post: Mapped["Post"] = relationship(back_populates="messages")
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     user: Mapped["User"] = relationship(back_populates="messages")
-#     content: Mapped[str] = mapped_column(String(512))
-#     timestamp: Mapped[datetime.datetime] = mapped_column(
-#         DateTime(timezone=True), server_default=func.now()
-#     )
 
 
 # Rename this
